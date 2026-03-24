@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款价格分布详情</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #653eb3;
+            padding-bottom: 15px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #653eb3;
+        }
+        .back-link {
+            text-decoration: none;
+            color: #5B8FF9;
+            font-size: 16px;
+        }
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filters, .toggle-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .product-selector, .month-selector, .toggle-btn {
+            background-color: #f5f7fa;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .product-selector, .month-selector {
+            min-width: 120px;
+        }
+        .toggle-btn:hover, .product-selector:hover, .month-selector:hover {
+            background-color: #e6f1fc;
+            border-color: #a0cfff;
+            color: #409eff;
+        }
+        .toggle-btn.active {
+            background-color: #409eff;
+            border-color: #409eff;
+            color: #fff;
+        }
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .chart-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .chart-body {
+            padding: 20px;
+            height: 400px;
+        }
+        .comparison-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .comparison-chart {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        .comparison-chart-body {
+            padding: 20px;
+            height: 300px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .summary-table th, .summary-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-table th {
+            background-color: #f5f7fa;
+            font-weight: bold;
+        }
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+        .positive-mom {
+            color: #67C23A;
+        }
+        .negative-mom {
+            color: #F56C6C;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 991px) {
+            .comparison-charts {
+                flex-direction: column;
+            }
+            .comparison-chart {
+                width: 100%;
+            }
+            .filters, .toggle-buttons {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .control-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .chart-body {
+                height: 300px;
+            }
+            .comparison-chart-body {
+                height: 250px;
+            }
+            .product-selector, .month-selector {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">贷款价格分布详情</div>
+            <a href="index.html" class="back-link">返回看板</a>
+        </div>
+        
+        <div class="control-panel">
+            <div class="filters">
+                <span class="filter-label">产品:</span>
+                <select id="product-selector" class="product-selector">
+                    <option value="all">全部产品</option>
+                    <option value="小微保">小微保</option>
+                    <option value="小微保专项">小微保专项</option>
+                    <option value="小微保旺季">小微保旺季</option>
+                    <option value="发薪贷">发薪贷</option>
+                    <option value="秒贷">秒贷</option>
+                    <option value="电商贷">电商贷</option>
+                </select>
+                
+                <span class="filter-label">月份:</span>
+                <select id="month-selector" class="month-selector">
+                    <option value="202312">2023年12月</option>
+                    <option value="202401">2024年01月</option>
+                    <option value="202402">2024年02月</option>
+                    <option value="202403">2024年03月</option>
+                    <option value="202404" selected>2024年04月</option>
+                    <option value="202405">2024年05月</option>
+                </select>
+            </div>
+            
+            <div class="toggle-buttons">
+                <button id="normal-btn" class="toggle-btn active">当前数据</button>
+                <button id="mom-btn" class="toggle-btn">环比数据</button>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">价格分布（按年利率区间）</div>
+            </div>
+            <div class="chart-body" id="main-chart"></div>
+        </div>
+        
+        <div class="comparison-charts" id="comparison-charts">
+            <div class="comparison-chart">
+                <div class="chart-header">
+                    <div class="chart-title">贷款笔数分布</div>
+                </div>
+                <div class="comparison-chart-body" id="count-chart"></div>
+            </div>
+            
+            <div class="comparison-chart">
+                <div class="chart-header">
+                    <div class="chart-title">在贷余额分布</div>
+                </div>
+                <div class="comparison-chart-body" id="amount-chart"></div>
+            </div>
+        </div>
+        
+        <table class="summary-table" id="summary-table">
+            <thead>
+                <tr>
+                    <th>年利率区间</th>
+                    <th>贷款笔数</th>
+                    <th>贷款笔数占比</th>
+                    <th>贷款笔数环比</th>
+                    <th>在贷余额(万元)</th>
+                    <th>在贷余额占比</th>
+                    <th>在贷余额环比</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 数据将通过JavaScript动态填充 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // 格式化货币
+        function formatCurrency(value) {
+            return parseFloat(value).toLocaleString('zh-CN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // 格式化百分比
+        function formatPercent(value) {
+            return parseFloat(value).toFixed(2) + '%';
+        }
+        
+        // 生成随机数据
+        function generateRandomData() {
+            // 利率区间
+            const interestRateRanges = ['0-5.5%', '5.5-10%', '10-15%', '15-20%', '20-24%'];
+            
+            // 产品列表
+            const products = ['小微保', '小微保专项', '小微保旺季', '发薪贷', '秒贷', '电商贷'];
+            
+            // 月份列表
+            const months = ['202312', '202401', '202402', '202403', '202404', '202405'];
+            
+            // 按产品和月份生成随机数据
+            const productData = {};
+            
+            // 为全部产品创建汇总数据
+            productData['all'] = {};
+            
+            months.forEach(month => {
+                productData['all'][month] = {
+                    normal: {
+                        count: interestRateRanges.map(() => 0),
+                        amount: interestRateRanges.map(() => 0)
+                    },
+                    mom: {
+                        count: interestRateRanges.map(() => 0),
+                        amount: interestRateRanges.map(() => 0)
+                    }
+                };
+            });
+            
+            // 为每个产品生成随机数据
+            products.forEach(product => {
+                productData[product] = {};
+                
+                months.forEach(month => {
+                    // 为每个月生成随机数据
+                    const counts = interestRateRanges.map(() => Math.floor(Math.random() * 1000) + 100);
+                    const amounts = interestRateRanges.map(() => (Math.random() * 5000 + 1000).toFixed(2));
+                    
+                    // 生成环比数据（-20%到+20%）
+                    const countMoms = interestRateRanges.map(() => ((Math.random() * 40 - 20) / 100).toFixed(4));
+                    const amountMoms = interestRateRanges.map(() => ((Math.random() * 40 - 20) / 100).toFixed(4));
+                    
+                    productData[product][month] = {
+                        normal: {
+                            count: counts,
+                            amount: amounts
+                        },
+                        mom: {
+                            count: countMoms,
+                            amount: amountMoms
+                        }
+                    };
+                    
+                    // 累加到全部产品
+                    for (let i = 0; i < interestRateRanges.length; i++) {
+                        productData['all'][month].normal.count[i] += counts[i];
+                        productData['all'][month].normal.amount[i] = (parseFloat(productData['all'][month].normal.amount[i]) + parseFloat(amounts[i])).toFixed(2);
+                        
+                        // 全部产品的环比是加权平均
+                        const totalCount = productData['all'][month].normal.count.reduce((a, b) => a + b, 0);
+                        const totalAmount = productData['all'][month].normal.amount.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+                        
+                        productData['all'][month].mom.count[i] = (counts[i] / totalCount * parseFloat(countMoms[i])).toFixed(4);
+                        productData['all'][month].mom.amount[i] = (parseFloat(amounts[i]) / totalAmount * parseFloat(amountMoms[i])).toFixed(4);
+                    }
+                });
+            });
+            
+            return {
+                interestRateRanges: interestRateRanges,
+                productData: productData
+            };
+        }
+        
+        // 初始化图表
+        let mainChart = echarts.init(document.getElementById('main-chart'));
+        let countChart = echarts.init(document.getElementById('count-chart'));
+        let amountChart = echarts.init(document.getElementById('amount-chart'));
+        
+        // 生成随机数据
+        const data = generateRandomData();
+        
+        // 当前选择
+        let currentProduct = 'all';
+        let currentMonth = '202404';
+        let currentMode = 'normal'; // normal 或 mom
+        
+        // 更新图表
+        function updateCharts() {
+            const productName = currentProduct === 'all' ? '全部产品' : currentProduct;
+            const chartData = data.productData[currentProduct][currentMonth];
+            const isMonthOverMonth = currentMode === 'mom';
+            
+            // 控制饼图显示/隐藏
+            const comparisonChartsElement = document.getElementById('comparison-charts');
+            if (isMonthOverMonth) {
+                comparisonChartsElement.classList.add('hidden');
+            } else {
+                comparisonChartsElement.classList.remove('hidden');
+            }
+            
+            // 颜色配置
+            const colors = {
+                primary: '#5B8FF9',
+                secondary: '#61DDAA',
+                accent: '#65789B'
+            };
+            
+            // 更新主图表
+            let mainChartOption;
+            
+            if (isMonthOverMonth) {
+                // 环比模式图表配置
+                mainChartOption = {
+                    title: {
+                        text: `${productName} - ${currentMonth.substring(0, 4)}年${currentMonth.substring(4, 6)}月`,
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 16
+                        },
+                        subtextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        formatter: function(params) {
+                            const range = params[0].axisValue;
+                            const countValue = params[0].value;
+                            const amountValue = params[1].value;
+                            
+                            return `${range}<br/>贷款笔数环比: ${formatPercent(countValue)}<br/>在贷余额环比: ${formatPercent(amountValue)}`;
+                        }
+                    },
+                    legend: {
+                        data: ['贷款笔数环比', '在贷余额环比'],
+                        top: 30
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '5%',
+                        bottom: '3%',
+                        top: 80,
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: data.interestRateRanges,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#ddd'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#666'
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '环比(%)',
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#333'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value}%'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#eee'
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: '贷款笔数环比',
+                            type: 'bar',
+                            data: chartData.mom.count.map(val => (parseFloat(val) * 100).toFixed(2)),
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                color: colors.primary,
+                                borderRadius: 4
+                            },
+                            barGap: '30%'
+                        },
+                        {
+                            name: '在贷余额环比',
+                            type: 'bar',
+                            data: chartData.mom.amount.map(val => (parseFloat(val) * 100).toFixed(2)),
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                color: colors.secondary,
+                                borderRadius: 4
+                            }
+                        }
+                    ]
+                };
+            } else {
+                // 正常模式图表配置
+                mainChartOption = {
+                    title: {
+                        text: `${productName} - ${currentMonth.substring(0, 4)}年${currentMonth.substring(4, 6)}月`,
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 16
+                        },
+                        subtextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        formatter: function(params) {
+                            const range = params[0].axisValue;
+                            const countValue = params[0].value;
+                            const amountValue = params[1].value;
+                            
+                            return `${range}<br/>贷款笔数: ${countValue}笔<br/>在贷余额: ${formatCurrency(amountValue)}万元`;
+                        }
+                    },
+                    legend: {
+                        data: ['贷款笔数', '在贷余额(万元)'],
+                        top: 30
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '5%',
+                        bottom: '3%',
+                        top: 80,
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: data.interestRateRanges,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#ddd'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#666'
+                        }
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '贷款笔数(笔)',
+                            position: 'left',
+                            axisLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: colors.primary
+                                }
+                            },
+                            axisLabel: {
+                                formatter: '{value}'
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: '#eee'
+                                }
+                            },
+                            min: 0
+                        },
+                        {
+                            type: 'value',
+                            name: '在贷余额(万元)',
+                            position: 'right',
+                            axisLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: colors.secondary
+                                }
+                            },
+                            axisLabel: {
+                                formatter: '{value}'
+                            },
+                            splitLine: {
+                                show: false
+                            },
+                            min: 0
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '贷款笔数',
+                            type: 'bar',
+                            data: chartData.normal.count,
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                color: colors.primary,
+                                borderRadius: 4
+                            }
+                        },
+                        {
+                            name: '在贷余额(万元)',
+                            type: 'bar',
+                            yAxisIndex: 1,
+                            data: chartData.normal.amount,
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                color: colors.secondary,
+                                borderRadius: 4
+                            }
+                        }
+                    ]
+                };
+            }
+            
+            mainChart.setOption(mainChartOption, true);
+            
+            // 更新贷款笔数图表
+            countChart.setOption({
+                title: {
+                    text: '贷款笔数分布',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: isMonthOverMonth ? 
+                        '{b}: {c}%' : 
+                        '{b}<br/>贷款笔数: {c}笔<br/>占比: {d}%'
+                },
+                series: [
+                    {
+                        name: '贷款笔数',
+                        type: 'pie',
+                        radius: '65%',
+                        center: ['50%', '55%'],
+                        data: isMonthOverMonth ? 
+                            data.interestRateRanges.map((range, index) => ({
+                                name: range, 
+                                value: (parseFloat(chartData.mom.count[index]) * 100).toFixed(2)
+                            })) : 
+                            data.interestRateRanges.map((range, index) => ({
+                                name: range, 
+                                value: chartData.normal.count[index]
+                            })),
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        label: {
+                            formatter: isMonthOverMonth ? 
+                                '{b}: {c}%' : 
+                                '{b}: {d}%\n{c}笔',
+                            lineHeight: 16
+                        },
+                        itemStyle: {
+                            borderRadius: 5,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }
+                    }
+                ]
+            });
+            
+            // 更新在贷余额图表
+            amountChart.setOption({
+                title: {
+                    text: '在贷余额分布',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: isMonthOverMonth ? 
+                        '{b}: {c}%' : 
+                        '{b}<br/>在贷余额: {c}万元<br/>占比: {d}%'
+                },
+                series: [
+                    {
+                        name: '在贷余额',
+                        type: 'pie',
+                        radius: '65%',
+                        center: ['50%', '55%'],
+                        data: isMonthOverMonth ? 
+                            data.interestRateRanges.map((range, index) => ({
+                                name: range, 
+                                value: (parseFloat(chartData.mom.amount[index]) * 100).toFixed(2)
+                            })) : 
+                            data.interestRateRanges.map((range, index) => ({
+                                name: range, 
+                                value: chartData.normal.amount[index]
+                            })),
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        label: {
+                            formatter: isMonthOverMonth ? 
+                                '{b}: {c}%' : 
+                                '{b}: {d}%\n{c}万元',
+                            lineHeight: 16
+                        },
+                        itemStyle: {
+                            borderRadius: 5,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }
+                    }
+                ]
+            });
+            
+            // 更新数据表格
+            updateTable();
+        }
+        
+        // 更新数据表格
+        function updateTable() {
+            const tableBody = document.getElementById('summary-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            
+            const chartData = data.productData[currentProduct][currentMonth];
+            
+            // 计算总计
+            const totalCount = chartData.normal.count.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            const totalAmount = chartData.normal.amount.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+            
+            data.interestRateRanges.forEach((range, index) => {
+                const row = document.createElement('tr');
+                
+                // 利率区间
+                const rangeCell = document.createElement('td');
+                rangeCell.textContent = range;
+                row.appendChild(rangeCell);
+                
+                // 贷款笔数
+                const countCell = document.createElement('td');
+                countCell.textContent = chartData.normal.count[index].toLocaleString();
+                row.appendChild(countCell);
+                
+                // 贷款笔数占比
+                const countPercentCell = document.createElement('td');
+                const countPercent = (chartData.normal.count[index] / totalCount * 100).toFixed(2);
+                countPercentCell.textContent = countPercent + '%';
+                row.appendChild(countPercentCell);
+                
+                // 贷款笔数环比
+                const countMomCell = document.createElement('td');
+                const countMom = (parseFloat(chartData.mom.count[index]) * 100).toFixed(2);
+                countMomCell.textContent = countMom + '%';
+                countMomCell.className = parseFloat(countMom) >= 0 ? 'positive-mom' : 'negative-mom';
+                row.appendChild(countMomCell);
+                
+                // 在贷余额
+                const amountCell = document.createElement('td');
+                amountCell.textContent = formatCurrency(chartData.normal.amount[index]);
+                row.appendChild(amountCell);
+                
+                // 在贷余额占比
+                const amountPercentCell = document.createElement('td');
+                const amountPercent = (parseFloat(chartData.normal.amount[index]) / totalAmount * 100).toFixed(2);
+                amountPercentCell.textContent = amountPercent + '%';
+                row.appendChild(amountPercentCell);
+                
+                // 在贷余额环比
+                const amountMomCell = document.createElement('td');
+                const amountMom = (parseFloat(chartData.mom.amount[index]) * 100).toFixed(2);
+                amountMomCell.textContent = amountMom + '%';
+                amountMomCell.className = parseFloat(amountMom) >= 0 ? 'positive-mom' : 'negative-mom';
+                row.appendChild(amountMomCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 产品选择器事件
+        document.getElementById('product-selector').addEventListener('change', function() {
+            currentProduct = this.value;
+            updateCharts();
+        });
+        
+        // 月份选择器事件
+        document.getElementById('month-selector').addEventListener('change', function() {
+            currentMonth = this.value;
+            updateCharts();
+        });
+        
+        // 当前数据按钮事件
+        document.getElementById('normal-btn').addEventListener('click', function() {
+            if (currentMode !== 'normal') {
+                currentMode = 'normal';
+                this.classList.add('active');
+                document.getElementById('mom-btn').classList.remove('active');
+                updateCharts();
+            }
+        });
+        
+        // 环比数据按钮事件
+        document.getElementById('mom-btn').addEventListener('click', function() {
+            if (currentMode !== 'mom') {
+                currentMode = 'mom';
+                this.classList.add('active');
+                document.getElementById('normal-btn').classList.remove('active');
+                updateCharts();
+            }
+        });
+        
+        // 初始更新图表
+        updateCharts();
+        
+        // 窗口调整时重绘图表
+        window.addEventListener('resize', function() {
+            mainChart.resize();
+            countChart.resize();
+            amountChart.resize();
+        });
+    </script>
+</body>
+</html> 

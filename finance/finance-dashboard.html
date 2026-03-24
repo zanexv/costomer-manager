@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财务驾驶舱 - 互联网小贷公司管理台系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #653EB3;
+            --success-color: #3BB950;
+            --danger-color: #F35252;
+            --warning-color: #E6A733;
+            --orange-color: #F28335;
+            --gray-color: #666;
+            --white: #fff;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .dashboard-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+
+        .dashboard-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dashboard-row .dashboard-card {
+            flex: 1;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .task-title {
+            font-weight: 500;
+        }
+
+        .task-deadline {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .task-priority {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .task-priority.high {
+            background: #ffebee;
+            color: var(--danger-color);
+        }
+
+        .task-priority.medium {
+            background: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        .task-priority.low {
+            background: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .view-more {
+            text-align: center;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 10px;
+            font-weight: 500;
+        }
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .notification-icon.warning {
+            background: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        .notification-icon.alert {
+            background: #ffebee;
+            color: var(--danger-color);
+        }
+
+        .notification-icon.info {
+            background: #e3f2fd;
+            color: var(--primary-color);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 500;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+
+        .product-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-toggle button {
+            padding: 5px 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .view-toggle button.active {
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .metrics-selector {
+            margin: 0 10px;
+        }
+        
+        .metrics-selector select, .product-filter select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-row {
+                flex-direction: column;
+            }
+            
+            .dashboard-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .stat-item {
+                flex: 1 1 calc(50% - 10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-card" id="business-overview-card" style="cursor: pointer;">
+            <h3>业务概况</h3>
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <div class="stat-value">¥ 1,256,789</div>
+                    <div class="stat-label">贷款余额(元)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3,278</div>
+                    <div class="stat-label">客户总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">245</div>
+                    <div class="stat-label">今日新增客户</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">97.8%</div>
+                    <div class="stat-label">还款率</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>业务指标走势</h3>
+                <div class="product-filter">
+                    <select id="metrics-product-selector">
+                        <option value="all">全部产品</option>
+                        <option value="xiaoweiprotect">小微保</option>
+                        <option value="xiaoweiprotect-standard">小微保标准</option>
+                        <option value="xiaoweiprotect-special">小微保专项</option>
+                        <option value="salary-loan">发薪贷</option>
+                        <option value="flash-loan">秒贷</option>
+                        <option value="ecommerce-loan">电商贷</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button id="metrics-trend-toggle-btn" class="active">趋势</button>
+                        <button id="metrics-mom-toggle-btn">月环比</button>
+                    </div>
+                </div>
+                <div class="chart-container" id="metrics-chart">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>待办任务</h3>
+                <div class="task-list">
+                    <div class="task-item">
+                        <div class="task-title">客户信用评估</div>
+                        <div class="task-deadline">今日 14:30</div>
+                        <div class="task-priority high">高</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-title">风险客户回访</div>
+                        <div class="task-deadline">今日 16:00</div>
+                        <div class="task-priority medium">中</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-title">贷款审批</div>
+                        <div class="task-deadline">明日 10:00</div>
+                        <div class="task-priority low">低</div>
+                    </div>
+                    <div class="view-more">查看更多</div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <h3>重要提醒</h3>
+                <div class="notification-list">
+                    <div class="notification-item">
+                        <div class="notification-icon warning">⚠️</div>
+                        <div class="notification-content">
+                            <div class="notification-title">5名客户即将逾期</div>
+                            <div class="notification-time">30分钟前</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon alert">🔔</div>
+                        <div class="notification-content">
+                            <div class="notification-title">新的贷款申请待审批</div>
+                            <div class="notification-time">1小时前</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon info">ℹ️</div>
+                        <div class="notification-content">
+                            <div class="notification-title">系统更新提醒</div>
+                            <div class="notification-time">2小时前</div>
+                        </div>
+                    </div>
+                    <div class="view-more">查看更多</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = {
+            loanBalance: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                datasets: [
+                    {
+                        label: '贷款余额',
+                        data: [1256, 1340, 1405, 1480, 1550, 1620, 1730, 1820, 1890, 1950, 2020, 2080],
+                        borderColor: '#653EB3',
+                        backgroundColor: 'rgba(101, 62, 179, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            loanBalanceMoM: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                datasets: [
+                    {
+                        label: '月环比(%)',
+                        data: [ -10, 6.7, 4.9, -5.3, 4.7, -4.5, 6.8, -5.2, 3.8, 3.2, 3.6, 0.0],
+                        borderColor: '#F28335',
+                        backgroundColor: 'rgba(242, 131, 53, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            productData: {
+                '全部产品': [1256, 1340, 1405, 1480, 1550, 1620, 1730, 1820, 1890, 1950, 2020, 2080],
+                '小微保': [580, 610, 645, 670, 700, 740, 790, 830, 860, 890, 920, 950],
+                '小微保标准': [280, 300, 320, 330, 350, 370, 390, 410, 425, 440, 460, 470],
+                '小微保专项': [150, 160, 165, 175, 180, 190, 205, 215, 225, 230, 240, 250],
+                '发薪贷': [300, 320, 330, 345, 360, 370, 390, 405, 415, 430, 450, 465],
+                '秒贷': [220, 240, 250, 270, 290, 305, 325, 345, 360, 370, 380, 390],
+                '电商贷': [156, 170, 180, 195, 200, 205, 225, 240, 255, 260, 270, 275]
+            },
+            // 新增业务指标数据
+            metrics: {
+                // 贷款余额已在上面定义
+                overdueAmount: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '在逾金额',
+                            data: [45, 52, 48, 60, 55, 65, 60, 68, 72, 65, 70, 75],
+                            borderColor: '#F35252',
+                            backgroundColor: 'rgba(243, 82, 82, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                loanIssued: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '累计投放',
+                            data: [320, 350, 380, 410, 470, 520, 580, 620, 680, 720, 780, 850],
+                            borderColor: '#3BB950',
+                            backgroundColor: 'rgba(59, 185, 80, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                activeCustomers: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '在贷客户数',
+                            data: [1850, 1950, 2100, 2200, 2350, 2500, 2650, 2800, 2900, 3100, 3200, 3278],
+                            borderColor: '#E6A733',
+                            backgroundColor: 'rgba(230, 167, 51, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                }
+            },
+            // 各指标月环比数据
+            metricsMoM: {
+                overdueAmount: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '在逾金额月环比(%)',
+                            data: [5.2, 15.6, -7.7, 25.0, -8.3, 18.2, -7.7, 13.3, 5.9, -9.7, 7.7, 7.1],
+                            borderColor: '#F35252',
+                            backgroundColor: 'rgba(243, 82, 82, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                loanIssued: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '累计投放月环比(%)',
+                            data: [3.2, 9.4, 8.6, 7.9, 14.6, 10.6, 11.5, 6.9, 9.7, 5.9, 8.3, 9.0],
+                            borderColor: '#3BB950',
+                            backgroundColor: 'rgba(59, 185, 80, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                activeCustomers: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [
+                        {
+                            label: '在贷客户数月环比(%)',
+                            data: [1.6, 5.4, 7.7, 4.8, 6.8, 6.4, 6.0, 5.7, 3.6, 6.9, 3.2, 2.4],
+                            borderColor: '#E6A733',
+                            backgroundColor: 'rgba(230, 167, 51, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                }
+            },
+            // 各产品各指标数据
+            metricsProductData: {
+                overdueAmount: {
+                    '全部产品': [45, 52, 48, 60, 55, 65, 60, 68, 72, 65, 70, 75],
+                    '小微保': [22, 25, 23, 28, 25, 30, 28, 32, 35, 30, 33, 35],
+                    '小微保标准': [10, 12, 10, 13, 12, 15, 14, 16, 17, 15, 16, 17],
+                    '小微保专项': [5, 6, 5, 7, 6, 7, 7, 8, 9, 8, 8, 9],
+                    '发薪贷': [8, 9, 8, 10, 9, 10, 9, 11, 11, 10, 11, 12],
+                    '秒贷': [6, 7, 7, 8, 7, 9, 8, 9, 10, 9, 10, 11],
+                    '电商贷': [4, 5, 5, 6, 6, 7, 6, 7, 8, 7, 8, 8]
+                },
+                loanIssued: {
+                    '全部产品': [320, 350, 380, 410, 470, 520, 580, 620, 680, 720, 780, 850],
+                    '小微保': [130, 145, 155, 165, 190, 215, 240, 255, 280, 295, 320, 350],
+                    '小微保标准': [70, 75, 80, 85, 95, 105, 115, 125, 135, 140, 155, 170],
+                    '小微保专项': [35, 40, 45, 50, 55, 65, 70, 75, 85, 90, 95, 105],
+                    '发薪贷': [85, 90, 95, 105, 120, 130, 145, 155, 170, 180, 195, 210],
+                    '秒贷': [65, 70, 75, 80, 95, 105, 115, 125, 135, 145, 155, 165],
+                    '电商贷': [40, 45, 50, 55, 60, 70, 75, 80, 90, 95, 100, 110]
+                },
+                activeCustomers: {
+                    '全部产品': [1850, 1950, 2100, 2200, 2350, 2500, 2650, 2800, 2900, 3100, 3200, 3278],
+                    '小微保': [850, 900, 970, 1020, 1090, 1160, 1230, 1290, 1350, 1450, 1500, 1540],
+                    '小微保标准': [420, 440, 470, 490, 525, 560, 590, 620, 645, 690, 710, 730],
+                    '小微保专项': [190, 210, 230, 240, 255, 280, 310, 325, 340, 365, 375, 385],
+                    '发薪贷': [440, 465, 500, 525, 560, 595, 630, 665, 690, 735, 760, 780],
+                    '秒贷': [360, 380, 410, 430, 460, 490, 520, 550, 570, 610, 630, 648],
+                    '电商贷': [200, 205, 220, 230, 240, 255, 270, 285, 290, 305, 310, 320]
+                }
+            }
+        };
+
+        // 图表配置
+        const chartConfigs = {
+            loanBalance: {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '近一年贷款余额走势（万元）'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '金额（万元）'
+                            }
+                        }
+                    }
+                }
+            },
+            loanBalanceMoM: {
+                type: 'bar',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '贷款余额月环比走势（%）'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '月环比（%）'
+                            },
+                            grid: {
+                                color: (context) => {
+                                    if (context.tick.value === 0) {
+                                        return 'rgba(0, 0, 0, 0.8)';
+                                    }
+                                    return 'rgba(0, 0, 0, 0.1)';
+                                },
+                                lineWidth: (context) => {
+                                    if (context.tick.value === 0) {
+                                        return 2;
+                                    }
+                                    return 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            // 业务指标走势图配置
+            metrics: {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '业务指标综合走势'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '金额（万元）'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '客户数（人）'
+                            },
+                            // 网格线不重复显示
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            },
+            // 业务指标月环比图表配置
+            metricsMoM: {
+                type: 'bar',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '业务指标月环比走势（%）'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '月环比（%）'
+                            },
+                            grid: {
+                                color: (context) => {
+                                    if (context.tick.value === 0) {
+                                        return 'rgba(0, 0, 0, 0.8)';
+                                    }
+                                    return 'rgba(0, 0, 0, 0.1)';
+                                },
+                                lineWidth: (context) => {
+                                    if (context.tick.value === 0) {
+                                        return 2;
+                                    }
+                                    return 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        let currentChart = null;
+        let currentView = 'trend'; // 'trend' or 'mom'
+        let currentProduct = 'all';
+
+        // 业务指标图表变量
+        let metricsChart = null;
+        let currentMetricsView = 'trend'; // 'trend' or 'mom'
+        let currentMetricsProduct = 'all';
+        let currentMetric = 'loanBalance'; // 当前选择的指标
+
+        // 初始化图表
+        function initCharts() {
+            renderMetricsChart();
+            
+            // 添加查看更多按钮点击事件
+            document.querySelectorAll('.view-more').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('查看更多功能开发中...');
+                });
+            });
+
+            // 业务指标图表事件绑定
+            document.getElementById('metrics-trend-toggle-btn').addEventListener('click', function() {
+                if (currentMetricsView !== 'trend') {
+                    currentMetricsView = 'trend';
+                    updateMetricsToggleButtons();
+                    renderMetricsChart();
+                }
+            });
+
+            document.getElementById('metrics-mom-toggle-btn').addEventListener('click', function() {
+                if (currentMetricsView !== 'mom') {
+                    currentMetricsView = 'mom';
+                    updateMetricsToggleButtons();
+                    renderMetricsChart();
+                }
+            });
+            
+            // 添加业务指标产品选择事件
+            document.getElementById('metrics-product-selector').addEventListener('change', function(e) {
+                currentMetricsProduct = e.target.value;
+                renderMetricsChart();
+            });
+        }
+        
+        // 更新业务指标切换按钮状态
+        function updateMetricsToggleButtons() {
+            document.getElementById('metrics-trend-toggle-btn').classList.toggle('active', currentMetricsView === 'trend');
+            document.getElementById('metrics-mom-toggle-btn').classList.toggle('active', currentMetricsView === 'mom');
+        }
+        
+        // 渲染业务指标图表
+        function renderMetricsChart() {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            
+            if (metricsChart) {
+                metricsChart.destroy();
+            }
+
+            // 准备数据
+            let chartData;
+            let config;
+            
+            if (currentMetricsView === 'trend') {
+                // 创建组合数据集
+                chartData = {
+                    labels: mockData.loanBalance.labels,
+                    datasets: [
+                        {
+                            label: '贷款余额',
+                            data: mockData.loanBalance.datasets[0].data,
+                            borderColor: '#653EB3',
+                            backgroundColor: 'rgba(101, 62, 179, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '在逾金额',
+                            data: mockData.metrics.overdueAmount.datasets[0].data,
+                            borderColor: '#F35252',
+                            backgroundColor: 'rgba(243, 82, 82, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '累计投放',
+                            data: mockData.metrics.loanIssued.datasets[0].data,
+                            borderColor: '#3BB950',
+                            backgroundColor: 'rgba(59, 185, 80, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '在贷客户数',
+                            data: mockData.metrics.activeCustomers.datasets[0].data,
+                            borderColor: '#E6A733',
+                            backgroundColor: 'rgba(230, 167, 51, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                };
+                
+                config = structuredClone(chartConfigs.metrics);
+                
+                // 根据产品筛选数据
+                if (currentMetricsProduct !== 'all') {
+                    const productMap = {
+                        'xiaoweiprotect': '小微保',
+                        'xiaoweiprotect-standard': '小微保标准',
+                        'xiaoweiprotect-special': '小微保专项',
+                        'salary-loan': '发薪贷',
+                        'flash-loan': '秒贷',
+                        'ecommerce-loan': '电商贷'
+                    };
+                    
+                    const productName = productMap[currentMetricsProduct];
+                    
+                    // 更新每个数据集的数据
+                    chartData.datasets[0].data = mockData.productData[productName];
+                    chartData.datasets[1].data = mockData.metricsProductData.overdueAmount[productName];
+                    chartData.datasets[2].data = mockData.metricsProductData.loanIssued[productName];
+                    chartData.datasets[3].data = mockData.metricsProductData.activeCustomers[productName];
+                    
+                    // 更新标题
+                    config.options.plugins.title.text = `${productName}业务指标综合走势`;
+                }
+            } else { // MoM view
+                // 对于月环比视图，我们仍然保留独立的图表
+                // 创建组合数据集
+                chartData = {
+                    labels: mockData.loanBalanceMoM.labels,
+                    datasets: [
+                        {
+                            label: '贷款余额月环比(%)',
+                            data: mockData.loanBalanceMoM.datasets[0].data,
+                            backgroundColor: '#653EB3',
+                            borderColor: '#653EB3',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '在逾金额月环比(%)',
+                            data: mockData.metricsMoM.overdueAmount.datasets[0].data,
+                            backgroundColor: '#F35252',
+                            borderColor: '#F35252',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '累计投放月环比(%)',
+                            data: mockData.metricsMoM.loanIssued.datasets[0].data,
+                            backgroundColor: '#3BB950',
+                            borderColor: '#3BB950',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '在贷客户数月环比(%)',
+                            data: mockData.metricsMoM.activeCustomers.datasets[0].data,
+                            backgroundColor: '#E6A733',
+                            borderColor: '#E6A733',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+                
+                // 使用柱状图类型和适当的配置
+                config = {
+                    type: 'bar',
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '业务指标月环比走势（%）'
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: false
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '月环比（%）'
+                                },
+                                grid: {
+                                    color: (context) => {
+                                        if (context.tick.value === 0) {
+                                            return 'rgba(0, 0, 0, 0.8)';
+                                        }
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    },
+                                    lineWidth: (context) => {
+                                        if (context.tick.value === 0) {
+                                            return 2;
+                                        }
+                                        return 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                // 根据产品筛选数据
+                if (currentMetricsProduct !== 'all') {
+                    const productMap = {
+                        'xiaoweiprotect': '小微保',
+                        'xiaoweiprotect-standard': '小微保标准',
+                        'xiaoweiprotect-special': '小微保专项',
+                        'salary-loan': '发薪贷',
+                        'flash-loan': '秒贷',
+                        'ecommerce-loan': '电商贷'
+                    };
+                    
+                    const productName = productMap[currentMetricsProduct];
+                    
+                    // 由于没有产品级别的月环比数据，这里我们模拟一下
+                    // 这个地方在实际项目中需要使用真实数据
+                    // 这里使用的数据只是示例，和实际不符
+                    const getRandomData = (baseData) => {
+                        return baseData.map(val => {
+                            // 在原始数据基础上随机偏移 +/- 2%
+                            const offset = Math.random() * 4 - 2;
+                            return parseFloat((val + offset).toFixed(1));
+                        });
+                    };
+                    
+                    // 更新所有数据集
+                    chartData.datasets[0].data = getRandomData(mockData.loanBalanceMoM.datasets[0].data);
+                    chartData.datasets[1].data = getRandomData(mockData.metricsMoM.overdueAmount.datasets[0].data);
+                    chartData.datasets[2].data = getRandomData(mockData.metricsMoM.loanIssued.datasets[0].data);
+                    chartData.datasets[3].data = getRandomData(mockData.metricsMoM.activeCustomers.datasets[0].data);
+                    
+                    config.options.plugins.title.text = `${productName}业务指标月环比走势（%）`;
+                }
+            }
+            
+            // 创建图表
+            metricsChart = new Chart(ctx, {
+                ...config,
+                data: chartData
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            
+            // 添加业务概况卡片点击事件
+            document.getElementById('business-overview-card').addEventListener('click', function() {
+                window.location.href = 'business-detail.html';
+            });
+        });
+    </script>
+</body>
+</html> 

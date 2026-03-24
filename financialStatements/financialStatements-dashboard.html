@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财务报表 - 互联网小贷公司管理台系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #653EB3;
+            --secondary-color: #653EB3;
+            --success-color: #2ECC71;
+            --danger-color: #E74C3C;
+            --warning-color: #F39C12;
+            --gray-color: #95A5A6;
+            --light-gray: #F7F9FC;
+            --white: #fff;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --card-radius: 4px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F5F7FA;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background-color: var(--white);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 20px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            padding: 16px 12px;
+            background-color: var(--light-gray);
+            border-radius: var(--card-radius);
+        }
+        
+        /* 突出显示的主要指标项 */
+        .stat-item.highlight {
+            background-color: rgba(231, 76, 60, 0.08);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.1);
+        }
+        
+        .stat-item.highlight .stat-value {
+            color: #E74C3C;
+            font-size: 26px;
+        }
+        
+        .stat-item.highlight .stat-label {
+            color: #E74C3C;
+            font-weight: bold;
+        }
+        
+        .stat-item.highlight .stat-label::before,
+        .stat-item.highlight .stat-label::after {
+            content: "★";
+            display: inline-block;
+            margin: 0 4px;
+            font-size: 10px;
+            vertical-align: middle;
+        }
+        
+        /* 预算达成率突出显示 */
+        .stat-item.budget-highlight {
+            background-color: rgba(52, 152, 219, 0.08);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.1);
+        }
+        
+        .stat-item.budget-highlight .stat-value {
+            color: #3498DB;
+            font-size: 26px;
+        }
+        
+        .budget-rate {
+            display: inline-block;
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498DB;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 5px;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .budget-rate::before {
+            content: "📊";
+            display: inline-block;
+            margin-right: 4px;
+            font-size: 14px;
+        }
+        
+        .budget-rate.good {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ECC71;
+        }
+        
+        .budget-rate.warning {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: #F39C12;
+        }
+        
+        .budget-rate.bad {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #E74C3C;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        .dashboard-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dashboard-row .dashboard-card {
+            flex: 1;
+        }
+
+        .income-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .income-item {
+            flex: 1;
+            padding: 20px;
+            border-radius: var(--card-radius);
+            background-color: var(--light-gray);
+            position: relative;
+        }
+
+        .income-item:nth-child(1) {
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .income-item:nth-child(2) {
+            border-bottom: 3px solid var(--success-color);
+        }
+
+        .income-item:nth-child(3) {
+            border-bottom: 3px solid var(--warning-color);
+        }
+
+        .income-title {
+            font-size: 13px;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .income-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .income-mom {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 2px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .income-mom.up {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+
+        .income-mom.down {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        .income-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .income-total {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(108, 92, 231, 0.05);
+            padding: 15px 20px;
+            border-radius: var(--card-radius);
+        }
+
+        .income-total-label {
+            font-size: 13px;
+            color: var(--gray-color);
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .income-total-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .overdue-item .income-mom.down {
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        /* 财务风格图标 */
+        .icon-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            opacity: 0.2;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            width: 100%;
+            height: 250px;
+            margin-top: 15px;
+        }
+
+        .flex-wrap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .product-card {
+            flex: 1 1 calc(33.33% - 10px);
+            min-width: 150px;
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: var(--card-radius);
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .product-data {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .product-data-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product-data-label {
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+
+        .product-data-value {
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .rate-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary-color);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px;
+            text-align: right;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .data-table th {
+            color: var(--gray-color);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .data-table td {
+            font-weight: 600;
+        }
+
+        .data-table tr td:first-child {
+            text-align: left;
+            color: var(--primary-color);
+        }
+
+        .indicator-item {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: var(--card-radius);
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .indicator-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .indicator-label {
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+
+        /* 左右分布布局 */
+        .split-layout {
+            display: flex;
+            gap: 20px;
+        }
+
+        .split-layout-left {
+            flex: 1;
+        }
+
+        .split-layout-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container-split {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .dashboard-row {
+                flex-direction: column;
+            }
+            
+            .dashboard-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .stat-item {
+                flex: 1 1 calc(50% - 10px);
+            }
+            
+            .income-box {
+                flex-direction: column;
+            }
+
+            .flex-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .indicator-item {
+                flex: 1 1 calc(50% - 15px);
+            }
+            
+            .split-layout {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>主要指标</h3>
+                <div class="dashboard-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">¥ 685,250,000</div>
+                        <div class="stat-label">贷款余额</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">¥ 24,350,000</div>
+                        <div class="stat-label">拨款总额</div>
+                    </div>
+                    <div class="stat-item highlight">
+                        <div class="stat-value">¥ 12,580,000</div>
+                        <div class="stat-label">不良总额</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">193.56%</div>
+                        <div class="stat-label">拨备覆盖率</div>
+                    </div>
+                </div>
+                <div class="dashboard-stats" style="margin-top: 15px;">
+                    <div class="stat-item">
+                        <div class="stat-value">¥ 756,820,000</div>
+                        <div class="stat-label">资产总额</div>
+                    </div>
+                    <div class="stat-item highlight">
+                        <div class="stat-value">¥ 465,380,000</div>
+                        <div class="stat-label">负债总额</div>
+                    </div>
+                    <div class="stat-item budget-highlight">
+                        <div class="stat-value">¥ 45,680,000<span class="income-mom up">↑ 4.2%</span></div>
+                        <div class="stat-label">收入总额</div>
+                        <div class="budget-rate warning">预算达成率: 48.2%</div>
+                    </div>
+                    <div class="stat-item budget-highlight">
+                        <div class="stat-value">¥ 18,450,000<span class="income-mom up">↑ 5.8%</span></div>
+                        <div class="stat-label">利润总额</div>
+                        <div class="budget-rate warning">预算达成率: 46.1%</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="mainIndicatorsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>产品表现</h3>
+                <div class="flex-wrap">
+                    <div class="product-card">
+                        <div class="product-name">小微保</div>
+                        <div class="product-data">
+                            <div class="product-data-item">
+                                <span class="product-data-label">月均利率</span>
+                                <span class="product-data-value rate-pill">1.32%</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">累计投放</span>
+                                <span class="product-data-value">¥248,560,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">月末在贷</span>
+                                <span class="product-data-value">¥325,450,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">预算达成率</span>
+                                <span class="product-data-value">48.2%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 48.2%"></div>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">收入贡献</span>
+                                <span class="product-data-value">¥18,580,000</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-name">电商贷</div>
+                        <div class="product-data">
+                            <div class="product-data-item">
+                                <span class="product-data-label">月均利率</span>
+                                <span class="product-data-value rate-pill">1.48%</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">累计投放</span>
+                                <span class="product-data-value">¥183,250,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">月末在贷</span>
+                                <span class="product-data-value">¥215,680,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">预算达成率</span>
+                                <span class="product-data-value">52.6%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 52.6%"></div>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">收入贡献</span>
+                                <span class="product-data-value">¥16,250,000</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-name">秒贷</div>
+                        <div class="product-data">
+                            <div class="product-data-item">
+                                <span class="product-data-label">月均利率</span>
+                                <span class="product-data-value rate-pill">1.65%</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">累计投放</span>
+                                <span class="product-data-value">¥122,450,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">月末在贷</span>
+                                <span class="product-data-value">¥144,120,000</span>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">预算达成率</span>
+                                <span class="product-data-value">45.8%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 45.8%"></div>
+                            </div>
+                            <div class="product-data-item">
+                                <span class="product-data-label">收入贡献</span>
+                                <span class="product-data-value">¥10,850,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productPerformanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>预测跟踪</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>产品</th>
+                            <th>应还金额</th>
+                            <th>应还本金</th>
+                            <th>应还利息</th>
+                            <th>已还金额</th>
+                            <th>已还本金</th>
+                            <th>已还利息</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>小微保</td>
+                            <td>¥28,450,000</td>
+                            <td>¥24,680,000</td>
+                            <td>¥3,770,000</td>
+                            <td>¥26,350,000</td>
+                            <td>¥22,950,000</td>
+                            <td>¥3,400,000</td>
+                        </tr>
+                        <tr>
+                            <td>电商贷</td>
+                            <td>¥22,650,000</td>
+                            <td>¥19,250,000</td>
+                            <td>¥3,400,000</td>
+                            <td>¥21,480,000</td>
+                            <td>¥18,350,000</td>
+                            <td>¥3,130,000</td>
+                        </tr>
+                        <tr>
+                            <td>秒贷</td>
+                            <td>¥15,850,000</td>
+                            <td>¥13,180,000</td>
+                            <td>¥2,670,000</td>
+                            <td>¥14,580,000</td>
+                            <td>¥12,250,000</td>
+                            <td>¥2,330,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <canvas id="repaymentTrackingChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>五级分类</h3>
+                <div class="split-layout">
+                    <div class="split-layout-left">
+                        <div class="flex-wrap" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="indicator-item">
+                                <div class="indicator-value">¥598,650,000</div>
+                                <div class="indicator-label">正常</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">¥45,820,000</div>
+                                <div class="indicator-label">关注</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">¥22,450,000</div>
+                                <div class="indicator-label">次级</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">¥12,780,000</div>
+                                <div class="indicator-label">可疑</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">¥5,550,000</div>
+                                <div class="indicator-label">损失</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="split-layout-right">
+                        <div class="chart-container-split">
+                            <canvas id="fiveLevelClassificationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>财务指标</h3>
+                <div class="split-layout">
+                    <div class="split-layout-left">
+                        <div class="flex-wrap" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="indicator-item">
+                                <div class="indicator-value">61.49%</div>
+                                <div class="indicator-label">资产负债率</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">4.8%</div>
+                                <div class="indicator-label">总资产增长率</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">32.5%</div>
+                                <div class="indicator-label">成本费用率</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">2.6%</div>
+                                <div class="indicator-label">逾期率</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">1.8%</div>
+                                <div class="indicator-label">不良率</div>
+                            </div>
+                            <div class="indicator-item">
+                                <div class="indicator-value">193.56%</div>
+                                <div class="indicator-label">拨备覆盖率</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="split-layout-right">
+                        <div class="chart-container-split">
+                            <canvas id="financialIndicatorsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = {
+            // 新增的模拟数据
+            mainIndicators: {
+                loanBalance: 685250000,
+                appropriationTotal: 24350000,
+                badLoanTotal: 12580000,
+                provisionCoverage: 193.56,
+                assetTotal: 756820000,
+                liabilityTotal: 465380000,
+                incomeTotal: 45680000,
+                incomeMoM: 4.2,
+                incomeBudgetReach: 48.2,
+                profitTotal: 18450000,
+                profitMoM: 5.8,
+                profitBudgetReach: 46.1
+            },
+            productPerformance: {
+                smallMicroLoan: {
+                    monthlyRate: 1.32,
+                    accumulatedLending: 248560000,
+                    endOfMonthLoan: 325450000,
+                    budgetReach: 48.2,
+                    incomeContribution: 18580000
+                },
+                eCommerceLoan: {
+                    monthlyRate: 1.48,
+                    accumulatedLending: 183250000,
+                    endOfMonthLoan: 215680000,
+                    budgetReach: 52.6,
+                    incomeContribution: 16250000
+                },
+                fastLoan: {
+                    monthlyRate: 1.65,
+                    accumulatedLending: 122450000,
+                    endOfMonthLoan: 144120000,
+                    budgetReach: 45.8,
+                    incomeContribution: 10850000
+                }
+            },
+            repaymentTracking: {
+                smallMicroLoan: {
+                    dueAmount: 28450000,
+                    duePrincipal: 24680000,
+                    dueInterest: 3770000,
+                    paidAmount: 26350000,
+                    paidPrincipal: 22950000,
+                    paidInterest: 3400000
+                },
+                eCommerceLoan: {
+                    dueAmount: 22650000,
+                    duePrincipal: 19250000,
+                    dueInterest: 3400000,
+                    paidAmount: 21480000,
+                    paidPrincipal: 18350000,
+                    paidInterest: 3130000
+                },
+                fastLoan: {
+                    dueAmount: 15850000,
+                    duePrincipal: 13180000,
+                    dueInterest: 2670000,
+                    paidAmount: 14580000,
+                    paidPrincipal: 12250000,
+                    paidInterest: 2330000
+                }
+            },
+            fiveLevelClassification: {
+                normal: 598650000,
+                attention: 45820000,
+                secondary: 22450000,
+                doubtful: 12780000,
+                loss: 5550000
+            },
+            financialIndicators: {
+                assetLiabilityRatio: 61.49,
+                totalAssetGrowthRate: 4.8,
+                costExpenseRatio: 32.5,
+                overdueRate: 2.6,
+                badLoanRate: 1.8,
+                provisionCoverageRatio: 193.56
+            }
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 主要指标图表
+            const mainIndicatorsCtx = document.getElementById('mainIndicatorsChart').getContext('2d');
+            
+            // 根据预算达成率设置相应的CSS类
+            function setBudgetRateClass() {
+                const budgetRates = document.querySelectorAll('.budget-rate');
+                budgetRates.forEach(rate => {
+                    const rateValue = parseFloat(rate.textContent.split(':')[1]);
+                    if (rateValue >= 70) {
+                        rate.classList.add('good');
+                    } else if (rateValue >= 40) {
+                        rate.classList.add('warning');
+                    } else {
+                        rate.classList.add('bad');
+                    }
+                });
+            }
+            
+            // 页面加载后设置预算达成率样式
+            document.addEventListener('DOMContentLoaded', function() {
+                setBudgetRateClass();
+            });
+            
+            new Chart(mainIndicatorsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [
+                        {
+                            label: '收入总额',
+                            data: [38250000, 40680000, 42350000, 43860000, 44950000, 45680000],
+                            borderColor: '#3498DB',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3
+                        },
+                        {
+                            label: '利润总额',
+                            data: [15320000, 16180000, 16950000, 17540000, 17980000, 18450000],
+                            borderColor: '#3498DB',
+                            backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 2,
+                            borderDash: [5, 5]
+                        },
+                        {
+                            label: '不良总额',
+                            data: [10450000, 10980000, 11250000, 11680000, 12180000, 12580000],
+                            borderColor: '#E74C3C',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#E74C3C',
+                            fill: true
+                        },
+                        {
+                            label: '负债总额',
+                            data: [410250000, 422380000, 435680000, 448750000, 455680000, 465380000],
+                            borderColor: '#F39C12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.4,
+                            borderDash: [5, 5],
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#F39C12',
+                            fill: true,
+                            hidden: true  // 默认隐藏，点击图例可显示
+                        },
+                        {
+                            label: '收入预算目标',
+                            data: [37800000, 42500000, 47200000, 51900000, 56600000, 61300000],
+                            borderColor: 'rgba(52, 152, 219, 0.5)',
+                            backgroundColor: 'transparent',
+                            tension: 0,
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: '利润预算目标',
+                            data: [15120000, 17000000, 18880000, 20760000, 22640000, 24520000],
+                            borderColor: 'rgba(52, 152, 219, 0.5)',
+                            backgroundColor: 'transparent',
+                            tension: 0,
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            hidden: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 10,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                generateLabels: function(chart) {
+                                    const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                    
+                                    // 为各指标添加特殊样式
+                                    labels.forEach(label => {
+                                        if (label.text === '不良总额' || label.text === '负债总额') {
+                                            label.fontColor = label.strokeStyle;
+                                            label.lineWidth = 2;
+                                        } else if (label.text === '收入总额' || label.text === '利润总额' || 
+                                                  label.text === '收入预算目标' || label.text === '利润预算目标') {
+                                            label.fontColor = '#3498DB';
+                                        }
+                                    });
+                                    
+                                    return labels;
+                                }
+                            },
+                            onClick: function(e, legendItem, legend) {
+                                const index = legendItem.datasetIndex;
+                                const chart = legend.chart;
+                                const meta = chart.getDatasetMeta(index);
+                                
+                                meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+                                chart.update();
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '收入和利润趋势（预算达成率）',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        const value = context.parsed.y;
+                                        const formattedValue = new Intl.NumberFormat('zh-CN', {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }).format(value);
+                                        
+                                        // 为不同指标添加特殊标记
+                                        if (context.dataset.label === '不良总额' || context.dataset.label === '负债总额') {
+                                            return `★ ${label}¥${formattedValue} ★`;
+                                        } else if (context.dataset.label === '收入总额' || context.dataset.label === '利润总额') {
+                                            // 计算预算达成率
+                                            let targetValue = 0;
+                                            let targetLabel = '';
+                                            if (context.dataset.label === '收入总额') {
+                                                const targetDataset = context.chart.data.datasets.find(ds => ds.label === '收入预算目标');
+                                                if (targetDataset) {
+                                                    targetValue = targetDataset.data[context.dataIndex];
+                                                    targetLabel = '收入预算目标';
+                                                }
+                                            } else {
+                                                const targetDataset = context.chart.data.datasets.find(ds => ds.label === '利润预算目标');
+                                                if (targetDataset) {
+                                                    targetValue = targetDataset.data[context.dataIndex];
+                                                    targetLabel = '利润预算目标';
+                                                }
+                                            }
+                                            
+                                            if (targetValue > 0) {
+                                                const percentage = ((value / targetValue) * 100).toFixed(1);
+                                                return `📊 ${label}¥${formattedValue} (达成率: ${percentage}%)`;
+                                            }
+                                        }
+                                        
+                                        return `${label}¥${formattedValue}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: function(context) {
+                                    if (context.tick.value === 12580000 || context.tick.value === 465380000) {
+                                        return 'rgba(231, 76, 60, 0.2)';
+                                    } else if (context.tick.value === 45680000 || context.tick.value === 18450000) {
+                                        return 'rgba(52, 152, 219, 0.2)';
+                                    }
+                                    return 'rgba(0, 0, 0, 0.05)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 产品表现图表
+            const productPerformanceCtx = document.getElementById('productPerformanceChart').getContext('2d');
+            new Chart(productPerformanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['小微保', '电商贷', '秒贷'],
+                    datasets: [
+                        {
+                            label: '月末在贷',
+                            data: [325450000, 215680000, 144120000],
+                            backgroundColor: 'rgba(101, 62, 179, 0.7)'
+                        },
+                        {
+                            label: '累计投放',
+                            data: [248560000, 183250000, 122450000],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)'
+                        },
+                        {
+                            label: '收入贡献',
+                            data: [18580000, 16250000, 10850000],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '产品表现对比'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 预测跟踪图表
+            const repaymentTrackingCtx = document.getElementById('repaymentTrackingChart').getContext('2d');
+            new Chart(repaymentTrackingCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['小微保', '电商贷', '秒贷'],
+                    datasets: [
+                        {
+                            label: '应还金额',
+                            data: [28450000, 22650000, 15850000],
+                            backgroundColor: 'rgba(101, 62, 179, 0.7)'
+                        },
+                        {
+                            label: '已还金额',
+                            data: [26350000, 21480000, 14580000],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '应还与已还金额对比'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 五级分类图表
+            const fiveLevelClassificationCtx = document.getElementById('fiveLevelClassificationChart').getContext('2d');
+            
+            // 格式化金额的辅助函数
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('zh-CN', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(value);
+            }
+            
+            // 五级分类数据颜色定义（由轻到重）
+            const fiveLevelColors = {
+                normal: '#2ECC71',      // 绿色 - 正常
+                attention: '#F39C12',   // 橙色 - 关注
+                secondary: '#E67E22',   // 深橙色 - 次级
+                doubtful: '#E74C3C',    // 红色 - 可疑
+                loss: '#C0392B'         // 深红色 - 损失
+            };
+            
+            new Chart(fiveLevelClassificationCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['正常', '关注', '次级', '可疑', '损失'],
+                    datasets: [{
+                        data: [598650000, 45820000, 22450000, 12780000, 5550000],
+                        backgroundColor: [
+                            fiveLevelColors.normal,
+                            fiveLevelColors.attention,
+                            fiveLevelColors.secondary,
+                            fiveLevelColors.doubtful,
+                            fiveLevelColors.loss
+                        ],
+                        borderColor: ['#fff', '#fff', '#fff', '#fff', '#fff'],
+                        borderWidth: 2,
+                        borderRadius: 4,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: '贷款余额五级分类'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                                    const value = context.parsed;
+                                    const percentage = ((value / total) * 100).toFixed(2) + '%';
+                                    return `${context.label}: ¥${formatCurrency(value)} (${percentage})`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: function(value, context) {
+                                const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                                const percentage = ((value / total) * 100).toFixed(2) + '%';
+                                return `${context.chart.data.labels[context.dataIndex]}:\n¥${formatCurrency(value)}\n占比: ${percentage}`;
+                            },
+                            color: '#333',
+                            font: {
+                                weight: 'bold',
+                                size: 11
+                            },
+                            textAlign: 'center',
+                            textStrokeColor: '#fff',
+                            textStrokeWidth: 2,
+                            textShadowColor: 'rgba(255,255,255,0.6)',
+                            textShadowBlur: 3
+                        }
+                    },
+                    layout: {
+                        padding: 20
+                    },
+                    elements: {
+                        arc: {
+                            borderWidth: 2
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    },
+                    // 引导线配置
+                    plugins: [{
+                        afterDraw: function(chart) {
+                            const ctx = chart.ctx;
+                            const chartArea = chart.chartArea;
+                            const center = {
+                                x: (chartArea.left + chartArea.right) / 2,
+                                y: (chartArea.top + chartArea.bottom) / 2
+                            };
+                            const radius = Math.min(chartArea.right - chartArea.left, chartArea.bottom - chartArea.top) / 2;
+                            
+                            // 绘制引导线
+                            chart.data.datasets[0].data.forEach((value, i) => {
+                                const total = chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+                                const meta = chart.getDatasetMeta(0);
+                                const arc = meta.data[i];
+                                const angle = Math.PI / 2 - arc.startAngle - (arc.endAngle - arc.startAngle) / 2;
+                                
+                                // 计算标签位置
+                                const startX = center.x + Math.cos(angle) * radius * 0.7;
+                                const startY = center.y - Math.sin(angle) * radius * 0.7;
+                                
+                                const endX = center.x + Math.cos(angle) * (radius * 1.1);
+                                const endY = center.y - Math.sin(angle) * (radius * 1.1);
+                                
+                                const textX = center.x + Math.cos(angle) * (radius * 1.3);
+                                const textY = center.y - Math.sin(angle) * (radius * 1.3);
+                                
+                                // 引导线起点
+                                ctx.beginPath();
+                                ctx.moveTo(startX, startY);
+                                ctx.lineTo(endX, endY);
+                                
+                                // 文本对齐方向
+                                const textAlign = Math.cos(angle) < 0 ? 'right' : 'left';
+                                
+                                // 水平延伸线
+                                ctx.lineTo(textAlign === 'left' ? textX + 10 : textX - 10, endY);
+                                
+                                ctx.strokeStyle = chart.data.datasets[0].backgroundColor[i];
+                                ctx.lineWidth = 1.5;
+                                ctx.stroke();
+                                
+                                // 绘制文本
+                                ctx.textAlign = textAlign;
+                                ctx.textBaseline = 'middle';
+                                ctx.font = 'bold 12px Arial';  // 统一字体大小
+                                
+                                const label = chart.data.labels[i];
+                                const percentage = ((value / total) * 100).toFixed(2) + '%';
+                                const formattedValue = formatCurrency(value);
+                                
+                                // 绘制文本阴影
+                                ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                                ctx.shadowBlur = 3;
+                                
+                                // 根据分类设置颜色
+                                ctx.fillStyle = chart.data.datasets[0].backgroundColor[i];
+                                
+                                // 按行显示文本
+                                ctx.fillText(label, textAlign === 'left' ? textX + 15 : textX - 15, textY - 10);
+                                ctx.fillText(`¥${formattedValue}`, textAlign === 'left' ? textX + 15 : textX - 15, textY + 5);
+                                ctx.fillText(`占比: ${percentage}`, textAlign === 'left' ? textX + 15 : textX - 15, textY + 20);
+                                
+                                ctx.shadowBlur = 0;
+                            });
+                        }
+                    }]
+                }
+            });
+            
+            // 五级分类数据显示配置
+            const fiveLevelDataDisplay = [
+                { label: '正常', color: fiveLevelColors.normal },
+                { label: '关注', color: fiveLevelColors.attention },
+                { label: '次级', color: fiveLevelColors.secondary },
+                { label: '可疑', color: fiveLevelColors.doubtful },
+                { label: '损失', color: fiveLevelColors.loss }
+            ];
+            
+            // 更新五级分类卡片的样式
+            const fiveLevelCard = document.querySelector('.dashboard-row:nth-of-type(4) .dashboard-card');
+            if (fiveLevelCard) {
+                const items = fiveLevelCard.querySelectorAll('.split-layout-left .indicator-item');
+                items.forEach((item, index) => {
+                    if (index < fiveLevelDataDisplay.length) {
+                        const valueElement = item.querySelector('.indicator-value');
+                        if (valueElement) {
+                            valueElement.style.color = fiveLevelDataDisplay[index].color;
+                            valueElement.style.fontSize = '18px';
+                            valueElement.style.fontWeight = 'bold';
+                        }
+                    }
+                });
+            }
+            
+            // 财务指标图表
+            const financialIndicatorsCtx = document.getElementById('financialIndicatorsChart').getContext('2d');
+            new Chart(financialIndicatorsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['资产负债率', '总资产增长率', '成本费用率', '逾期率', '不良率', '拨备覆盖率'],
+                    datasets: [{
+                        label: '当前值',
+                        data: [61.49, 4.8, 32.5, 2.6, 1.8, 193.56/2], // 拨备覆盖率数值调整以适应雷达图
+                        backgroundColor: 'rgba(101, 62, 179, 0.2)',
+                        borderColor: 'rgba(101, 62, 179, 0.7)',
+                        pointBackgroundColor: ['rgba(101, 62, 179, 0.8)', 'rgba(101, 62, 179, 0.8)', 'rgba(101, 62, 179, 0.8)', 'rgba(231, 76, 60, 1)', 'rgba(231, 76, 60, 1)', 'rgba(101, 62, 179, 0.8)'],
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: ['rgba(101, 62, 179, 1)', 'rgba(101, 62, 179, 1)', 'rgba(101, 62, 179, 1)', 'rgba(231, 76, 60, 1)', 'rgba(231, 76, 60, 1)', 'rgba(101, 62, 179, 1)'],
+                        pointRadius: [4, 4, 4, 7, 7, 4],
+                        pointHoverRadius: [6, 6, 6, 10, 10, 6],
+                        pointStyle: ['circle', 'circle', 'circle', 'star', 'star', 'circle']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '关键财务指标'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const value = context.raw;
+                                    let displayValue = value;
+                                    let labelText = context.chart.data.labels[index];
+                                    
+                                    // 对拨备覆盖率进行特殊处理，还原显示值
+                                    if (index === 5) {
+                                        displayValue = value * 2;
+                                    }
+                                    
+                                    // 突出显示逾期率和不良率
+                                    if (index === 3 || index === 4) {
+                                        return `★ ${labelText}: ${displayValue}% ★`;
+                                    }
+                                    
+                                    return `${labelText}: ${displayValue}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true,
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            grid: {
+                                color: function(context) {
+                                    // 突出显示逾期率和不良率的网格线
+                                    if (context.index === 3 || context.index === 4) {
+                                        return 'rgba(231, 76, 60, 0.2)';
+                                    }
+                                    return 'rgba(0,0,0,0.05)';
+                                }
+                            },
+                            pointLabels: {
+                                font: function(context) {
+                                    // 突出显示逾期率和不良率的标签
+                                    if (context.index === 3 || context.index === 4) {
+                                        return {
+                                            size: 14,
+                                            weight: 'bold'
+                                        };
+                                    }
+                                    return {
+                                        size: 12,
+                                        weight: 'normal'
+                                    };
+                                },
+                                color: function(context) {
+                                    // 突出显示逾期率和不良率的标签颜色
+                                    if (context.index === 3 || context.index === 4) {
+                                        return '#E74C3C';
+                                    }
+                                    return '#666';
+                                }
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: '#999',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.2
+                        }
+                    }
+                }
+            });
+            
+            // 同时更新财务指标卡片，突出显示逾期率和不良率
+            const financialCard = document.querySelector('.dashboard-row:nth-of-type(5) .dashboard-card');
+            if (financialCard) {
+                const items = financialCard.querySelectorAll('.split-layout-left .indicator-item');
+                
+                // 逾期率 - 索引3
+                if (items[3]) {
+                    const valueElement = items[3].querySelector('.indicator-value');
+                    const labelElement = items[3].querySelector('.indicator-label');
+                    if (valueElement) {
+                        valueElement.style.color = '#E74C3C';
+                        valueElement.style.fontSize = '22px';
+                        valueElement.style.fontWeight = 'bold';
+                        // 添加带星号的标签
+                        if (labelElement) {
+                            labelElement.innerHTML = '★ 逾期率 ★';
+                            labelElement.style.color = '#E74C3C';
+                            labelElement.style.fontWeight = 'bold';
+                        }
+                    }
+                }
+                
+                // 不良率 - 索引4
+                if (items[4]) {
+                    const valueElement = items[4].querySelector('.indicator-value');
+                    const labelElement = items[4].querySelector('.indicator-label');
+                    if (valueElement) {
+                        valueElement.style.color = '#E74C3C';
+                        valueElement.style.fontSize = '22px';
+                        valueElement.style.fontWeight = 'bold';
+                        // 添加带星号的标签
+                        if (labelElement) {
+                            labelElement.innerHTML = '★ 不良率 ★';
+                            labelElement.style.color = '#E74C3C';
+                            labelElement.style.fontWeight = 'bold';
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #653eb3;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #653eb3;
+        }
+        .control-panel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .month-selector {
+            background-color: #f5f7fa;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        .chart-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 30%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .chart-body {
+            height: 400px;
+            width: 100%;
+        }
+        .table-container {
+            flex: 1;
+            width: 100%;
+            max-width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .table-body {
+            height: 450px;
+            overflow: auto;
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        @media (max-width: 1200px) {
+            .chart-container, .table-container {
+                min-width: 100%;
+            }
+            .chart-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">资产统计</div>
+            <div class="control-panel">
+                <select id="global-month-selector" class="month-selector">
+                    <option value="202401">2024年01月</option>
+                    <option value="202402">2024年02月</option>
+                    <option value="202403">2024年03月</option>
+                    <option value="202404" selected>2024年04月</option>
+                    <option value="202405">2024年05月</option>
+                    <option value="202406">2024年06月</option>
+                    <option value="202407">2024年07月</option>
+                    <option value="202408">2024年08月</option>
+                    <option value="202409">2024年09月</option>
+                    <option value="202410">2024年10月</option>
+                    <option value="202411">2024年11月</option>
+                    <option value="202412">2024年12月</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 价格分布、期限分布、笔均分布 -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-body">
+                    <iframe id="price-frame" src="price-chart-module.html"></iframe>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-body">
+                    <iframe id="term-frame" src="term-chart-module.html"></iframe>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-body">
+                    <iframe id="average-amount-frame" src="average-amount-chart-module.html"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 地区分布、逾期分布 -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-body">
+                    <iframe id="geo-frame" src="geo-chart-module.html"></iframe>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-body">
+                    <iframe id="overdue-frame" src="overdue-chart-module.html"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 客户集中度分布 -->
+        <div class="chart-row">
+            <div class="table-container">
+                <div class="table-body">
+                    <iframe id="customer-frame" src="customer-concentration-module.html"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 全局月份控制
+        document.getElementById('global-month-selector').addEventListener('change', function() {
+            const selectedMonth = this.value;
+            const frames = [
+                'price-frame', 'term-frame', 'average-amount-frame',
+                'geo-frame', 'overdue-frame', 'customer-frame'
+            ];
+            
+            // 遍历所有iframe并发送月份更新消息
+            frames.forEach(frameId => {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentWindow) {
+                    // 发送消息到iframe
+                    frame.contentWindow.postMessage({
+                        type: 'updateMonth',
+                        month: selectedMonth
+                    }, '*');
+                }
+            });
+        });
+        
+        // 调整iframe高度
+        function adjustFrameHeight() {
+            const frames = document.querySelectorAll('iframe');
+            frames.forEach(frame => {
+                frame.style.height = frame.parentElement.offsetHeight + 'px';
+            });
+        }
+        
+        // 监听resize事件，调整iframe高度
+        window.addEventListener('resize', adjustFrameHeight);
+        window.addEventListener('load', adjustFrameHeight);
+    </script>
+</body>
+</html> 

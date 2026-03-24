@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户集中度分析详情</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #653eb3;
+            padding-bottom: 15px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #653eb3;
+        }
+        .back-link {
+            text-decoration: none;
+            color: #5B8FF9;
+            font-size: 16px;
+        }
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filters, .toggle-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .product-selector, .month-selector, .toggle-btn {
+            background-color: #f5f7fa;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .product-selector, .month-selector {
+            min-width: 120px;
+        }
+        .toggle-btn:hover, .product-selector:hover, .month-selector:hover {
+            background-color: #e6f1fc;
+            border-color: #a0cfff;
+            color: #409eff;
+        }
+        .toggle-btn.active {
+            background-color: #409eff;
+            border-color: #409eff;
+            color: #fff;
+        }
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .chart-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .chart-body {
+            padding: 20px;
+            height: 400px;
+        }
+        .comparison-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .comparison-chart {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        .comparison-chart-body {
+            padding: 20px;
+            height: 300px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .summary-table th, .summary-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-table th {
+            background-color: #f5f7fa;
+            font-weight: bold;
+        }
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+        .positive-mom {
+            color: #67C23A;
+        }
+        .negative-mom {
+            color: #F56C6C;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 991px) {
+            .comparison-charts {
+                flex-direction: column;
+            }
+            .comparison-chart {
+                width: 100%;
+            }
+            .filters, .toggle-buttons {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .control-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .chart-body {
+                height: 300px;
+            }
+            .comparison-chart-body {
+                height: 250px;
+            }
+            .product-selector, .month-selector {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">客户集中度分析详情</div>
+            <a href="dashboard.html" class="back-link">返回看板</a>
+        </div>
+        
+        <div class="control-panel">
+            <div class="filters">
+                <span class="filter-label">月份:</span>
+                <select id="month-selector" class="month-selector">
+                    <option value="202312">2023年12月</option>
+                    <option value="202401">2024年01月</option>
+                    <option value="202402">2024年02月</option>
+                    <option value="202403">2024年03月</option>
+                    <option value="202404" selected>2024年04月</option>
+                    <option value="202405">2024年05月</option>
+                </select>
+            </div>
+            
+            <div class="toggle-buttons">
+                <button id="normal-btn" class="toggle-btn active">当前数据</button>
+                <button id="mom-btn" class="toggle-btn">环比数据</button>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">客户集中度分布</div>
+            </div>
+            <div class="chart-body" id="main-chart"></div>
+        </div>
+        
+        <div class="comparison-charts">
+            <div class="comparison-chart">
+                <div class="chart-header">
+                    <div class="chart-title">TOP 10 客户贷款余额占比</div>
+                </div>
+                <div class="comparison-chart-body" id="top10-chart"></div>
+            </div>
+            
+            <div class="comparison-chart">
+                <div class="chart-header">
+                    <div class="chart-title">客户数量分布</div>
+                </div>
+                <div class="comparison-chart-body" id="customer-count-chart"></div>
+            </div>
+        </div>
+        
+        <table class="summary-table" id="summary-table">
+            <thead>
+                <tr>
+                    <th>客户分组</th>
+                    <th>客户数量</th>
+                    <th>客户数量占比</th>
+                    <th>客户数量环比</th>
+                    <th>在贷余额(万元)</th>
+                    <th>在贷余额占比</th>
+                    <th>在贷余额环比</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 数据将通过JavaScript动态填充 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            return urlParams.get(name);
+        }
+
+        // 页面加载时设置月份
+        window.addEventListener('load', function() {
+            const monthParam = getUrlParam('month');
+            if (monthParam) {
+                const monthSelect = document.querySelector('select[name="month"]');
+                if (monthSelect) {
+                    monthSelect.value = monthParam;
+                    // 触发change事件以更新数据
+                    const event = new Event('change');
+                    monthSelect.dispatchEvent(event);
+                }
+            }
+        });
+        
+        // 格式化货币
+        function formatCurrency(value) {
+            return parseFloat(value).toLocaleString('zh-CN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // 格式化百分比
+        function formatPercent(value) {
+            return parseFloat(value).toFixed(2) + '%';
+        }
+        
+        // 生成随机数据
+        function generateRandomData() {
+            // 客户集中度区间
+            const concentrationGroups = [
+                'TOP 10 客户', 'TOP 11-20 客户', 'TOP 21-50 客户', 
+                'TOP 51-100 客户', 'TOP 101-200 客户', '其他客户'
+            ];
+            
+            // 月份列表
+            const months = ['202312', '202401', '202402', '202403', '202404', '202405'];
+            
+            // 按月份生成随机数据
+            const monthlyData = {};
+            
+            months.forEach(month => {
+                const customerData = {
+                    normal: {},
+                    mom: {}
+                };
+                
+                // 生成TOP 10个客户的详细数据
+                const top10Customers = [];
+                let totalAmount = 0;
+                
+                for (let i = 1; i <= 10; i++) {
+                    const amount = Math.floor(Math.random() * 8000) + 2000;
+                    totalAmount += amount;
+                    
+                    top10Customers.push({
+                        name: `客户${i}`,
+                        amount: amount
+                    });
+                }
+                
+                // 按金额排序
+                top10Customers.sort((a, b) => b.amount - a.amount);
+                
+                // 为每个集中度区间生成随机数据
+                let remainingCustomers = 5000; // 总客户数
+                let remainingAmount = totalAmount * 3; // 总贷款额
+                
+                concentrationGroups.forEach((group, index) => {
+                    let customerCount;
+                    let amount;
+                    
+                    if (index === 0) {
+                        // TOP 10 客户
+                        customerCount = 10;
+                        amount = totalAmount;
+                    } else if (index === concentrationGroups.length - 1) {
+                        // 其他客户（剩余的）
+                        customerCount = remainingCustomers;
+                        amount = remainingAmount;
+                    } else {
+                        // 其他分组
+                        let countRatio;
+                        let amountRatio;
+                        
+                        switch (index) {
+                            case 1: // TOP 11-20
+                                countRatio = 10 / remainingCustomers;
+                                amountRatio = 0.15;
+                                break;
+                            case 2: // TOP 21-50
+                                countRatio = 30 / remainingCustomers;
+                                amountRatio = 0.25;
+                                break;
+                            case 3: // TOP 51-100
+                                countRatio = 50 / remainingCustomers;
+                                amountRatio = 0.20;
+                                break;
+                            case 4: // TOP 101-200
+                                countRatio = 100 / remainingCustomers;
+                                amountRatio = 0.15;
+                                break;
+                        }
+                        
+                        customerCount = Math.round(remainingCustomers * countRatio);
+                        amount = Math.round(remainingAmount * amountRatio);
+                        
+                        remainingCustomers -= customerCount;
+                        remainingAmount -= amount;
+                    }
+                    
+                    // 环比变化（-15%到+15%）
+                    const countMom = ((Math.random() * 30 - 15) / 100).toFixed(4);
+                    const amountMom = ((Math.random() * 30 - 15) / 100).toFixed(4);
+                    
+                    customerData.normal[group] = {
+                        count: customerCount,
+                        amount: amount
+                    };
+                    
+                    customerData.mom[group] = {
+                        count: countMom,
+                        amount: amountMom
+                    };
+                });
+                
+                // 将TOP 10客户的详细数据也保存
+                customerData.topCustomers = top10Customers;
+                
+                monthlyData[month] = customerData;
+            });
+            
+            return monthlyData;
+        }
+        
+        // 初始化图表
+        let mainChart = echarts.init(document.getElementById('main-chart'));
+        let top10Chart = echarts.init(document.getElementById('top10-chart'));
+        let customerCountChart = echarts.init(document.getElementById('customer-count-chart'));
+        
+        // 生成随机数据
+        const data = generateRandomData();
+        
+        // 当前选择
+        let currentMonth = '202404';
+        let currentMode = 'normal'; // normal 或 mom
+        
+        // 更新图表
+        function updateCharts() {
+            const chartData = data[currentMonth];
+            const isMonthOverMonth = currentMode === 'mom';
+            
+            // 颜色配置
+            const colors = {
+                primary: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272'],
+                secondary: ['#5B8FF9', '#61DDAA', '#65789B']
+            };
+            
+            // 数据处理
+            const groups = Object.keys(chartData.normal);
+            let totalCount = 0;
+            let totalAmount = 0;
+            
+            // 计算总客户数和总金额
+            for (const group of groups) {
+                totalCount += chartData.normal[group].count;
+                totalAmount += chartData.normal[group].amount;
+            }
+            
+            // 主图表数据
+            const mainChartData = groups.map(group => {
+                return {
+                    name: group,
+                    value: chartData.normal[group].amount
+                };
+            });
+            
+            // 对于环比模式，我们需要修改数据
+            if (isMonthOverMonth) {
+                // 环比模式下的数据
+                const momData = groups.map(group => {
+                    return {
+                        name: group,
+                        value: (parseFloat(chartData.mom[group].amount) * 100).toFixed(2)
+                    };
+                });
+                
+                // 环比模式的主图表
+                mainChart.setOption({
+                    title: {
+                        text: `${currentMonth.substring(0, 4)}年${currentMonth.substring(4, 6)}月 - 客户集中度环比变化`,
+                        left: 'center',
+                        top: 0
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}: {c}%'
+                    },
+                    series: [
+                        {
+                            name: '环比变化',
+                            type: 'bar',
+                            data: momData,
+                            itemStyle: {
+                                color: function(params) {
+                                    // 正值为绿色，负值为红色
+                                    return parseFloat(params.value) >= 0 ? '#67C23A' : '#F56C6C';
+                                },
+                                borderRadius: 4
+                            },
+                            label: {
+                                show: true,
+                                position: 'top',
+                                formatter: '{c}%'
+                            }
+                        }
+                    ],
+                    xAxis: {
+                        type: 'category',
+                        data: groups
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '环比变化(%)',
+                        axisLabel: {
+                            formatter: '{value}%'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '8%',
+                        top: '15%',
+                        containLabel: true
+                    }
+                });
+            } else {
+                // 正常模式下的主图表
+                mainChart.setOption({
+                    title: {
+                        text: `${currentMonth.substring(0, 4)}年${currentMonth.substring(4, 6)}月 - 客户集中度分布`,
+                        left: 'center',
+                        top: 0
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function(params) {
+                            const group = params.name;
+                            const amount = formatCurrency(params.value);
+                            const percentage = formatPercent(params.value / totalAmount * 100);
+                            const count = chartData.normal[group].count;
+                            const countPercentage = formatPercent(count / totalCount * 100);
+                            
+                            return `${group}<br/>在贷余额: ${amount}万元 (${percentage})<br/>客户数: ${count}个 (${countPercentage})`;
+                        }
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        top: 'center'
+                    },
+                    series: [
+                        {
+                            name: '客户集中度',
+                            type: 'pie',
+                            radius: '65%',
+                            center: ['55%', '50%'],
+                            data: mainChartData,
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            },
+                            label: {
+                                formatter: '{b}: {d}%',
+                                color: '#333'
+                            },
+                            itemStyle: {
+                                borderRadius: 5,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }
+                        }
+                    ]
+                });
+            }
+            
+            // TOP 10 客户图表
+            if (isMonthOverMonth) {
+                // 环比模式下不显示TOP 10客户图表
+                top10Chart.setOption({
+                    title: {
+                        text: '环比模式下不显示TOP 10客户详情',
+                        left: 'center',
+                        top: 'center',
+                        textStyle: {
+                            fontSize: 14,
+                            color: '#999'
+                        }
+                    },
+                    series: []
+                });
+            } else {
+                // 计算TOP 10客户的占比
+                const top10Customers = chartData.topCustomers;
+                const top10Amount = top10Customers.reduce((sum, customer) => sum + customer.amount, 0);
+                
+                top10Chart.setOption({
+                    title: {
+                        text: 'TOP 10 客户贷款余额占比',
+                        left: 'center',
+                        top: 0
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function(params) {
+                            const customer = params.name;
+                            const amount = formatCurrency(params.value);
+                            const percentage = formatPercent(params.value / totalAmount * 100);
+                            
+                            return `${customer}<br/>在贷余额: ${amount}万元<br/>占总体比例: ${percentage}`;
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'TOP 10客户',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            center: ['50%', '55%'],
+                            roseType: 'radius',
+                            label: {
+                                formatter: '{b}: {c}万元'
+                            },
+                            data: top10Customers.map(customer => {
+                                return {
+                                    name: customer.name,
+                                    value: customer.amount
+                                };
+                            }),
+                            itemStyle: {
+                                borderRadius: 5,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }
+                        }
+                    ]
+                });
+            }
+            
+            // 客户数量分布图表
+            if (isMonthOverMonth) {
+                // 环比模式下显示客户数量环比
+                const customerCountMomData = groups.map(group => {
+                    return {
+                        name: group,
+                        value: (parseFloat(chartData.mom[group].count) * 100).toFixed(2)
+                    };
+                });
+                
+                customerCountChart.setOption({
+                    title: {
+                        text: '客户数量环比变化',
+                        left: 'center',
+                        top: 0
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}: {c}%'
+                    },
+                    series: [
+                        {
+                            name: '环比变化',
+                            type: 'bar',
+                            data: customerCountMomData,
+                            itemStyle: {
+                                color: function(params) {
+                                    return parseFloat(params.value) >= 0 ? '#67C23A' : '#F56C6C';
+                                },
+                                borderRadius: 4
+                            },
+                            label: {
+                                show: true,
+                                position: 'top',
+                                formatter: '{c}%'
+                            }
+                        }
+                    ],
+                    xAxis: {
+                        type: 'category',
+                        data: groups
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '环比变化(%)',
+                        axisLabel: {
+                            formatter: '{value}%'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '8%',
+                        top: '15%',
+                        containLabel: true
+                    }
+                });
+            } else {
+                // 正常模式下显示客户数量分布
+                const customerCountData = groups.map(group => {
+                    return {
+                        name: group,
+                        value: chartData.normal[group].count
+                    };
+                });
+                
+                customerCountChart.setOption({
+                    title: {
+                        text: '客户数量分布',
+                        left: 'center',
+                        top: 0
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function(params) {
+                            const count = params.value;
+                            const percentage = formatPercent(params.value / totalCount * 100);
+                            
+                            return `${params.name}<br/>客户数: ${count}个<br/>占比: ${percentage}`;
+                        }
+                    },
+                    series: [
+                        {
+                            name: '客户数量',
+                            type: 'pie',
+                            radius: '65%',
+                            center: ['50%', '55%'],
+                            data: customerCountData,
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            },
+                            label: {
+                                formatter: '{b}: {c}个',
+                                color: '#333'
+                            },
+                            itemStyle: {
+                                borderRadius: 5,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }
+                        }
+                    ]
+                });
+            }
+            
+            // 更新表格
+            updateTable();
+        }
+        
+        // 更新数据表格
+        function updateTable() {
+            const tableBody = document.getElementById('summary-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            
+            const chartData = data[currentMonth];
+            const groups = Object.keys(chartData.normal);
+            
+            // 计算总客户数和总金额
+            let totalCount = 0;
+            let totalAmount = 0;
+            
+            for (const group of groups) {
+                totalCount += chartData.normal[group].count;
+                totalAmount += chartData.normal[group].amount;
+            }
+            
+            // 填充表格
+            groups.forEach(group => {
+                const row = document.createElement('tr');
+                
+                // 客户分组
+                const groupCell = document.createElement('td');
+                groupCell.textContent = group;
+                row.appendChild(groupCell);
+                
+                // 客户数量
+                const countCell = document.createElement('td');
+                countCell.textContent = chartData.normal[group].count.toLocaleString();
+                row.appendChild(countCell);
+                
+                // 客户数量占比
+                const countPercentCell = document.createElement('td');
+                const countPercent = (chartData.normal[group].count / totalCount * 100).toFixed(2);
+                countPercentCell.textContent = countPercent + '%';
+                row.appendChild(countPercentCell);
+                
+                // 客户数量环比
+                const countMomCell = document.createElement('td');
+                const countMom = (parseFloat(chartData.mom[group].count) * 100).toFixed(2);
+                countMomCell.textContent = countMom + '%';
+                countMomCell.className = parseFloat(countMom) >= 0 ? 'positive-mom' : 'negative-mom';
+                row.appendChild(countMomCell);
+                
+                // 在贷余额
+                const amountCell = document.createElement('td');
+                amountCell.textContent = formatCurrency(chartData.normal[group].amount);
+                row.appendChild(amountCell);
+                
+                // 在贷余额占比
+                const amountPercentCell = document.createElement('td');
+                const amountPercent = (chartData.normal[group].amount / totalAmount * 100).toFixed(2);
+                amountPercentCell.textContent = amountPercent + '%';
+                row.appendChild(amountPercentCell);
+                
+                // 在贷余额环比
+                const amountMomCell = document.createElement('td');
+                const amountMom = (parseFloat(chartData.mom[group].amount) * 100).toFixed(2);
+                amountMomCell.textContent = amountMom + '%';
+                amountMomCell.className = parseFloat(amountMom) >= 0 ? 'positive-mom' : 'negative-mom';
+                row.appendChild(amountMomCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 月份选择器事件
+        document.getElementById('month-selector').addEventListener('change', function() {
+            currentMonth = this.value;
+            updateCharts();
+        });
+        
+        // 当前数据按钮事件
+        document.getElementById('normal-btn').addEventListener('click', function() {
+            if (currentMode !== 'normal') {
+                currentMode = 'normal';
+                this.classList.add('active');
+                document.getElementById('mom-btn').classList.remove('active');
+                updateCharts();
+            }
+        });
+        
+        // 环比数据按钮事件
+        document.getElementById('mom-btn').addEventListener('click', function() {
+            if (currentMode !== 'mom') {
+                currentMode = 'mom';
+                this.classList.add('active');
+                document.getElementById('normal-btn').classList.remove('active');
+                updateCharts();
+            }
+        });
+        
+        // 窗口调整时重绘图表
+        window.addEventListener('resize', function() {
+            mainChart.resize();
+            top10Chart.resize();
+            customerCountChart.resize();
+        });
+        
+        // 初始更新图表
+        updateCharts();
+    </script>
+</body>
+</html>
