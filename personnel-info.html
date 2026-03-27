@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -426,25 +426,6 @@
                 </table>
             </div>
             
-            <!-- 3. 网点在职人员名单部分 -->
-            <div class="section" id="personnel-list-section">
-                <h2 class="section-title">
-                    网点在职人员名单
-                </h2>
-                <table class="data-table" id="personnelTable">
-                    <thead>
-                        <tr>
-                            <th>姓名</th>
-                            <th>电话</th>
-                            <th>身份证号</th>
-                            <th>岗位</th>
-                        </tr>
-                    </thead>
-                    <tbody id="personnelTableBody">
-                        <!-- 数据将通过JavaScript生成 -->
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
     
@@ -644,30 +625,9 @@
             });
         }
         
-        // 更新人员名单表格
-        function updatePersonnelTable() {
-            const personnelTableBody = document.getElementById('personnelTableBody');
-            personnelTableBody.innerHTML = '';
-            
-            // 筛选在职人员
-            const activePersonnels = personnels.filter(person => person.active);
-            
-            activePersonnels.forEach(person => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${person.name}</td>
-                    <td>${person.phone}</td>
-                    <td>${person.idNumber}</td>
-                    <td>${person.position}</td>
-                `;
-                personnelTableBody.appendChild(row);
-            });
-        }
-        
         // 更新所有表格
         function updateTables() {
             updatePositionTable();
-            updatePersonnelTable();
         }
         
         // 更新统计数据

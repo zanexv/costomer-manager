@@ -3,977 +3,873 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>经营信息</title>
+    <title>资产信息提取页</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 全局样式变量 */
         :root {
-            --primary-color: #653EB3;
-            --primary-light: #7A5DC7;
-            --secondary-color: #5934A1;
-            --accent-color: #FF9F43;
-            --warning-color: #FF6B6B;
-            --danger-color: #FF5252;
-            --success-color: #28C76F;
-            --info-color: #00CFE8;
-            --light-bg: #F8F8F8;
-            --white: #FFFFFF;
-            --text-color: #555555;
-            --gray-color: #8A8A8A;
-            --light-gray: #EAEAEA;
-            --border-color: #E4E4E4;
-            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --orange-color: #FF9F43;
+            --page-bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --line: #e8edf5;
+            --line-strong: #dbe3ef;
+            --text: #1f2a44;
+            --muted: #7d8aa6;
+            --primary: #7c63ff;
+            --primary-soft: rgba(124, 99, 255, 0.12);
+            --orange: #ff9d3d;
+            --green: #40c27a;
+            --red: #ff5c70;
+            --cyan: #36c7d0;
+            --shadow: 0 10px 28px rgba(20, 35, 90, 0.08);
+            --radius: 14px;
         }
-        
-        /* 基础样式 */
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-color);
-            background-color: var(--light-bg);
+            margin: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+            background: linear-gradient(180deg, #f8faff 0%, var(--page-bg) 100%);
         }
-        
-        /* 页面容器 */
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
+
+        .page {
+            max-width: 1420px;
+            margin: 0 auto;
+            padding: 22px 24px 42px;
         }
-        
-        /* 内容区域样式 */
-        .business-info-container {
-            margin-top: 20px;
-        }
-        
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .section-title {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 18px;
-            font-weight: 600;
-            position: relative;
-            padding-left: 12px;
-        }
-        
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 18px;
-            background-color: var(--primary-color);
-            border-radius: 2px;
-        }
-        
-        /* 信息表格 */
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        
-        .info-table th, 
-        .info-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-        }
-        
-        .info-table th {
-            background-color: rgba(101, 62, 179, 0.05);
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 14px;
-        }
-        
-        .info-table td {
-            font-size: 14px;
-            color: var(--text-color);
-        }
-        
-        .info-table tr:hover td {
-            background-color: rgba(101, 62, 179, 0.02);
-        }
-        
-        /* 两列布局 */
-        .two-column {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .two-column > div {
-            flex: 1;
-        }
-        
-        /* 金刚账户预警布局 */
-        .warning-layout > .calendar-wrapper {
-            flex: 2;
-        }
-        
-        .warning-layout > .chart-container {
-            flex: 3;
-            height: 350px;
-        }
-        
-        /* 图表容器 */
-        .chart-container {
-            width: 100%;
-            height: 300px;
-            margin-bottom: 20px;
-        }
-        
-        /* 卡片布局 */
-        .card {
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-        
-        .card-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .data-item {
-            margin-bottom: 10px;
-        }
-        
-        .data-label {
-            font-size: 12px;
-            color: var(--gray-color);
-            margin-bottom: 3px;
-        }
-        
-        .data-value {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-        
-        /* 响应式布局 */
-        @media (max-width: 768px) {
-            .two-column {
-                flex-direction: column;
-            }
-            
-            .chart-container {
-                height: 250px;
-            }
-            
-            .card-content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* 日历表格样式 */
-        .calendar-wrapper {
-            margin-top: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            background-color: var(--white);
-        }
-        
-        .calendar-header {
-            padding: 12px 15px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .calendar-table th {
-            padding: 10px;
-            text-align: center;
-            background-color: rgba(101, 62, 179, 0.05);
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .calendar-table td {
-            height: 80px;
-            border: 1px solid var(--border-color);
-            vertical-align: top;
-            padding: 5px;
-        }
-        
-        .date-cell {
+
+        .content {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            gap: 22px;
+            padding-top: 0;
         }
-        
-        .date-number {
-            font-weight: 600;
-            margin-bottom: 5px;
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 24px rgba(31, 42, 68, 0.06);
+            padding: 22px;
         }
-        
-        .warning-amount {
-            font-size: 12px;
-            color: var(--danger-color);
-            background-color: rgba(255, 82, 82, 0.1);
-            padding: 3px 6px;
-            border-radius: 4px;
-            margin-top: auto;
-        }
-        
-        .other-month {
-            background-color: var(--light-gray);
-            opacity: 0.7;
-        }
-        
-        .current-day {
-            background-color: rgba(101, 62, 179, 0.1);
-        }
-        
-        /* 图表居中样式 */
-        .centered-chart {
+
+        .section-title {
             display: flex;
             align-items: center;
+            gap: 10px;
+            margin: 0 0 18px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            border-radius: 999px;
+            background: var(--primary);
+        }
+
+        .chart-shell {
+            height: 268px;
+            border: 1px solid #eef2f8;
+            border-radius: 12px;
+            padding: 14px 14px 8px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            height: 100%;
+            gap: 18px;
+            margin-bottom: 12px;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #5f6f8f;
+            white-space: nowrap;
+        }
+
+        .legend-mark {
+            position: relative;
+            width: 24px;
+            height: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-mark::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 2px;
+            transform: translateY(-50%);
+            border-radius: 999px;
+            background: var(--legend-color, var(--primary));
+        }
+
+        .legend-mark::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid var(--legend-color, var(--primary));
+            background: #fff;
+        }
+
+        .chartjs-tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #e8edf5;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(31, 42, 68, 0.12);
+            padding: 10px 12px;
+            pointer-events: none;
+            transform: translate(-50%, -100%);
+            transition: opacity 0.12s ease;
+            white-space: nowrap;
+            z-index: 20;
+        }
+
+        .chartjs-tooltip-title {
+            margin: 0 0 6px;
+            color: #7d8aa6;
+            font-size: 12px;
+        }
+
+        .chartjs-tooltip-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+            color: #1f2a44;
+        }
+
+        .chartjs-tooltip-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chartjs-tooltip-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--dot-color, var(--primary));
+            flex-shrink: 0;
+        }
+
+        .chartjs-tooltip-value {
+            color: #5f6f8f;
+        }
+
+        .table-wrap {
+            margin-top: 16px;
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+        }
+
+        th,
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        thead th {
+            background: #f8faff;
+            color: #5f6f8f;
+            font-weight: 600;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tbody tr:hover td {
+            background: #fafcff;
+        }
+
+        .calendar-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+        }
+
+        .calendar-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-control {
+            border: 1px solid var(--line-strong);
+            background: #fff;
+            color: var(--text);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .calendar-view {
+            display: inline-flex;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-view button {
+            border: 0;
+            background: #fff;
+            color: var(--muted);
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .calendar-view .active {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0;
+            border-top: 1px solid var(--line);
+            border-left: 1px solid var(--line);
+        }
+
+        .weekday,
+        .day-cell {
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            min-height: 84px;
+            padding: 10px 8px;
+        }
+
+        .weekday {
+            min-height: auto;
+            background: #fafcff;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .day-cell.is-other {
+            background: #fafbfe;
+            color: #b6bfd1;
+        }
+
+        .day-cell.is-focus {
+            box-shadow: inset 0 2px 0 var(--primary);
+            background: #fcfbff;
+        }
+
+        .day-number {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .warning-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+            color: #50607f;
+        }
+
+        .warning-item::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: #eef8f1;
+            color: #2f9a5e;
+        }
+
+        @media (max-width: 980px) {
+            .page {
+                padding: 18px 14px 36px;
+            }
+
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="business-info-container">
-            <!-- 1. 网点KPI部分 -->
-            <div class="section" id="kpi-section">
+    <div class="page">
+        <main class="content">
+            <section class="section">
                 <h2 class="section-title">网点KPI</h2>
-                <div class="chart-container">
+                <div class="chart-legend" id="kpiLegend"></div>
+                <div class="chart-shell">
                     <canvas id="kpiChart"></canvas>
                 </div>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>2024年4月</th>
-                            <th>2024年5月</th>
-                            <th>2024年6月</th>
-                            <th>2024年7月</th>
-                            <th>2024年8月</th>
-                            <th>2024年9月</th>
-                            <th>2024年10月</th>
-                            <th>2024年11月</th>
-                            <th>2024年12月</th>
-                            <th>2025年1月</th>
-                            <th>2025年2月</th>
-                            <th>2025年3月</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>KPI评分</th>
-                            <td>68</td>
-                            <td>59</td>
-                            <td>86</td>
-                            <td>52</td>
-                            <td>86</td>
-                            <td>50</td>
-                            <td>68</td>
-                            <td>85</td>
-                            <td>90</td>
-                            <td>60</td>
-                            <td>70</td>
-                            <td>80</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 2. 网点揽派件部分 -->
-            <div class="section" id="pickup-delivery-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">网点揽派件</h2>
-                <div class="chart-container">
-                    <canvas id="pickupDeliveryChart"></canvas>
+                <div class="chart-legend" id="deliveryLegend"></div>
+                <div class="chart-shell">
+                    <canvas id="deliveryChart"></canvas>
                 </div>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>2024年4月</th>
-                            <th>2024年5月</th>
-                            <th>2024年6月</th>
-                            <th>2024年7月</th>
-                            <th>2024年8月</th>
-                            <th>2024年9月</th>
-                            <th>2024年10月</th>
-                            <th>2024年11月</th>
-                            <th>2024年12月</th>
-                            <th>2025年1月</th>
-                            <th>2025年2月</th>
-                            <th>2025年3月</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>揽件数量</th>
-                            <td>6800</td>
-                            <td>5900</td>
-                            <td>8600</td>
-                            <td>5200</td>
-                            <td>8600</td>
-                            <td>5000</td>
-                            <td>6800</td>
-                            <td>8500</td>
-                            <td>9000</td>
-                            <td>6000</td>
-                            <td>7000</td>
-                            <td>8000</td>
-                        </tr>
-                        <tr>
-                            <th>派件数量</th>
-                            <td>9008</td>
-                            <td>5009</td>
-                            <td>8006</td>
-                            <td>5002</td>
-                            <td>8006</td>
-                            <td>5000</td>
-                            <td>6008</td>
-                            <td>8005</td>
-                            <td>9000</td>
-                            <td>6000</td>
-                            <td>7000</td>
-                            <td>8000</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 3. 金刚账户预警部分 -->
-            <div class="section" id="account-warning-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">金刚账户预警</h2>
-                <div class="two-column warning-layout">
-                    <div class="calendar-wrapper">
-                        <div class="calendar-header">
-                            <span id="calendarMonth"></span>
+                <div class="calendar-card">
+                    <div class="calendar-toolbar">
+                        <select class="calendar-control">
+                            <option selected>2026年</option>
+                        </select>
+                        <select class="calendar-control">
+                            <option selected>4月</option>
+                        </select>
+                        <div class="calendar-view">
+                            <button class="active">月</button>
+                            <button>年</button>
                         </div>
-                        <table class="calendar-table">
-                            <thead>
-                                <tr>
-                                    <th>周日</th>
-                                    <th>周一</th>
-                                    <th>周二</th>
-                                    <th>周三</th>
-                                    <th>周四</th>
-                                    <th>周五</th>
-                                    <th>周六</th>
-                                </tr>
-                            </thead>
-                            <tbody id="calendarBody">
-                                <!-- 日历数据将通过JavaScript生成 -->
-                            </tbody>
-                        </table>
                     </div>
-                    <div class="chart-container centered-chart">
-                        <canvas id="accountWarningChart"></canvas>
-                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
-            </div>
-            
-            <!-- 4. 金刚预警部分 -->
-            <div class="section" id="warning-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">金刚预警</h2>
-                <div class="chart-container">
-                    <canvas id="warningChart"></canvas>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>数据统计月份</th>
+                                <th>执行预警次数</th>
+                                <th>临时开通天数次数</th>
+                                <th>修改预警金额</th>
+                                <th>冻结次数</th>
+                                <th>解冻次数</th>
+                                <th>冻结账户资金次数</th>
+                                <th>解冻账户资金次数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="diamondWarningTable"></tbody>
+                    </table>
                 </div>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th>时间</th>
-                            <th>执行预警次数</th>
-                            <th>临时开通天数次数</th>
-                            <th>修改预警金额</th>
-                            <th>冻结次数</th>
-                            <th>解冻次数</th>
-                            <th>冻结账户资金次数</th>
-                            <th>解冻账户资金次数</th>
-                        </tr>
-                    </thead>
-                    <tbody id="warningTable">
-                        <!-- 表格数据将通过JavaScript生成 -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 5. 风险评级部分 -->
-            <div class="section" id="risk-rating-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">风险评级</h2>
-                <div class="chart-container">
-                    <canvas id="riskRatingChart"></canvas>
+                <div class="chart-legend" id="riskLegend"></div>
+                <div class="chart-shell">
+                    <canvas id="riskChart"></canvas>
                 </div>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th>时间</th>
-                            <th>综合风险星级</th>
-                            <th>KPI星级</th>
-                            <th>单票罚款星级</th>
-                            <th>欠薪月数星级</th>
-                        </tr>
-                    </thead>
-                    <tbody id="riskRatingTable">
-                        <!-- 表格数据将通过JavaScript生成 -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 6. 预转让数据部分 -->
-            <div class="section" id="pre-transfer-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">预转让数据</h2>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="data-item">
-                            <div class="data-label">累计预转让次数</div>
-                            <div class="data-value">2</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">流程完结日期</div>
-                            <div class="data-value">2024-05-05</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">优化方式</div>
-                            <div class="data-value">划分</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">受让方姓名</div>
-                            <div class="data-value">张三</div>
-                        </div>
-                    </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>网点名称</th>
+                                <th>优化方式</th>
+                                <th>新网点名称</th>
+                                <th>受让方姓名</th>
+                                <th>联系方式</th>
+                                <th>流程促结时间</th>
+                                <th>是否实质性转让</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>湖北省武汉市江夏区庙山</td>
+                                <td>转让</td>
+                                <td>-</td>
+                                <td>张三</td>
+                                <td>18800001234</td>
+                                <td>2026-03-10</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>湖北省武汉市江夏区庙山</td>
+                                <td>转让</td>
+                                <td>-</td>
+                                <td>张三</td>
+                                <td>18800001234</td>
+                                <td>2026-03-09</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            
-            <!-- 7. 退网数据部分 -->
-            <div class="section" id="exit-network-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">退网数据</h2>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="data-item">
-                            <div class="data-label">累计退网次数</div>
-                            <div class="data-value">2</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">退网时间</div>
-                            <div class="data-value">2024-05-05</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">处理结果</div>
-                            <div class="data-value">划分</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">转让价格（万元）</div>
-                            <div class="data-value">100</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">退网原因</div>
-                            <div class="data-value">经营不善</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">退网备注</div>
-                            <div class="data-value">资金链短缺</div>
-                        </div>
-                    </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>企业名称</th>
+                                <th>退网时间</th>
+                                <th>转让价格（万元）</th>
+                                <th>登记退网时的余额（元）</th>
+                                <th>处理结果</th>
+                                <th>退网原因</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>北京鸿德昌顺物流有限公司</td>
+                                <td>2022-03-01</td>
+                                <td>-</td>
+                                <td>0</td>
+                                <td>已处理</td>
+                                <td>-</td>
+                                <td>北京网管王帅君，新老板签担...</td>
+                            </tr>
+                            <tr>
+                                <td>北京鸿德昌顺物流有限公司</td>
+                                <td>2024-03-13</td>
+                                <td>30</td>
+                                <td>550,000</td>
+                                <td>已处理</td>
+                                <td>非实质转让</td>
+                                <td>更换营业执照</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            
-            <!-- 8. 预警数据部分 -->
-            <div class="section" id="alert-data-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">预警数据</h2>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="data-item">
-                            <div class="data-label">累计预警次数</div>
-                            <div class="data-value">2</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">最近预警时间</div>
-                            <div class="data-value">2025-01-01</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">异常分类</div>
-                            <div class="data-value">经营与管理风险</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">异常明细</div>
-                            <div class="data-value">管理混乱</div>
-                        </div>
-                    </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>网点名称</th>
+                                <th>预警次数</th>
+                                <th>最近预警时间</th>
+                                <th>异常分类</th>
+                                <th>异常明细</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>北京鸿德昌顺物流有限公司</td>
+                                <td>50</td>
+                                <td>2026-03-13</td>
+                                <td>经营与管理风险</td>
+                                <td>网点变更频繁</td>
+                                <td>股份转让</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            
-            <!-- 9. 共配数据部分 -->
-            <div class="section" id="shared-config-section">
+            </section>
+
+            <section class="section">
                 <h2 class="section-title">共配数据</h2>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="data-item">
-                            <div class="data-label">共配反馈次数</div>
-                            <div class="data-value">2</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">最新共配反馈时间</div>
-                            <div class="data-value">2024-12-12 09:00:00</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">共配主导方</div>
-                            <div class="data-value">圆通</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">共配品牌</div>
-                            <div class="data-value">圆通、中通</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">共配方式</div>
-                            <div class="data-value">联合经营</div>
-                        </div>
-                    </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>共配状态</th>
+                                <th>共配主导方</th>
+                                <th>共配品牌</th>
+                                <th>共配方式</th>
+                                <th>是否使用共配系统</th>
+                                <th>数据提供人</th>
+                                <th>数据提供时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge">生效</span></td>
+                                <td>2022-03-01</td>
+                                <td>极兔、申通、韵达、圆通</td>
+                                <td>同场操作</td>
+                                <td>是</td>
+                                <td>黄龙</td>
+                                <td>2024-09-24</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge">生效</span></td>
+                                <td>2024-03-13</td>
+                                <td>圆通、极兔</td>
+                                <td>联合经营</td>
+                                <td>否</td>
+                                <td>黄龙</td>
+                                <td>2024-09-24</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            
-            <!-- 10. 小贷余额数据部分 -->
-            <div class="section" id="loan-balance-section">
-                <h2 class="section-title">小贷余额数据</h2>
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th>产品</th>
-                            <th>借款次数</th>
-                            <th>首次借款时间</th>
-                            <th>最近借款时间</th>
-                            <th>借款频率/月</th>
-                            <th>累计放款金额（元）</th>
-                            <th>平均借款金额（元）</th>
-                            <th>本金余额（元）</th>
-                            <th>是否逾期过</th>
-                        </tr>
-                    </thead>
-                    <tbody id="loanBalanceTable">
-                        <!-- 表格数据将通过JavaScript生成 -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. 网点KPI图表
-            const kpiCtx = document.getElementById('kpiChart').getContext('2d');
-            const kpiLabels = ['2024年4月', '2024年5月', '2024年6月', '2024年7月', '2024年8月', '2024年9月', 
-                              '2024年10月', '2024年11月', '2024年12月', '2025年1月', '2025年2月', '2025年3月'];
-            const kpiData = [68, 59, 86, 52, 86, 50, 68, 85, 90, 60, 70, 80];
-            
-            new Chart(kpiCtx, {
-                type: 'line',
-                data: {
-                    labels: kpiLabels,
-                    datasets: [{
-                        label: 'KPI评分',
-                        data: kpiData,
-                        borderColor: '#653EB3',
-                        backgroundColor: 'rgba(101, 62, 179, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
+        const monthLabels = ["2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02"];
+
+        const kpiSeries = [58, 69, 71, 66, 57, 62, 83, 75, 73, 69, 74, 84];
+        const pickupSeries = [56, 70, 71, 65, 57, 61, 83, 81, 80, 69, 73, 82];
+        const deliverySeries = [45, 74, 77, 61, 41, 59, 103, 99, 69, 71, 84, 106];
+        const riskSeries = {
+            comprehensive: [6.1, 7.3, 7.4, 6.6, 5.4, 6.2, 8.3, 8.1, 7.0, 7.1, 7.3, 8.4],
+            kpi: [4.5, 7.6, 7.8, 6.2, 4.2, 6.3, 10.2, 9.9, 7.1, 7.2, 8.0, 10.4],
+            ticket: [2.2, 4.9, 5.0, 3.9, 2.1, 3.0, 7.3, 7.1, 4.8, 4.7, 5.2, 7.0],
+            payroll: [1.7, 5.2, 5.7, 3.8, 1.1, 5.8, 8.7, 8.0, 4.5, 4.6, 5.0, 8.5]
+        };
+
+        const diamondWarnings = [
+            ["2026-07", 1, 3, 20, 20, 20, 20, 20],
+            ["2026-06", 3, 33, 202, 2, 20, 202, 20],
+            ["2026-05", 5, 23, 20, 1, 20, 20, 20],
+            ["2025-04", 2, 12, 2, 2, 20, 202, 20],
+            ["2025-03", 2, 20, 202, 20, 20, 20, 20]
+        ];
+
+        const calendarWarnings = {
+            19: ["账户余额:300,000.45", "预警余额:0", "预警天数:3"],
+            20: ["账户余额:300,000.45", "预警余额:0", "预警天数:4"],
+            21: ["账户余额:300,000.45", "预警余额:0", "预警天数:5"]
+        };
+
+        function withAlpha(color, alpha) {
+            if (color.startsWith("#")) {
+                let hex = color.slice(1);
+                if (hex.length === 3) {
+                    hex = hex.split("").map((char) => char + char).join("");
                 }
-            });
-            
-            // 2. 网点揽派件图表
-            const pdCtx = document.getElementById('pickupDeliveryChart').getContext('2d');
-            const pdLabels = ['2024年4月', '2024年5月', '2024年6月', '2024年7月', '2024年8月', '2024年9月', 
-                             '2024年10月', '2024年11月', '2024年12月', '2025年1月', '2025年2月', '2025年3月'];
-            const pickupData = [6800, 5900, 8600, 5200, 8600, 5000, 6800, 8500, 9000, 6000, 7000, 8000];
-            const deliveryData = [9008, 5009, 8006, 5002, 8006, 5000, 6008, 8005, 9000, 6000, 7000, 8000];
-            
-            new Chart(pdCtx, {
-                type: 'line',
-                data: {
-                    labels: pdLabels,
-                    datasets: [
-                        {
-                            label: '揽件数量',
-                            data: pickupData,
-                            borderColor: '#653EB3',
-                            backgroundColor: 'rgba(101, 62, 179, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4
-                        },
-                        {
-                            label: '派件数量',
-                            data: deliveryData,
-                            borderColor: '#FF9F43',
-                            backgroundColor: 'rgba(255, 159, 67, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-            
-            // 3. 金刚账户预警
-            const accountWarningDates = [];
-            const accountWarningValues = [];
-            const calendarBody = document.getElementById('calendarBody');
-            const calendarMonthElement = document.getElementById('calendarMonth');
-            
-            // 获取当前日期
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
-            
-            // 设置日历标题
-            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-            calendarMonthElement.textContent = `${currentYear}年 ${monthNames[currentMonth]}`;
-            
-            // 获取当月第一天
-            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-            // 获取当月第一天是星期几 (0-6, 0表示星期日)
-            const firstDayOfWeek = firstDayOfMonth.getDay();
-            // 获取当月有多少天
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
-            // 获取上个月有多少天
-            const daysInLastMonth = new Date(currentYear, currentMonth, 0).getDate();
-            
-            // 生成日历表格
-            let date = 1;
-            let nextMonthDate = 1;
-            
-            // 创建预警数据映射 (日期 -> 金额)
-            const warningData = {};
-            
-            // 为当月每一天生成随机预警金额
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                const value = Math.floor(Math.random() * 5000) + 1000;
-                warningData[dateStr] = value;
-                
-                // 添加到图表数据
-                if (i <= 30) { // 只取30天的数据用于图表
-                    accountWarningDates.push(dateStr);
-                    accountWarningValues.push(value);
-                }
+                const intValue = parseInt(hex, 16);
+                const r = (intValue >> 16) & 255;
+                const g = (intValue >> 8) & 255;
+                const b = intValue & 255;
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
             }
-            
-            // 生成日历网格
-            for (let i = 0; i < 6; i++) { // 最多6行
-                const row = document.createElement('tr');
-                
-                for (let j = 0; j < 7; j++) { // 7列 (周日-周六)
-                    const cell = document.createElement('td');
-                    const cellContent = document.createElement('div');
-                    cellContent.className = 'date-cell';
-                    
-                    const dateNumber = document.createElement('div');
-                    dateNumber.className = 'date-number';
-                    
-                    if (i === 0 && j < firstDayOfWeek) {
-                        // 上个月的日期
-                        const prevMonthDay = daysInLastMonth - firstDayOfWeek + j + 1;
-                        dateNumber.textContent = prevMonthDay;
-                        cell.classList.add('other-month');
-                        cellContent.appendChild(dateNumber);
-                    } else if (date > daysInMonth) {
-                        // 下个月的日期
-                        dateNumber.textContent = nextMonthDate;
-                        cell.classList.add('other-month');
-                        cellContent.appendChild(dateNumber);
-                        nextMonthDate++;
-                    } else {
-                        // 当月的日期
-                        dateNumber.textContent = date;
-                        
-                        // 检查是否是今天
-                        if (date === currentDate.getDate()) {
-                            cell.classList.add('current-day');
-                        }
-                        
-                        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-                        
-                        // 添加预警金额
-                        if (warningData[dateStr]) {
-                            const warningAmount = document.createElement('div');
-                            warningAmount.className = 'warning-amount';
-                            warningAmount.textContent = `预警: ¥${warningData[dateStr].toLocaleString()}`;
-                            cellContent.appendChild(dateNumber);
-                            cellContent.appendChild(warningAmount);
-                        } else {
-                            cellContent.appendChild(dateNumber);
-                        }
-                        
-                        date++;
-                    }
-                    
-                    cell.appendChild(cellContent);
-                    row.appendChild(cell);
-                }
-                
-                calendarBody.appendChild(row);
-                
-                // 如果已经显示完当月所有日期，退出循环
-                if (date > daysInMonth && i >= 3) {
-                    break;
-                }
+            return color;
+        }
+
+        function getOrCreateTooltip(chart) {
+            let tooltipEl = chart.canvas.parentNode.querySelector(".chartjs-tooltip");
+            if (!tooltipEl) {
+                tooltipEl = document.createElement("div");
+                tooltipEl.className = "chartjs-tooltip";
+                chart.canvas.parentNode.appendChild(tooltipEl);
             }
-            
-            const awCtx = document.getElementById('accountWarningChart').getContext('2d');
-            new Chart(awCtx, {
-                type: 'line',
-                data: {
-                    labels: accountWarningDates,
-                    datasets: [{
-                        label: '预警金额（元）',
-                        data: accountWarningValues,
-                        borderColor: '#FF5252',
-                        backgroundColor: 'rgba(255, 82, 82, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
+            return tooltipEl;
+        }
+
+        function externalTooltipHandler(context) {
+            const { chart, tooltip } = context;
+            const tooltipEl = getOrCreateTooltip(chart);
+
+            if (tooltip.opacity === 0) {
+                tooltipEl.style.opacity = 0;
+                return;
+            }
+
+            const title = tooltip.title?.[0] || "";
+            const body = tooltip.dataPoints.map((point) => {
+                const color = point.dataset.borderColor;
+                return `
+                    <div class="chartjs-tooltip-row">
+                        <span class="chartjs-tooltip-label">
+                            <span class="chartjs-tooltip-dot" style="--dot-color:${color}"></span>
+                            <span>${point.dataset.label}</span>
+                        </span>
+                        <span class="chartjs-tooltip-value">${point.formattedValue}</span>
+                    </div>
+                `;
+            }).join("");
+
+            tooltipEl.innerHTML = `
+                <div class="chartjs-tooltip-title">${title}</div>
+                ${body}
+            `;
+
+            const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = `${positionX + tooltip.caretX}px`;
+            tooltipEl.style.top = `${positionY + tooltip.caretY - 12}px`;
+        }
+
+        const hoverGuidePlugin = {
+            id: "hoverGuidePlugin",
+            afterDatasetsDraw(chart) {
+                const active = chart.tooltip?.getActiveElements?.() || [];
+                if (!active.length) {
+                    return;
+                }
+
+                const { ctx, chartArea } = chart;
+                const x = active[0].element.x;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, chartArea.top);
+                ctx.lineTo(x, chartArea.bottom);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "#d9e1ee";
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+
+        const activePointPlugin = {
+            id: "activePointPlugin",
+            afterDatasetsDraw(chart) {
+                const active = chart.tooltip?.getActiveElements?.() || [];
+                if (!active.length) {
+                    return;
+                }
+
+                const { ctx } = chart;
+                active.forEach(({ element, datasetIndex }) => {
+                    const dataset = chart.data.datasets[datasetIndex];
+                    const color = dataset.borderColor;
+
+                    ctx.save();
+                    ctx.fillStyle = withAlpha(color, 0.18);
+                    ctx.beginPath();
+                    ctx.arc(element.x, element.y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(element.x, element.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+            }
+        };
+
+        function renderLegend(legendId, datasets) {
+            if (!legendId) {
+                return;
+            }
+
+            const legendRoot = document.getElementById(legendId);
+            if (!legendRoot) {
+                return;
+            }
+
+            legendRoot.innerHTML = datasets.map((dataset) => `
+                <span class="legend-item">
+                    <span class="legend-mark" style="--legend-color:${dataset.borderColor}"></span>
+                    <span>${dataset.label}</span>
+                </span>
+            `).join("");
+        }
+
+        function createLineChart(id, labels, datasets, options = {}, legendId = "") {
+            const ctx = document.getElementById(id);
+            new Chart(ctx, {
+                type: "line",
+                data: { labels, datasets },
+                plugins: [hoverGuidePlugin, activePointPlugin],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: { mode: "index", intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: false,
+                            external: externalTooltipHandler
+                        }
+                    },
+                    elements: {
+                        line: { tension: 0.35 },
+                        point: {
+                            radius: 0,
+                            hoverRadius: 0,
+                            hitRadius: 16
+                        }
+                    },
                     scales: {
                         x: {
-                            ticks: {
-                                maxTicksLimit: 10
-                            }
+                            grid: { display: false },
+                            ticks: { color: "#7d8aa6" }
                         },
                         y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-            
-            // 4. 金刚预警
-            const warningMonths = ['2024年4月', '2024年5月', '2024年6月', '2024年7月', '2024年8月', '2024年9月', 
-                                 '2024年10月', '2024年11月', '2024年12月', '2025年1月', '2025年2月', '2025年3月'];
-            const warningTypes = ['执行预警次数', '临时开通天数次数', '修改预警金额', '冻结次数', '解冻次数', '冻结账户资金次数', '解冻账户资金次数'];
-            const warningTableBody = document.getElementById('warningTable');
-            
-            // 生成金刚预警随机数据和表格
-            const warningDatasets = [];
-            
-            warningMonths.forEach(month => {
-                const tr = document.createElement('tr');
-                let tdHtml = `<td>${month}</td>`;
-                
-                const rowData = [];
-                warningTypes.forEach(type => {
-                    const value = Math.floor(Math.random() * 10);
-                    rowData.push(value);
-                    tdHtml += `<td>${value}</td>`;
-                });
-                
-                tr.innerHTML = tdHtml;
-                warningTableBody.appendChild(tr);
-            });
-            
-            // 为每种预警类型创建一个数据集
-            warningTypes.forEach((type, index) => {
-                const data = [];
-                // 为每个月随机生成数据
-                for (let i = 0; i < warningMonths.length; i++) {
-                    data.push(Math.floor(Math.random() * 10));
-                }
-                
-                // 为每种类型选择不同的颜色
-                const colors = ['#653EB3', '#FF9F43', '#28C76F', '#00CFE8', '#FF5252', '#5934A1', '#FF6B6B'];
-                
-                warningDatasets.push({
-                    label: type,
-                    data: data,
-                    borderColor: colors[index],
-                    backgroundColor: colors[index],
-                    borderWidth: 2
-                });
-            });
-            
-            const warningCtx = document.getElementById('warningChart').getContext('2d');
-            new Chart(warningCtx, {
-                type: 'bar',
-                data: {
-                    labels: warningMonths,
-                    datasets: warningDatasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-            
-            // 5. 风险评级
-            const riskMonths = ['2024年4月', '2024年5月', '2024年6月', '2024年7月', '2024年8月', '2024年9月', 
-                              '2024年10月', '2024年11月', '2024年12月', '2025年1月', '2025年2月', '2025年3月'];
-            const riskTypes = ['综合风险星级', 'KPI星级', '单票罚款星级', '欠薪月数星级'];
-            const riskTableBody = document.getElementById('riskRatingTable');
-            
-            // 生成风险评级随机数据和表格
-            const riskDatasets = [];
-            
-            riskMonths.forEach(month => {
-                const tr = document.createElement('tr');
-                let tdHtml = `<td>${month}</td>`;
-                
-                riskTypes.forEach(type => {
-                    const value = Math.floor(Math.random() * 5) + 1;
-                    tdHtml += `<td>${value}</td>`;
-                });
-                
-                tr.innerHTML = tdHtml;
-                riskTableBody.appendChild(tr);
-            });
-            
-            // 为每种风险类型创建一个数据集
-            riskTypes.forEach((type, index) => {
-                const data = [];
-                // 为每个月随机生成1-5的星级
-                for (let i = 0; i < riskMonths.length; i++) {
-                    data.push(Math.floor(Math.random() * 5) + 1);
-                }
-                
-                // 为每种类型选择不同的颜色
-                const colors = ['#FF5252', '#FF9F43', '#28C76F', '#00CFE8'];
-                
-                riskDatasets.push({
-                    label: type,
-                    data: data,
-                    borderColor: colors[index],
-                    backgroundColor: colors[index],
-                    borderWidth: 2
-                });
-            });
-            
-            const riskCtx = document.getElementById('riskRatingChart').getContext('2d');
-            new Chart(riskCtx, {
-                type: 'line',
-                data: {
-                    labels: riskMonths,
-                    datasets: riskDatasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
                             beginAtZero: true,
-                            max: 5,
-                            ticks: {
-                                stepSize: 1
-                            }
+                            grid: { color: "#eef2f8" },
+                            ticks: { color: "#7d8aa6" }
                         }
-                    }
+                    },
+                    ...options
                 }
             });
-            
-            // 10. 小贷余额数据
-            const products = ['经营贷', '消费贷', '信用贷', '抵押贷', '质押贷'];
-            const loanTableBody = document.getElementById('loanBalanceTable');
-            
-            // 生成小贷余额随机数据
-            products.forEach(product => {
-                const loanCount = Math.floor(Math.random() * 20) + 1;
-                const firstLoanDate = `2023-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
-                const recentLoanDate = `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
-                const loanFrequency = (Math.random() * 2).toFixed(1);
-                const totalLoanAmount = Math.floor(Math.random() * 1000000) + 100000;
-                const avgLoanAmount = Math.floor(totalLoanAmount / loanCount);
-                const principalBalance = Math.floor(Math.random() * 500000) + 10000;
-                const overdue = Math.random() > 0.7 ? '是' : '否';
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${product}</td>
-                    <td>${loanCount}</td>
-                    <td>${firstLoanDate}</td>
-                    <td>${recentLoanDate}</td>
-                    <td>${loanFrequency}</td>
-                    <td>${totalLoanAmount.toLocaleString()}</td>
-                    <td>${avgLoanAmount.toLocaleString()}</td>
-                    <td>${principalBalance.toLocaleString()}</td>
-                    <td>${overdue}</td>
-                `;
-                
-                loanTableBody.appendChild(tr);
+
+            renderLegend(legendId, datasets);
+        }
+
+        function renderDiamondWarningTable() {
+            const tbody = document.getElementById("diamondWarningTable");
+            tbody.innerHTML = diamondWarnings.map((row) => `
+                <tr>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${row[2]}</td>
+                    <td>${row[3]}</td>
+                    <td>${row[4]}</td>
+                    <td>${row[5]}</td>
+                    <td>${row[6]}</td>
+                    <td>${row[7]}</td>
+                </tr>
+            `).join("");
+        }
+
+        function renderCalendar() {
+            const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+            const cells = [];
+
+            weekDays.forEach((day) => {
+                cells.push(`<div class="weekday">${day}</div>`);
             });
-        });
+
+            const leading = [27, 28, 29, 30, 31];
+            leading.forEach((day) => {
+                cells.push(`<div class="day-cell is-other"><div class="day-number">${day}</div></div>`);
+            });
+
+            for (let day = 1; day <= 30; day++) {
+                const warnings = calendarWarnings[day] || [];
+                const warningHtml = warnings.map((item) => `<div class="warning-item">${item}</div>`).join("");
+                const focusClass = day === 19 ? " is-focus" : "";
+                cells.push(`
+                    <div class="day-cell${focusClass}">
+                        <div class="day-number">${String(day).padStart(2, "0")}</div>
+                        <div class="warning-list">${warningHtml}</div>
+                    </div>
+                `);
+            }
+
+            document.getElementById("calendarGrid").innerHTML = cells.join("");
+        }
+
+        createLineChart("kpiChart", monthLabels, [
+            {
+                label: "KPI评分",
+                data: kpiSeries,
+                borderColor: "#7c63ff",
+                backgroundColor: "rgba(124, 99, 255, 0.12)",
+                fill: false,
+                borderWidth: 2
+            }
+        ], {
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#7d8aa6" } },
+                y: { beginAtZero: true, max: 100, grid: { color: "#eef2f8" }, ticks: { color: "#7d8aa6" } }
+            }
+        }, "kpiLegend");
+
+        createLineChart("deliveryChart", monthLabels, [
+            {
+                label: "揽件数量",
+                data: pickupSeries,
+                borderColor: "#7c63ff",
+                backgroundColor: "rgba(124, 99, 255, 0.12)",
+                fill: false,
+                borderWidth: 2
+            },
+            {
+                label: "派件数量",
+                data: deliverySeries,
+                borderColor: "#ff9d3d",
+                backgroundColor: "rgba(255, 157, 61, 0.12)",
+                fill: false,
+                borderWidth: 2
+            }
+        ], {}, "deliveryLegend");
+
+        createLineChart("riskChart", monthLabels, [
+            {
+                label: "综合风险星级",
+                data: riskSeries.comprehensive,
+                borderColor: "#7c63ff",
+                backgroundColor: "rgba(124, 99, 255, 0.12)",
+                fill: false,
+                borderWidth: 2
+            },
+            {
+                label: "KPI星级",
+                data: riskSeries.kpi,
+                borderColor: "#ff9d3d",
+                backgroundColor: "rgba(255, 157, 61, 0.12)",
+                fill: false,
+                borderWidth: 2
+            },
+            {
+                label: "单票票款星级",
+                data: riskSeries.ticket,
+                borderColor: "#36c7d0",
+                backgroundColor: "rgba(54, 199, 208, 0.12)",
+                fill: false,
+                borderWidth: 2
+            },
+            {
+                label: "欠薪月数星级",
+                data: riskSeries.payroll,
+                borderColor: "#ff5c70",
+                backgroundColor: "rgba(255, 92, 112, 0.12)",
+                fill: false,
+                borderWidth: 2
+            }
+        ], {
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#7d8aa6" } },
+                y: { beginAtZero: true, max: 12, grid: { color: "#eef2f8" }, ticks: { color: "#7d8aa6" } }
+            }
+        }, "riskLegend");
+
+        renderDiamondWarningTable();
+        renderCalendar();
     </script>
 </body>
-</html> 
+</html>
