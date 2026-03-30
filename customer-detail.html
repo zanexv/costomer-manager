@@ -84,159 +84,9 @@
             background-color: var(--secondary-color);
         }
         
-        /* 客户评级区域 */
-        .customer-rating {
-            text-align: center;
-            background-color: #FAFAFA;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            width: 100%;
-        }
-        
-        .customer-rating h3 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .customer-rating h3::after {
-            content: attr(data-rating);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .radar-chart-container {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            position: relative;
-        }
-        
-        /* 客户摘要卡片 */
-        .customer-summary-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: 100%;
-        }
-        
-        /* 客户概览区域 - 上方评级和卡片的布局容器 */
-        .customer-overview {
-            display: flex;
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-        
-        /* 媒体查询优化布局 */
-        @media (max-width: 1100px) {
-            .customer-overview {
-                flex-direction: column;
-            }
-            
-            .customer-rating, .customer-summary-cards {
-                width: 100%;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .customer-summary-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .summary-card {
-            background-color: white;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-        
-        .summary-card.finance::before {
-            background-color: var(--primary-color);
-        }
-        
-        .summary-card.risk::before {
-            background-color: var(--danger-color);
-        }
-        
-        .summary-card.business::before {
-            background-color: var(--orange-color);
-        }
-        
-        .summary-card.credit::before {
-            background-color: var(--success-color);
-        }
-        
-        .summary-card-title {
-            font-size: 14px;
-            color: var(--gray-color);
-            margin-bottom: 10px;
-        }
-        
-        .summary-card-value {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-        
-        .summary-card-footer {
-            font-size: 12px;
-            color: var(--gray-color);
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .summary-card-change {
-            font-weight: 500;
-        }
-        
-        .summary-card-change.positive {
-            color: var(--success-color);
-        }
-        
-        .summary-card-change.negative {
-            color: var(--danger-color);
-        }
-        
         /* 客户信息区域 */
         .customer-info {
-            border-top: 1px solid rgba(224, 224, 224, 0.5);
-            padding-top: 25px;
+            padding-top: 4px;
         }
         
         /* 标签导航 */
@@ -302,20 +152,6 @@
                 font-size: 13px;
             }
             
-            .radar-chart-container {
-                width: 100%;
-                max-width: 250px;
-                height: 250px;
-            }
-            
-            .customer-summary-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .customer-overview {
-                flex-direction: column;
-            }
-            
             .iframe-container {
                 height: 600px;
             }
@@ -344,9 +180,6 @@
         </div>
     </div>
     
-    <!-- Chart.js 图表库 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script>
         /**
          * 页面加载时执行初始化
@@ -373,10 +206,6 @@
             // 初始化标签页
             initCustomerDetailTabs();
             
-            // 绘制客户评级雷达图
-            const customerRating = getCustomerRatingData(customerId);
-            drawCustomerRatingRadarChart('customerRatingChart', customerRating);
-            
             // 默认显示企业基本信息页面
             loadIframePage('enterprise-basic-info.html');
         }
@@ -389,53 +218,6 @@
         function createCustomerDetailContent(customerId) {
             return `
                 <div class="customer-detail-content">
-                    <!-- 客户概览区域 - 包含评级和信息卡片 -->
-                    <div class="customer-overview">
-                        <!-- 客户评级 -->
-                        <div class="customer-rating">
-                            <h3 data-rating="A">客户综合评级</h3>
-                            <div class="radar-chart-container">
-                                <canvas id="customerRatingChart"></canvas>
-                            </div>
-                        </div>
-                        
-                        <!-- 客户综合信息卡片 -->
-                        <div class="customer-summary-cards">
-                            <div class="summary-card finance">
-                                <div class="summary-card-title">贷款余额</div>
-                                <div class="summary-card-value">350万元</div>
-                                <div class="summary-card-footer">
-                                    <span>较上月</span>
-                                    <span class="summary-card-change positive">+50万元</span>
-                                </div>
-                            </div>
-                            <div class="summary-card credit">
-                                <div class="summary-card-title">授信额度</div>
-                                <div class="summary-card-value">500万元</div>
-                                <div class="summary-card-footer">
-                                    <span>未使用</span>
-                                    <span class="summary-card-change">150万元</span>
-                                </div>
-                            </div>
-                            <div class="summary-card business">
-                                <div class="summary-card-title">合作产品数</div>
-                                <div class="summary-card-value">5个</div>
-                                <div class="summary-card-footer">
-                                    <span>较上年</span>
-                                    <span class="summary-card-change positive">+2个</span>
-                                </div>
-                            </div>
-                            <div class="summary-card risk">
-                                <div class="summary-card-title">逾期金额</div>
-                                <div class="summary-card-value">0元</div>
-                                <div class="summary-card-footer">
-                                    <span>风险评级</span>
-                                    <span class="summary-card-change positive">低风险</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- 客户信息 -->
                     <div class="customer-info">
                         <div class="tab-navigation">
@@ -486,68 +268,6 @@
             iframe.src = pageUrl;
         }
         
-        /**
-         * 获取客户评级数据
-         * @param {string} customerId - 客户ID
-         * @returns {Object} 客户评级数据
-         */
-        function getCustomerRatingData(customerId) {
-            // 在实际应用中，这里应该是从后端API获取数据
-            // 这里返回模拟数据
-            return {
-                assetLevel: 85,
-                creditHistory: 75,
-                performanceCapability: 90,
-                behaviorPreference: 65,
-                customerRelationship: 80
-            };
-        }
-        
-        /**
-         * 绘制客户评级雷达图
-         * @param {string} elementId - 容器元素ID
-         * @param {Object} data - 客户评级数据
-         */
-        function drawCustomerRatingRadarChart(elementId, data) {
-            const ctx = document.getElementById(elementId).getContext('2d');
-            const radarData = {
-                labels: ['资产水平', '信用历史', '履约能力', '行为偏好', '客户关系'],
-                datasets: [{
-                    label: '客户评级',
-                    data: [data.assetLevel, data.creditHistory, data.performanceCapability, data.behaviorPreference, data.customerRelationship],
-                    fill: true,
-                    backgroundColor: 'rgba(101, 62, 179, 0.2)',
-                    borderColor: 'rgb(101, 62, 179)',
-                    pointBackgroundColor: 'rgb(101, 62, 179)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(101, 62, 179)'
-                }]
-            };
-            
-            new Chart(ctx, {
-                type: 'radar',
-                data: radarData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            min: 0,
-                            max: 100,
-                            ticks: {
-                                stepSize: 20
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
     </script>
 </body>
 </html>
