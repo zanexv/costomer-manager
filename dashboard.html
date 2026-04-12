@@ -1,406 +1,662 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>驾驶舱 - 互联网小贷公司管理台系统</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-color: #653EB3;
-            --success-color: #3BB950;
-            --danger-color: #F35252;
-            --warning-color: #E6A733;
-            --orange-color: #F28335;
-            --gray-color: #666;
-            --white: #fff;
-            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        .dashboard-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .dashboard-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-        }
-
-        .dashboard-card h3 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .dashboard-stats {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .stat-item {
-            text-align: center;
-            flex: 1;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: var(--gray-color);
-        }
-
-        .dashboard-row {
-            display: flex;
-            gap: 20px;
-        }
-
-        .dashboard-row .dashboard-card {
-            flex: 1;
-        }
-
-        .chart-container {
-            height: 250px;
-            position: relative;
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-
-        .task-title {
-            font-weight: 500;
-        }
-
-        .task-deadline {
-            color: var(--gray-color);
-            font-size: 14px;
-        }
-
-        .task-priority {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .task-priority.high {
-            background: #ffebee;
-            color: var(--danger-color);
-        }
-
-        .task-priority.medium {
-            background: #fff3e0;
-            color: var(--warning-color);
-        }
-
-        .task-priority.low {
-            background: #e8f5e9;
-            color: var(--success-color);
-        }
-
-        .view-more {
-            text-align: center;
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 10px;
-            font-weight: 500;
-        }
-
-        .notification-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-
-        .notification-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .notification-icon.warning {
-            background: #fff3e0;
-            color: var(--warning-color);
-        }
-
-        .notification-icon.alert {
-            background: #ffebee;
-            color: var(--danger-color);
-        }
-
-        .notification-icon.info {
-            background: #e3f2fd;
-            color: var(--primary-color);
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 500;
-        }
-
-        .notification-time {
-            font-size: 12px;
-            color: var(--gray-color);
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-row {
-                flex-direction: column;
+    <s先cript src="https://cdn.jsdelivr.net/npm/chart.js">
+        </script>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <style>
+            /* ========================================
+           Design System — Apple-Inspired Dashboard
+           Ref: DESIGN.md
+           ======================================== */
+            :root {
+                --bg: #f5f5f7;
+                --surface: #ffffff;
+                --text-primary: #1d1d1f;
+                --text-secondary: rgba(0, 0, 0, 0.56);
+                --text-tertiary: rgba(0, 0, 0, 0.36);
+                --accent: #7c3aed;
+                --accent-hover: #6d28d9;
+                --border: rgba(0, 0, 0, 0.06);
+                --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+                --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
+                --radius: 12px;
+                --radius-sm: 8px;
+                --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
             }
-            
-            .dashboard-stats {
-                flex-wrap: wrap;
-                gap: 15px;
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            
-            .stat-item {
-                flex: 1 1 calc(50% - 10px);
+
+            body {
+                font-family: var(--font);
+                background: var(--bg);
+                color: var(--text-primary);
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
-        }
-    </style>
+
+            /* ========================================
+           Layout
+           ======================================== */
+            .dashboard {
+                max-width: 1120px;
+                margin: 0 auto;
+                padding: 32px 24px 48px;
+            }
+
+            /* Page Header */
+            .page-header {
+                margin-bottom: 32px;
+            }
+
+            .page-title {
+                font-size: 28px;
+                font-weight: 600;
+                letter-spacing: -0.28px;
+                line-height: 1.14;
+                color: var(--text-primary);
+            }
+
+            .page-subtitle {
+                font-size: 15px;
+                color: var(--text-secondary);
+                margin-top: 6px;
+                letter-spacing: -0.2px;
+            }
+
+            /* ========================================
+           Stat Cards — Top KPI Row
+           ======================================== */
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .stat-card {
+                background: var(--surface);
+                border-radius: var(--radius);
+                padding: 24px;
+                box-shadow: var(--shadow);
+                transition: box-shadow 0.3s ease, transform 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .stat-card:hover {
+                box-shadow: var(--shadow-hover);
+                transform: translateY(-1px);
+            }
+
+            .stat-label {
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--text-secondary);
+                letter-spacing: -0.1px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .stat-label i {
+                font-size: 15px;
+                color: var(--text-tertiary);
+            }
+
+            .stat-value {
+                font-size: 28px;
+                font-weight: 600;
+                letter-spacing: -0.4px;
+                line-height: 1.14;
+                color: var(--text-primary);
+                font-variant-numeric: tabular-nums;
+            }
+
+            .stat-change {
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                margin-top: 8px;
+                font-size: 12px;
+                font-weight: 500;
+                letter-spacing: -0.1px;
+                padding: 2px 8px;
+                border-radius: 980px;
+            }
+
+            .stat-change.up {
+                color: #1b7a3d;
+                background: rgba(27, 122, 61, 0.08);
+            }
+
+            .stat-change.down {
+                color: #c53030;
+                background: rgba(197, 48, 48, 0.08);
+            }
+
+            /* ========================================
+           Chart Section
+           ======================================== */
+            .charts-row {
+                display: grid;
+                grid-template-columns: 1.4fr 1fr;
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .card {
+                background: var(--surface);
+                border-radius: var(--radius);
+                padding: 24px;
+                box-shadow: var(--shadow);
+            }
+
+            .card-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                font-size: 17px;
+                font-weight: 600;
+                letter-spacing: -0.2px;
+                color: var(--text-primary);
+            }
+
+            .card-action {
+                font-size: 13px;
+                font-weight: 400;
+                color: var(--accent);
+                text-decoration: none;
+                cursor: pointer;
+                letter-spacing: -0.1px;
+                transition: opacity 0.15s;
+            }
+
+            .card-action:hover {
+                opacity: 0.72;
+            }
+
+            .chart-wrap {
+                height: 260px;
+                position: relative;
+            }
+
+            /* ========================================
+           Tasks & Notifications — Bottom Row
+           ======================================== */
+            .bottom-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            /* Task Items */
+            .list-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 14px 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .list-item:last-child {
+                border-bottom: none;
+            }
+
+            .list-icon {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                border-radius: var(--radius-sm);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+            }
+
+            .list-icon.task-icon {
+                background: rgba(124, 58, 237, 0.08);
+                color: var(--accent);
+            }
+
+            .list-icon.warn-icon {
+                background: rgba(197, 48, 48, 0.06);
+                color: #c53030;
+            }
+
+            .list-icon.info-icon {
+                background: rgba(0, 0, 0, 0.04);
+                color: var(--text-secondary);
+            }
+
+            .list-body {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .list-title {
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--text-primary);
+                letter-spacing: -0.15px;
+                line-height: 1.3;
+            }
+
+            .list-meta {
+                font-size: 12px;
+                color: var(--text-tertiary);
+                margin-top: 2px;
+                letter-spacing: -0.1px;
+            }
+
+            .priority-tag {
+                padding: 3px 10px;
+                border-radius: 980px;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.02em;
+                flex-shrink: 0;
+            }
+
+            .priority-tag.high {
+                background: rgba(197, 48, 48, 0.08);
+                color: #c53030;
+            }
+
+            .priority-tag.medium {
+                background: rgba(0, 0, 0, 0.05);
+                color: var(--text-secondary);
+            }
+
+            .priority-tag.low {
+                background: rgba(27, 122, 61, 0.08);
+                color: #1b7a3d;
+            }
+
+            /* View More Link */
+            .view-more {
+                display: block;
+                text-align: center;
+                padding: 14px 0 2px;
+                font-size: 13px;
+                font-weight: 400;
+                color: var(--accent);
+                cursor: pointer;
+                letter-spacing: -0.1px;
+                transition: opacity 0.15s;
+            }
+
+            .view-more:hover {
+                opacity: 0.72;
+            }
+
+            /* ========================================
+           Responsive
+           ======================================== */
+            @media (max-width: 1024px) {
+                .charts-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .dashboard {
+                    padding: 20px 16px 40px;
+                }
+
+                .stats-row {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                }
+
+                .bottom-row {
+                    grid-template-columns: 1fr;
+                }
+
+                .page-title {
+                    font-size: 24px;
+                }
+
+                .stat-value {
+                    font-size: 22px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .stats-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
 </head>
+
 <body>
-    <div class="dashboard-container">
-        <div class="dashboard-card">
-            <h3>业务概况</h3>
-            <div class="dashboard-stats">
-                <div class="stat-item">
-                    <div class="stat-value">¥ 1,256,789</div>
-                    <div class="stat-label">贷款余额(元)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">3,278</div>
-                    <div class="stat-label">客户总数</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">245</div>
-                    <div class="stat-label">今日新增客户</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">97.8%</div>
-                    <div class="stat-label">还款率</div>
-                </div>
+    <div class="dashboard">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">业务概览</h1>
+            <p class="page-subtitle">实时数据汇总 · 截至今日</p>
+        </div>
+
+        <!-- KPI Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label"><i class="ph ph-currency-circle-dollar"></i>贷款余额</div>
+                <div class="stat-value">¥1,256,789</div>
+                <div class="stat-change up">↑ 12.5% 较上月</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label"><i class="ph ph-users-three"></i>客户总数</div>
+                <div class="stat-value">3,278</div>
+                <div class="stat-change up">↑ 8.3% 较上月</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label"><i class="ph ph-user-plus"></i>今日新增</div>
+                <div class="stat-value">245</div>
+                <div class="stat-change down">↓ 2.1% 较昨日</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label"><i class="ph ph-check-circle"></i>还款率</div>
+                <div class="stat-value">97.8%</div>
+                <div class="stat-change up">↑ 0.5% 较上月</div>
             </div>
         </div>
-        
-        <div class="dashboard-row">
-            <div class="dashboard-card">
-                <h3>贷款趋势</h3>
-                <div class="chart-container" id="loan-trend-chart">
+
+        <!-- Charts -->
+        <div class="charts-row">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">贷款趋势</h2>
+                </div>
+                <div class="chart-wrap">
                     <canvas id="loanTrendChart"></canvas>
                 </div>
             </div>
-            <div class="dashboard-card">
-                <h3>客户分布</h3>
-                <div class="chart-container" id="customer-distribution-chart">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">客户分布</h2>
+                </div>
+                <div class="chart-wrap">
                     <canvas id="customerDistributionChart"></canvas>
                 </div>
             </div>
         </div>
-        
-        <div class="dashboard-row">
-            <div class="dashboard-card">
-                <h3>待办任务</h3>
-                <div class="task-list">
-                    <div class="task-item">
-                        <div class="task-title">客户信用评估</div>
-                        <div class="task-deadline">今日 14:30</div>
-                        <div class="task-priority high">高</div>
+
+        <!-- Tasks & Notifications -->
+        <div class="bottom-row">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">待办任务</h2>
+                    <span class="card-action view-more">查看更多 ›</span>
+                </div>
+                <div>
+                    <div class="list-item">
+                        <div class="list-icon task-icon"><i class="ph ph-clipboard-text"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">客户信用评估</div>
+                            <div class="list-meta">今日 14:30 截止</div>
+                        </div>
+                        <div class="priority-tag high">紧急</div>
                     </div>
-                    <div class="task-item">
-                        <div class="task-title">风险客户回访</div>
-                        <div class="task-deadline">今日 16:00</div>
-                        <div class="task-priority medium">中</div>
+                    <div class="list-item">
+                        <div class="list-icon task-icon"><i class="ph ph-phone-outgoing"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">风险客户回访</div>
+                            <div class="list-meta">今日 16:00 截止</div>
+                        </div>
+                        <div class="priority-tag medium">一般</div>
                     </div>
-                    <div class="task-item">
-                        <div class="task-title">贷款审批</div>
-                        <div class="task-deadline">明日 10:00</div>
-                        <div class="task-priority low">低</div>
+                    <div class="list-item">
+                        <div class="list-icon task-icon"><i class="ph ph-stamp"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">贷款审批</div>
+                            <div class="list-meta">明日 10:00 截止</div>
+                        </div>
+                        <div class="priority-tag low">普通</div>
                     </div>
-                    <div class="view-more">查看更多</div>
+                    <div class="list-item">
+                        <div class="list-icon task-icon"><i class="ph ph-file-text"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">月度报表整理</div>
+                            <div class="list-meta">本周五 18:00 截止</div>
+                        </div>
+                        <div class="priority-tag low">普通</div>
+                    </div>
                 </div>
             </div>
-            <div class="dashboard-card">
-                <h3>重要提醒</h3>
-                <div class="notification-list">
-                    <div class="notification-item">
-                        <div class="notification-icon warning">⚠️</div>
-                        <div class="notification-content">
-                            <div class="notification-title">5名客户即将逾期</div>
-                            <div class="notification-time">30分钟前</div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">重要提醒</h2>
+                    <span class="card-action view-more">查看更多 ›</span>
+                </div>
+                <div>
+                    <div class="list-item">
+                        <div class="list-icon warn-icon"><i class="ph ph-warning"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">5名客户即将逾期</div>
+                            <div class="list-meta">30 分钟前</div>
                         </div>
                     </div>
-                    <div class="notification-item">
-                        <div class="notification-icon alert">🔔</div>
-                        <div class="notification-content">
-                            <div class="notification-title">新的贷款申请待审批</div>
-                            <div class="notification-time">1小时前</div>
+                    <div class="list-item">
+                        <div class="list-icon warn-icon"><i class="ph ph-bell-ringing"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">新的贷款申请待审批</div>
+                            <div class="list-meta">1 小时前</div>
                         </div>
                     </div>
-                    <div class="notification-item">
-                        <div class="notification-icon info">ℹ️</div>
-                        <div class="notification-content">
-                            <div class="notification-title">系统更新提醒</div>
-                            <div class="notification-time">2小时前</div>
+                    <div class="list-item">
+                        <div class="list-icon info-icon"><i class="ph ph-info"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">系统于凌晨完成版本更新</div>
+                            <div class="list-meta">2 小时前</div>
                         </div>
                     </div>
-                    <div class="view-more">查看更多</div>
+                    <div class="list-item">
+                        <div class="list-icon info-icon"><i class="ph ph-chart-line-up"></i></div>
+                        <div class="list-body">
+                            <div class="list-title">本月还款率达标，位列全区前三</div>
+                            <div class="list-meta">今日 09:00</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 模拟数据
+        // ========================================
+        // Chart.js Global Defaults — Apple-style
+        // ========================================
+        Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = 'rgba(0, 0, 0, 0.36)';
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+        Chart.defaults.plugins.legend.labels.pointStyleWidth = 8;
+        Chart.defaults.plugins.legend.labels.padding = 20;
+
         const mockData = {
             loanTrend: {
                 labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
                 datasets: [
                     {
-                        label: '贷款发放金额',
+                        label: '贷款发放',
                         data: [150, 220, 180, 270, 310, 290, 380, 320, 290, 350, 410, 320],
-                        borderColor: '#653EB3',
-                        backgroundColor: 'rgba(101, 62, 179, 0.1)',
+                        borderColor: '#1d1d1f',
+                        backgroundColor: 'rgba(29, 29, 31, 0.04)',
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointStyle: 'circle',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#1d1d1f',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 2
                     },
                     {
-                        label: '贷款回收金额',
+                        label: '贷款回收',
                         data: [100, 170, 150, 210, 250, 230, 300, 270, 240, 290, 330, 280],
-                        borderColor: '#F35252',
-                        backgroundColor: 'rgba(243, 82, 82, 0.1)',
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.04)',
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointStyle: 'circle',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#7c3aed',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 2
                     }
                 ]
             },
             customerDistribution: {
-                labels: ['优质客户', '标准客户', '风险客户', '黑名单客户', '新客户'],
+                labels: ['优质客户', '标准客户', '风险客户', '黑名单', '新客户'],
                 datasets: [{
                     data: [35, 45, 12, 3, 5],
                     backgroundColor: [
-                        '#3BB950',
-                        '#56A0B0',
-                        '#E6A733',
-                        '#F35252',
-                        '#F28335'
+                        '#1d1d1f',
+                        '#6e6e73',
+                        '#aeaeb2',
+                        '#d1d1d6',
+                        '#7c3aed'
                     ],
+                    borderWidth: 0,
                     hoverOffset: 4
                 }]
             }
         };
 
-        // 图表配置
-        const chartConfigs = {
-            loanTrend: {
+        function initCharts() {
+            // Loan Trend — Line Chart
+            new Chart(document.getElementById('loanTrendChart').getContext('2d'), {
                 type: 'line',
+                data: mockData.loanTrend,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         legend: {
                             position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 6,
+                                boxHeight: 6,
+                                font: { size: 12, weight: 400 },
+                                padding: 16
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(29, 29, 31, 0.88)',
+                            titleFont: { size: 12, weight: 500 },
+                            bodyFont: { size: 12 },
+                            padding: { x: 12, y: 8 },
+                            cornerRadius: 8,
+                            displayColors: true,
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            boxHeight: 6,
+                            boxPadding: 4
                         }
                     },
                     scales: {
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: {
+                                font: { size: 11 },
+                                color: 'rgba(0, 0, 0, 0.28)',
+                                padding: 8
+                            }
+                        },
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: '金额（万元）'
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.04)',
+                                drawTicks: false
+                            },
+                            border: { display: false },
+                            ticks: {
+                                font: { size: 11 },
+                                color: 'rgba(0, 0, 0, 0.28)',
+                                padding: 12,
+                                callback: v => v + '万'
                             }
                         }
                     }
                 }
-            },
-            customerDistribution: {
+            });
+
+            // Customer Distribution — Doughnut Chart
+            new Chart(document.getElementById('customerDistributionChart').getContext('2d'), {
                 type: 'doughnut',
+                data: mockData.customerDistribution,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '68%',
                     plugins: {
                         legend: {
-                            position: 'right',
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 16,
+                                font: { size: 12 },
+                                boxWidth: 6,
+                                boxHeight: 6
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(29, 29, 31, 0.88)',
+                            titleFont: { size: 12, weight: 500 },
+                            bodyFont: { size: 12 },
+                            padding: { x: 12, y: 8 },
+                            cornerRadius: 8,
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            boxHeight: 6,
+                            callbacks: {
+                                label: ctx => ` ${ctx.label}: ${ctx.parsed}%`
+                            }
                         }
                     }
                 }
-            }
-        };
-
-        // 初始化图表
-        function initCharts() {
-            // 贷款趋势图
-            const loanTrendCtx = document.getElementById('loanTrendChart').getContext('2d');
-            new Chart(loanTrendCtx, {
-                ...chartConfigs.loanTrend,
-                data: mockData.loanTrend
-            });
-
-            // 客户分布图
-            const customerDistCtx = document.getElementById('customerDistributionChart').getContext('2d');
-            new Chart(customerDistCtx, {
-                ...chartConfigs.customerDistribution,
-                data: mockData.customerDistribution
             });
         }
 
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initCharts();
-            
+
             // 添加查看更多按钮点击事件
             document.querySelectorAll('.view-more').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     alert('查看更多功能开发中...');
                 });
             });
         });
     </script>
 </body>
-</html> 
+
+</html>

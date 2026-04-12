@@ -1,967 +1,1043 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>企业基本信息</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <style>
-        /* 全局样式变量 */
         :root {
-            --primary-color: #653EB3;
-            --primary-light: #7A5DC7;
-            --secondary-color: #5934A1;
-            --accent-color: #FF9F43;
-            --warning-color: #FF6B6B;
-            --danger-color: #FF5252;
-            --success-color: #28C76F;
-            --info-color: #00CFE8;
-            --light-bg: #F8F8F8;
-            --white: #FFFFFF;
-            --text-color: #555555;
-            --gray-color: #8A8A8A;
-            --light-gray: #EAEAEA;
-            --border-color: #E4E4E4;
-            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --orange-color: #FF9F43;
+            --page-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-shadow: 0 2px 4px rgba(15, 23, 42, 0.08), 0 10px 24px rgba(15, 23, 42, 0.04);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-soft: #edf2f7;
+            --purple: #8b5cf6;
+            --purple-soft: #f5efff;
+            --purple-ring: rgba(139, 92, 246, 0.12);
+            --input-bg: #ffffff;
+            --table-head: #f8fafc;
+            --row-accent: #faf7ff;
+            --radius-sm: 6px;
+            --radius-md: 20px;
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
         }
-        
-        /* 基础样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: var(--font);
             font-size: 14px;
             line-height: 1.5;
-            color: var(--text-color);
-            background-color: var(--light-bg);
+            color: var(--text-primary);
+            background: var(--page-bg);
+            -webkit-font-smoothing: antialiased;
         }
-        
-        /* 页面容器 */
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
+
+        .page {
+            max-width: 1160px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
         }
-        
-        /* 页面标题区域 */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+
+        /* ========================================
+           Section Card
+           ======================================== */
+        .section-card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            padding: 22px;
             margin-bottom: 20px;
         }
-        
-        .page-title {
-            color: var(--primary-color);
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        .back-button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: var(--radius-sm);
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        /* 内容区域样式 */
-        .enterprise-info-container {
-            margin-top: 20px;
-        }
-        
+
         .section-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
         }
-        
+
         .section-title {
-            color: var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             font-size: 18px;
             font-weight: 600;
-            position: relative;
-            padding-left: 12px;
+            color: #111827;
         }
-        
+
         .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            content: "";
             width: 4px;
-            height: 18px;
-            background-color: var(--primary-color);
-            border-radius: 2px;
+            height: 16px;
+            border-radius: 999px;
+            background: var(--purple);
         }
-        
-        .add-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 6px 12px;
-            font-size: 13px;
-            cursor: pointer;
+
+        .section-actions {
             display: flex;
             align-items: center;
-            gap: 5px;
-            transition: all 0.3s ease;
+            gap: 12px;
         }
-        
-        .add-button:hover {
-            background-color: var(--secondary-color);
+
+        /* ========================================
+           Buttons
+           ======================================== */
+        .btn {
+            appearance: none;
+            border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            min-width: 70px;
+            height: 38px;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
         }
-        
-        .add-button::before {
-            content: '+';
-            font-size: 16px;
-            font-weight: bold;
+
+        .btn:hover {
+            transform: translateY(-1px);
         }
-        
-        /* 信息表格 */
-        .info-table {
+
+        .btn-primary {
+            background: var(--purple);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.18);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--purple);
+            border-color: #c4b5fd;
+        }
+
+        /* ========================================
+           Basic Info Grid — View Mode
+           Description-list style with alternating rows
+           ======================================== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 16px;
+            border-radius: 6px;
+            transition: background 0.15s ease;
+        }
+
+        .info-item:hover {
+            background: #f9fafb;
+        }
+
+        .info-item.full-width {
+            grid-column: span 2;
+        }
+
+        .info-label {
+            width: 110px;
+            min-width: 110px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            padding-top: 1px;
+        }
+
+        .info-value {
+            flex: 1;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        /* ========================================
+           Basic Info Grid — Edit Mode
+           Inline-edit with underline inputs
+           ======================================== */
+        .info-grid.editing .info-item {
+            padding: 10px 16px;
+        }
+
+        .info-grid.editing .info-item:hover {
+            background: var(--purple-soft);
+        }
+
+        .info-grid.editing .info-label {
+            padding-top: 8px;
+        }
+
+        .info-input {
+            flex: 1;
+        }
+
+        .info-input input {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0 12px;
+            font-size: 14px;
+            font-family: var(--font);
+            color: var(--text-primary);
+            background: var(--input-bg);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .info-input input:focus {
+            border-color: #c4b5fd;
+            box-shadow: 0 0 0 3px var(--purple-ring);
+        }
+
+        .info-input input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ========================================
+           Tables
+           ======================================== */
+        .table-shell {
+            border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             overflow: hidden;
+            background: #ffffff;
         }
-        
-        .info-table th, 
-        .info-table td {
-            padding: 12px 15px;
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+            table-layout: fixed;
+        }
+
+        thead th {
+            background: var(--table-head);
+            color: rgba(0, 0, 0, 0.88);
+            font-size: 13px;
+            font-weight: 600;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
         }
-        
-        .info-table th {
-            background-color: rgba(101, 62, 179, 0.05);
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 14px;
+
+        tbody td {
+            height: 48px;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-soft);
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+            font-variant-numeric: tabular-nums;
         }
-        
-        .info-table td {
-            font-size: 14px;
-            color: var(--text-color);
+
+        tbody tr:last-child td {
+            border-bottom: none;
         }
-        
-        .info-table tr:hover td {
-            background-color: rgba(101, 62, 179, 0.02);
+
+        tbody tr.view-row:hover {
+            background: #fcfcff;
         }
-        
-        .edit-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 4px 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        tbody tr.edit-row {
+            background: #fff;
         }
-        
-        .edit-btn:hover {
-            background-color: #e58c3c;
+
+        tbody tr.edit-row:focus-within {
+            background: var(--row-accent);
         }
-        
-        .save-btn {
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 4px 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: none;
+
+        .row-index {
+            width: 58px;
+            color: #4b5563;
         }
-        
-        .save-btn:hover {
-            background-color: #1eaa5a;
+
+        .input-cell {
+            padding: 0 8px !important;
         }
-        
-        .cancel-btn {
-            background-color: var(--gray-color);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 4px 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 5px;
-            display: none;
-        }
-        
-        .cancel-btn:hover {
-            background-color: #767676;
-        }
-        
-        .editable-cell input,
-        .editable-cell select {
+
+        .input-cell input,
+        .input-cell select {
             width: 100%;
-            padding: 6px 8px;
-            border: 1px solid var(--primary-light);
-            border-radius: var(--radius-sm);
+            height: 32px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0 8px;
+            background: var(--input-bg);
+            color: #111827;
             font-size: 14px;
-            color: var(--text-color);
-        }
-        
-        /* 模态框样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        
-        .modal-content {
-            background-color: var(--white);
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            width: 80%;
-            max-width: 800px;
-            box-shadow: var(--shadow-md);
-            animation: modalFadeIn 0.3s;
-        }
-        
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--light-gray);
-        }
-        
-        .modal-title {
-            color: var(--primary-color);
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .close {
-            color: var(--gray-color);
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close:hover {
-            color: var(--text-color);
-        }
-        
-        .form-row {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .form-group {
-            flex: 1 1 calc(33.33% - 20px);
-            min-width: 200px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
+            font-family: var(--font);
             outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 30px;
-            gap: 10px;
+
+        .input-cell input:focus,
+        .input-cell select:focus {
+            border-color: #c4b5fd;
+            box-shadow: 0 0 0 3px var(--purple-ring);
         }
-        
-        .btn {
-            padding: 10px 20px;
+
+        .input-cell input::placeholder {
+            color: #c0c4cc;
+        }
+
+        .action-col {
+            display: none;
+            width: 80px;
+            text-align: center;
+        }
+
+        .is-editing .action-col {
+            display: table-cell;
+            position: sticky;
+            right: 0;
+            background: #ffffff;
+            z-index: 11;
+            box-shadow: -10px 0 20px rgba(0, 0, 0, 0.03);
+            border-left: 1px solid var(--border-soft);
+        }
+
+        thead th.action-col {
+            background: var(--table-head) !important;
+            z-index: 12;
+        }
+
+        .delete-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
             border: none;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
+            background: #fee2e2;
+            color: #ef4444;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            transition: background-color 0.2s, transform 0.2s;
         }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
+
+        .delete-btn:hover {
+            background: #fecaca;
+            transform: scale(1.1);
         }
-        
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
+
+        .delete-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
         }
-        
-        .btn-secondary {
-            background-color: var(--light-gray);
-            color: var(--text-color);
+
+        .add-row-wrap {
+            padding: 8px 12px 12px;
+            border-top: 1px solid var(--border-soft);
+            background: #ffffff;
         }
-        
-        .btn-secondary:hover {
-            background-color: #d7d7d7;
+
+        .add-row-btn {
+            width: 100%;
+            height: 32px;
+            border: 1px dashed #d5d9e2;
+            border-radius: var(--radius-sm);
+            background: #ffffff;
+            color: #8b8b8b;
+            font-size: 13px;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
         }
-        
-        /* 响应式布局 */
+
+        .add-row-btn:hover {
+            border-color: #c4b5fd;
+            color: var(--purple);
+            background: #fcfaff;
+        }
+
+        .empty-tip {
+            padding: 24px 16px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* ========================================
+           Responsive
+           ======================================== */
         @media (max-width: 768px) {
-            .info-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .back-button {
-                margin-top: 10px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
-            }
-            
-            .form-group {
-                flex: 1 1 100%;
-            }
+            .info-grid { grid-template-columns: 1fr; }
+            .info-item.full-width { grid-column: span 1; }
         }
+
+        /* Apple Style Popconfirm Bubbles */
+        .popover-confirm {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 2000;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: popIn 0.24s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            pointer-events: auto;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .popover-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            text-align: center;
+        }
+        .popover-btns {
+            display: flex;
+            gap: 6px;
+        }
+        .popover-btns button {
+            flex: 1;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pop-btn-cancel { background: rgba(0,0,0,0.05); color: #007aff; }
+        .pop-btn-cancel:hover { background: rgba(0,0,0,0.08); }
+        .pop-btn-delete { background: #ff3b30; color: #fff; }
+        .pop-btn-delete:hover { background: #e0352a; }
+        .popover-confirm::after {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: rgba(255,255,255,0.9) transparent transparent;
+        }
+
+        /* Apple Style Smart Tooltip */
+        .apple-tooltip {
+            position: absolute;
+            background: rgba(45, 45, 47, 0.94);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            max-width: 300px;
+            white-space: normal;
+            word-break: break-all;
+        }
+        .apple-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Ant Design Style Table — Auto Column Sizing */
+        table { table-layout: auto; width: 100%; border-collapse: collapse; }
+        th, td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 10px 14px;
+            max-width: 220px;
+        }
+        .row-index { white-space: nowrap; width: 1%; }
+        .action-col { white-space: nowrap; width: 1%; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="enterprise-info-container">
-            <!-- 基本信息 -->
-            <h2 class="section-title">基本信息</h2>
-            <table class="info-table">
-                <tr>
-                    <th>企业名称</th>
-                    <td>杭州云恒科技有限公司</td>
-                    <th>企业信用代码</th>
-                    <td>91330106MA2CDX7Y3R</td>
-                </tr>
-                <tr>
-                    <th>成立日期</th>
-                    <td>2018-05-23</td>
-                    <th>注册资本</th>
-                    <td>5000万元</td>
-                </tr>
-                <tr>
-                    <th>企业类型</th>
-                    <td>有限责任公司</td>
-                    <th>经营状态</th>
-                    <td>正常营业</td>
-                </tr>
-                <tr>
-                    <th>法定代表人</th>
-                    <td>李明远</td>
-                    <th>联系电话</th>
-                    <td>13987654321</td>
-                </tr>
-                <tr>
-                    <th>经营范围</th>
-                    <td colspan="3">计算机软件开发，人工智能技术服务，大数据处理，云计算服务，信息系统集成，电子商务技术咨询</td>
-                </tr>
-                <tr>
-                    <th>注册地址</th>
-                    <td colspan="3">浙江省杭州市滨江区西兴路1819号智慧产业园B座12层</td>
-                </tr>
-            </table>
-            
-            <!-- 股东数据 -->
-            <h2 class="section-title">股东数据</h2>
-            <table class="info-table">
-                <thead>
-                    <tr>
-                        <th>股东名称</th>
-                        <th>股东类型</th>
-                        <th>持股比例</th>
-                        <th>认缴出资额(万元)</th>
-                        <th>认缴出资日期</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>李明远</td>
-                        <td>自然人</td>
-                        <td>45%</td>
-                        <td>2250</td>
-                        <td>2018-06-15</td>
-                    </tr>
-                    <tr>
-                        <td>王建国</td>
-                        <td>自然人</td>
-                        <td>25%</td>
-                        <td>1250</td>
-                        <td>2018-06-15</td>
-                    </tr>
-                    <tr>
-                        <td>杭州晨光投资有限公司</td>
-                        <td>企业法人</td>
-                        <td>20%</td>
-                        <td>1000</td>
-                        <td>2019-03-20</td>
-                    </tr>
-                    <tr>
-                        <td>浙江科创创业投资基金</td>
-                        <td>有限合伙企业</td>
-                        <td>10%</td>
-                        <td>500</td>
-                        <td>2020-08-12</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <!-- 企业对公账户流水 -->
+    <div class="page">
+        <!-- 基本信息 -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">基本信息</h2>
+                <div class="section-actions" id="basicInfoActions"></div>
+            </div>
+            <div class="info-grid" id="basicInfoContainer"></div>
+        </section>
+
+        <!-- 股东数据 -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">股东数据</h2>
+                <div class="section-actions" id="shareholderActions"></div>
+            </div>
+            <div class="table-shell">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="row-index">序号</th>
+                                <th>股东名称</th>
+                                <th>股东类型</th>
+                                <th>持股比例</th>
+                                <th>认缴出资额(万元)</th>
+                                <th>认缴出资日期</th>
+                                <th class="action-col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shareholderTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="add-row-wrap" id="shareholderAddRowWrap" hidden>
+                    <button class="add-row-btn" type="button" id="addShareholderRowBtn">＋ 添加一行数据</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 企业对公账户流水 -->
+        <section class="section-card">
             <div class="section-header">
                 <h2 class="section-title">企业对公账户流水</h2>
-                <button class="add-button" id="addAccountBtn">添加账户</button>
+                <div class="section-actions" id="accountActions"></div>
             </div>
-            <table class="info-table" id="accountTable">
-                <thead>
-                    <tr>
-                        <th>银行名称</th>
-                        <th>银行账户</th>
-                        <th>平均值(万元)</th>
-                        <th>六月流水</th>
-                        <th>五月流水</th>
-                        <th>四月流水</th>
-                        <th>三月流水</th>
-                        <th>二月流水</th>
-                        <th>一月流水</th>
-                        <th>更新时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr data-id="1">
-                        <td>建设银行</td>
-                        <td>3305 0168 8800 0001 234</td>
-                        <td>367.5</td>
-                        <td>425.6</td>
-                        <td>382.3</td>
-                        <td>356.7</td>
-                        <td>345.2</td>
-                        <td>358.9</td>
-                        <td>336.3</td>
-                        <td>2023-07-05</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                    <tr data-id="2">
-                        <td>工商银行</td>
-                        <td>1202 0215 0901 2345 678</td>
-                        <td>215.8</td>
-                        <td>245.3</td>
-                        <td>228.7</td>
-                        <td>205.6</td>
-                        <td>193.4</td>
-                        <td>210.5</td>
-                        <td>211.3</td>
-                        <td>2023-07-05</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                    <tr data-id="3">
-                        <td>招商银行</td>
-                        <td>5712 3456 7890 1234</td>
-                        <td>128.3</td>
-                        <td>142.8</td>
-                        <td>135.2</td>
-                        <td>126.7</td>
-                        <td>118.5</td>
-                        <td>122.9</td>
-                        <td>123.7</td>
-                        <td>2023-07-04</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <!-- 关联企业情况 -->
+            <div class="table-shell">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="row-index">序号</th>
+                                <th>银行名称</th>
+                                <th>银行账户</th>
+                                <th>平均值(万元)</th>
+                                <th>六月流水</th>
+                                <th>五月流水</th>
+                                <th>四月流水</th>
+                                <th>三月流水</th>
+                                <th>二月流水</th>
+                                <th>一月流水</th>
+                                <th>更新时间</th>
+                                <th class="action-col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="add-row-wrap" id="accountAddRowWrap" hidden>
+                    <button class="add-row-btn" type="button" id="addAccountRowBtn">＋ 添加一行数据</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关联企业情况 -->
+        <section class="section-card">
             <div class="section-header">
                 <h2 class="section-title">关联企业情况</h2>
-                <button class="add-button" id="addCompanyBtn">添加企业</button>
+                <div class="section-actions" id="companyActions"></div>
             </div>
-            <table class="info-table" id="companyTable">
-                <thead>
-                    <tr>
-                        <th>关联企业名称</th>
-                        <th>行业类型</th>
-                        <th>成立日期</th>
-                        <th>注册资本</th>
-                        <th>实际控制人</th>
-                        <th>控制人关系</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr data-id="1">
-                        <td>杭州数智信息技术有限公司</td>
-                        <td>软件和信息技术服务</td>
-                        <td>2017-03-18</td>
-                        <td>1000万元</td>
-                        <td>李明远</td>
-                        <td>直接控股</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                    <tr data-id="2">
-                        <td>浙江云极大数据科技有限公司</td>
-                        <td>大数据服务</td>
-                        <td>2019-08-25</td>
-                        <td>2000万元</td>
-                        <td>李明远</td>
-                        <td>间接控股</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                    <tr data-id="3">
-                        <td>杭州智联物联网科技有限公司</td>
-                        <td>物联网技术</td>
-                        <td>2020-05-12</td>
-                        <td>1500万元</td>
-                        <td>王建国</td>
-                        <td>亲属关系</td>
-                        <td>
-                            <button class="edit-btn">修改</button>
-                            <button class="save-btn">保存</button>
-                            <button class="cancel-btn">取消</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- 添加账户模态框 -->
-    <div id="accountModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">添加账户信息</h3>
-                <span class="close" id="closeAccountModal">&times;</span>
+            <div class="table-shell">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="row-index">序号</th>
+                                <th>关联企业名称</th>
+                                <th>行业类型</th>
+                                <th>成立日期</th>
+                                <th>注册资本</th>
+                                <th>实际控制人</th>
+                                <th>控制人关系</th>
+                                <th class="action-col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="companyTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="add-row-wrap" id="companyAddRowWrap" hidden>
+                    <button class="add-row-btn" type="button" id="addCompanyRowBtn">＋ 添加一行数据</button>
+                </div>
             </div>
-            <form id="accountForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">银行名称</label>
-                        <input type="text" class="form-control" name="bankName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">银行账户</label>
-                        <input type="text" class="form-control" name="accountNumber" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">平均值(万元)</label>
-                        <input type="number" step="0.1" class="form-control" name="averageValue" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">六月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="june">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">五月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="may">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">四月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="april">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">三月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="march">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">二月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="february">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">一月流水</label>
-                        <input type="number" step="0.1" class="form-control" name="january">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelAccountBtn">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
-        </div>
+        </section>
     </div>
-    
-    <!-- 添加关联企业模态框 -->
-    <div id="companyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">添加关联企业</h3>
-                <span class="close" id="closeCompanyModal">&times;</span>
-            </div>
-            <form id="companyForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">关联企业名称</label>
-                        <input type="text" class="form-control" name="companyName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">行业类型</label>
-                        <input type="text" class="form-control" name="industryType" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">成立日期</label>
-                        <input type="date" class="form-control" name="establishDate" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">注册资本</label>
-                        <input type="text" class="form-control" name="registeredCapital" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">实际控制人</label>
-                        <input type="text" class="form-control" name="controller" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">控制人关系</label>
-                        <select class="form-control" name="relationship" required>
-                            <option value="">请选择关系</option>
-                            <option value="直接控股">直接控股</option>
-                            <option value="间接控股">间接控股</option>
-                            <option value="亲属关系">亲属关系</option>
-                            <option value="其他关系">其他关系</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelCompanyBtn">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('企业基本信息页面加载完成');
+        document.addEventListener("DOMContentLoaded", function () {
+            const text = {
+                edit: "编辑",
+                save: "保存",
+                cancel: "取消",
+                emptyShareholder: "暂无股东数据",
+                emptyAccount: "暂无流水数据",
+                emptyCompany: "暂无关联企业数据"
+            };
+
+            const initialBasicInfo = {
+                name: "杭州云恒科技有限公司",
+                creditCode: "91330106MA2CDX7Y3R",
+                establishDate: "2018-05-23",
+                capital: "5000万元",
+                type: "有限责任公司",
+                status: "正常营业",
+                legalPerson: "李明远",
+                phone: "13987654321",
+                scope: "计算机软件开发，人工智能技术服务，大数据处理，云计算服务，信息系统集成，电子商务技术咨询",
+                address: "浙江省杭州市滨江区西兴路1819号智慧产业园B座12层"
+            };
+
+            const initialShareholders = [
+                { id: 1, name: "李明远", type: "自然人", ratio: "45%", amount: "2250", date: "2018-06-15" },
+                { id: 2, name: "王建国", type: "自然人", ratio: "25%", amount: "1250", date: "2018-06-15" },
+                { id: 3, name: "杭州晨光投资有限公司", type: "企业法人", ratio: "20%", amount: "1000", date: "2019-03-20" },
+                { id: 4, name: "浙江科创创业投资基金", type: "有限合伙企业", ratio: "10%", amount: "500", date: "2020-08-12" }
+            ];
+
+            const initialAccounts = [
+                { id: 1, bank: "建设银行", account: "3305 0168 8800 0001 234", avg: "367.5", m6: "425.6", m5: "382.3", m4: "356.7", m3: "345.2", m2: "358.9", m1: "336.3", date: "2023-07-05" },
+                { id: 2, bank: "工商银行", account: "1202 0215 0901 2345 678", avg: "215.8", m6: "245.3", m5: "228.7", m4: "205.6", m3: "193.4", m2: "210.5", m1: "211.3", date: "2023-07-05" },
+                { id: 3, bank: "招商银行", account: "5712 3456 7890 1234", avg: "128.3", m6: "142.8", m5: "135.2", m4: "126.7", m3: "118.5", m2: "122.9", m1: "123.7", date: "2023-07-04" }
+            ];
+
+            const initialCompanies = [
+                { id: 1, name: "杭州数智信息技术有限公司", industry: "软件和信息技术服务", date: "2017-03-18", capital: "1000万元", controller: "李明远", relationship: "直接控股" },
+                { id: 2, name: "浙江云极大数据科技有限公司", industry: "大数据服务", date: "2019-08-25", capital: "2000万元", controller: "李明远", relationship: "间接控股" },
+                { id: 3, name: "杭州智联物联网科技有限公司", industry: "物联网技术", date: "2020-05-12", capital: "1500万元", controller: "王建国", relationship: "亲属关系" }
+            ];
+
+            const state = {
+                basicInfo: { data: clone(initialBasicInfo), editing: false, snapshot: null },
+                shareholder: { items: clone(initialShareholders), editing: false, snapshot: null },
+                account: { items: clone(initialAccounts), editing: false, snapshot: null },
+                company: { items: clone(initialCompanies), editing: false, snapshot: null }
+            };
+
+            const basicInfoContainer = document.getElementById("basicInfoContainer");
+            const shareholderTableBody = document.getElementById("shareholderTableBody");
+            const accountTableBody = document.getElementById("accountTableBody");
+            const companyTableBody = document.getElementById("companyTableBody");
             
-            // 添加表格行的悬停效果
-            const tableRows = document.querySelectorAll('.info-table tbody tr');
-            tableRows.forEach(row => {
-                row.addEventListener('mouseenter', function() {
-                    this.style.backgroundColor = 'rgba(101, 62, 179, 0.05)';
-                });
-                
-                row.addEventListener('mouseleave', function() {
-                    if (!this.classList.contains('editing')) {
-                        this.style.backgroundColor = '';
-                    }
-                });
-            });
-            
-            // 获取模态框和按钮元素
-            const accountModal = document.getElementById('accountModal');
-            const companyModal = document.getElementById('companyModal');
-            const addAccountBtn = document.getElementById('addAccountBtn');
-            const addCompanyBtn = document.getElementById('addCompanyBtn');
-            const closeAccountModal = document.getElementById('closeAccountModal');
-            const closeCompanyModal = document.getElementById('closeCompanyModal');
-            const cancelAccountBtn = document.getElementById('cancelAccountBtn');
-            const cancelCompanyBtn = document.getElementById('cancelCompanyBtn');
-            
-            // 打开对公账户模态框
-            addAccountBtn.addEventListener('click', function() {
-                accountModal.style.display = 'block';
-                document.getElementById('accountForm').reset();
-            });
-            
-            // 打开关联企业模态框
-            addCompanyBtn.addEventListener('click', function() {
-                companyModal.style.display = 'block';
-                document.getElementById('companyForm').reset();
-            });
-            
-            // 关闭模态框
-            closeAccountModal.addEventListener('click', function() {
-                accountModal.style.display = 'none';
-            });
-            
-            closeCompanyModal.addEventListener('click', function() {
-                companyModal.style.display = 'none';
-            });
-            
-            cancelAccountBtn.addEventListener('click', function() {
-                accountModal.style.display = 'none';
-            });
-            
-            cancelCompanyBtn.addEventListener('click', function() {
-                companyModal.style.display = 'none';
-            });
-            
-            // 点击模态框外部关闭
-            window.addEventListener('click', function(event) {
-                if (event.target === accountModal) {
-                    accountModal.style.display = 'none';
-                }
-                if (event.target === companyModal) {
-                    companyModal.style.display = 'none';
-                }
-            });
-            
-            // 提交对公账户表单
-            document.getElementById('accountForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this);
-                const bankName = formData.get('bankName');
-                const accountNumber = formData.get('accountNumber');
-                const averageValue = formData.get('averageValue');
-                const june = formData.get('june') || '-';
-                const may = formData.get('may') || '-';
-                const april = formData.get('april') || '-';
-                const march = formData.get('march') || '-';
-                const february = formData.get('february') || '-';
-                const january = formData.get('january') || '-';
-                
-                const today = new Date();
-                const updateDate = today.getFullYear() + '-' + 
-                                  String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                                  String(today.getDate()).padStart(2, '0');
-                
-                // 创建新行
-                const newRow = document.createElement('tr');
-                newRow.dataset.id = Date.now(); // 使用时间戳作为临时ID
-                newRow.innerHTML = `
-                    <td>${bankName}</td>
-                    <td>${accountNumber}</td>
-                    <td>${averageValue}</td>
-                    <td>${june}</td>
-                    <td>${may}</td>
-                    <td>${april}</td>
-                    <td>${march}</td>
-                    <td>${february}</td>
-                    <td>${january}</td>
-                    <td>${updateDate}</td>
-                    <td>
-                        <button class="edit-btn">修改</button>
-                        <button class="save-btn">保存</button>
-                        <button class="cancel-btn">取消</button>
-                    </td>
-                `;
-                
-                // 添加到表格
-                document.querySelector('#accountTable tbody').appendChild(newRow);
-                
-                // 为新行添加编辑功能
-                initEditFunctionality(newRow);
-                
-                // 关闭模态框
-                accountModal.style.display = 'none';
-                alert('添加成功！');
-            });
-            
-            // 提交关联企业表单
-            document.getElementById('companyForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this);
-                const companyName = formData.get('companyName');
-                const industryType = formData.get('industryType');
-                const establishDate = formData.get('establishDate');
-                const registeredCapital = formData.get('registeredCapital');
-                const controller = formData.get('controller');
-                const relationship = formData.get('relationship');
-                
-                // 创建新行
-                const newRow = document.createElement('tr');
-                newRow.dataset.id = Date.now(); // 使用时间戳作为临时ID
-                newRow.innerHTML = `
-                    <td>${companyName}</td>
-                    <td>${industryType}</td>
-                    <td>${establishDate}</td>
-                    <td>${registeredCapital}</td>
-                    <td>${controller}</td>
-                    <td>${relationship}</td>
-                    <td>
-                        <button class="edit-btn">修改</button>
-                        <button class="save-btn">保存</button>
-                        <button class="cancel-btn">取消</button>
-                    </td>
-                `;
-                
-                // 添加到表格
-                document.querySelector('#companyTable tbody').appendChild(newRow);
-                
-                // 为新行添加编辑功能
-                initEditFunctionality(newRow);
-                
-                // 关闭模态框
-                companyModal.style.display = 'none';
-                alert('添加成功！');
-            });
-            
-            // 初始化现有行的编辑功能
-            const allRows = document.querySelectorAll('#accountTable tbody tr, #companyTable tbody tr');
-            allRows.forEach(row => {
-                initEditFunctionality(row);
-            });
-            
-            // 初始化行编辑功能
-            function initEditFunctionality(row) {
-                const editBtn = row.querySelector('.edit-btn');
-                const saveBtn = row.querySelector('.save-btn');
-                const cancelBtn = row.querySelector('.cancel-btn');
-                
-                // 点击修改按钮
-                editBtn.addEventListener('click', function() {
-                    // 进入编辑状态
-                    row.classList.add('editing');
-                    row.style.backgroundColor = 'rgba(101, 62, 179, 0.05)';
-                    
-                    // 显示保存和取消按钮
-                    editBtn.style.display = 'none';
-                    saveBtn.style.display = 'inline-block';
-                    cancelBtn.style.display = 'inline-block';
-                    
-                    // 保存原数据
-                    const cells = row.querySelectorAll('td:not(:last-child)');
-                    cells.forEach(cell => {
-                        cell.dataset.originalValue = cell.textContent;
-                        cell.classList.add('editable-cell');
-                        
-                        // 如果是关联企业的控制人关系字段，提供下拉选择
-                        if (row.parentElement.parentElement.id === 'companyTable' && 
-                            cell === cells[cells.length - 1]) {
-                            const currentValue = cell.textContent;
-                            cell.innerHTML = `
-                                <select>
-                                    <option value="直接控股" ${currentValue === '直接控股' ? 'selected' : ''}>直接控股</option>
-                                    <option value="间接控股" ${currentValue === '间接控股' ? 'selected' : ''}>间接控股</option>
-                                    <option value="亲属关系" ${currentValue === '亲属关系' ? 'selected' : ''}>亲属关系</option>
-                                    <option value="其他关系" ${currentValue === '其他关系' ? 'selected' : ''}>其他关系</option>
-                                </select>
-                            `;
-                        } else {
-                            cell.innerHTML = `<input type="text" value="${cell.textContent}">`;
-                        }
-                    });
-                });
-                
-                // 点击保存按钮
-                saveBtn.addEventListener('click', function() {
-                    // 获取所有编辑框的值
-                    const cells = row.querySelectorAll('.editable-cell');
-                    cells.forEach(cell => {
-                        const input = cell.querySelector('input') || cell.querySelector('select');
-                        if (input) {
-                            cell.textContent = input.value;
-                        }
-                        cell.classList.remove('editable-cell');
-                    });
-                    
-                    // 退出编辑状态
-                    row.classList.remove('editing');
-                    row.style.backgroundColor = '';
-                    
-                    // 隐藏保存和取消按钮，显示修改按钮
-                    editBtn.style.display = 'inline-block';
-                    saveBtn.style.display = 'none';
-                    cancelBtn.style.display = 'none';
-                    
-                    alert('保存成功！');
-                });
-                
-                // 点击取消按钮
-                cancelBtn.addEventListener('click', function() {
-                    // 恢复原数据
-                    const cells = row.querySelectorAll('.editable-cell');
-                    cells.forEach(cell => {
-                        cell.textContent = cell.dataset.originalValue;
-                        cell.classList.remove('editable-cell');
-                    });
-                    
-                    // 退出编辑状态
-                    row.classList.remove('editing');
-                    row.style.backgroundColor = '';
-                    
-                    // 隐藏保存和取消按钮，显示修改按钮
-                    editBtn.style.display = 'inline-block';
-                    saveBtn.style.display = 'none';
-                    cancelBtn.style.display = 'none';
+            const basicInfoActions = document.getElementById("basicInfoActions");
+            const shareholderActions = document.getElementById("shareholderActions");
+            const accountActions = document.getElementById("accountActions");
+            const companyActions = document.getElementById("companyActions");
+
+            document.getElementById("addShareholderRowBtn").addEventListener("click", () => addRow("shareholder", { name: "", type: "", ratio: "", amount: "", date: "" }));
+            document.getElementById("addAccountRowBtn").addEventListener("click", () => addRow("account", { bank: "", account: "", avg: "", m6: "", m5: "", m4: "", m3: "", m2: "", m1: "", date: "" }));
+            document.getElementById("addCompanyRowBtn").addEventListener("click", () => addRow("company", { name: "", industry: "", date: "", capital: "", controller: "", relationship: "" }));
+
+            setupActionListeners("basicInfo", basicInfoActions);
+            setupActionListeners("shareholder", shareholderActions);
+            setupActionListeners("account", accountActions);
+            setupActionListeners("company", companyActions);
+
+            setupDeleteListeners("shareholder", shareholderTableBody);
+            setupDeleteListeners("account", accountTableBody);
+            setupDeleteListeners("company", companyTableBody);
+
+            function clone(data) {
+                return JSON.parse(JSON.stringify(data));
+            }
+
+            function escapeHtml(value) {
+                return String(value == null ? "" : value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+            }
+
+            function setupActionListeners(sectionName, container) {
+                container.addEventListener("click", function (event) {
+                    const action = event.target.dataset.action;
+                    if (action === "edit") enterSectionEdit(sectionName);
+                    else if (action === "cancel") cancelSectionEdit(sectionName);
+                    else if (action === "save") saveSectionEdit(sectionName);
                 });
             }
+
+            function setupDeleteListeners(sectionName, container) {
+                container.addEventListener("click", function (event) {
+                    const button = event.target.closest("[data-delete]");
+                    if (button) {
+                        const index = Number(button.dataset.delete);
+                        const names = { shareholder: "股东", account: "账户", company: "关联企业" };
+                        showConfirm(`确认删除${names[sectionName] || "该项"}？`, "此操作将永久移除数据且不可恢复，是否确定？", "立即删除", true, () => {
+                            deleteRow(sectionName, index);
+                        });
+                    }
+                });
+            }
+
+            function syncBasicInfoFromInputs() {
+                document.querySelectorAll("[data-section='basicInfo']").forEach(el => {
+                    const field = el.dataset.field;
+                    state.basicInfo.data[field] = el.value.trim();
+                });
+            }
+
+            function syncTableFromInputs(sectionName) {
+                const rows = state[sectionName].items;
+                document.querySelectorAll("[data-section='" + sectionName + "']").forEach(el => {
+                    const index = Number(el.dataset.index);
+                    const field = el.dataset.field;
+                    if (rows[index]) {
+                        rows[index][field] = el.value.trim();
+                    }
+                });
+            }
+
+            function syncEditingSections() {
+                if (state.basicInfo.editing) syncBasicInfoFromInputs();
+                if (state.shareholder.editing) syncTableFromInputs("shareholder");
+                if (state.account.editing) syncTableFromInputs("account");
+                if (state.company.editing) syncTableFromInputs("company");
+            }
+
+            function renumberItems(items) {
+                items.forEach((item, index) => { item.id = index + 1; });
+            }
+
+            function renderActionButtons(sectionName) {
+                const targets = {
+                    basicInfo: basicInfoActions,
+                    shareholder: shareholderActions,
+                    account: accountActions,
+                    company: companyActions
+                };
+                const target = targets[sectionName];
+                if (state[sectionName].editing) {
+                    target.innerHTML =
+                        `<button class="btn btn-secondary" type="button" data-action="cancel">${text.cancel}</button>` +
+                        `<button class="btn btn-primary" type="button" data-action="save">${text.save}</button>`;
+                } else {
+                    target.innerHTML = `<button class="btn btn-primary" type="button" data-action="edit">${text.edit}</button>`;
+                }
+            }
+
+            function createBasicInfoItem(label, field, isFullWidth = false) {
+                const value = escapeHtml(state.basicInfo.data[field]);
+                const wrapperClass = isFullWidth ? "info-item full-width" : "info-item";
+                
+                if (state.basicInfo.editing) {
+                    let typeAttr = "text";
+                    let inputMode = "text";
+                    let auto = "off";
+                    
+                    if (field === "phone") { typeAttr = "tel"; inputMode = "tel"; auto = "tel"; }
+                    if (field === "establishDate") { typeAttr = "date"; }
+                    if (field === "creditCode") { auto = "organization"; }
+                    if (field === "legalPerson") { auto = "name"; }
+
+                    return `
+                        <div class="${wrapperClass} info-input">
+                            <div class="info-label">${label}</div>
+                            <div class="info-input">
+                                <input type="${typeAttr}" data-field="${field}" data-section="basicInfo" value="${value}" autocomplete="${auto}" inputmode="${inputMode}" placeholder="请输入${label}…">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="${wrapperClass}">
+                            <div class="info-label">${label}</div>
+                            <div class="info-value">${value || "-"}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            function renderBasicInfo() {
+                renderActionButtons("basicInfo");
+                basicInfoContainer.className = state.basicInfo.editing ? "info-grid editing" : "info-grid";
+                basicInfoContainer.innerHTML = [
+                    createBasicInfoItem("企业名称", "name"),
+                    createBasicInfoItem("企业信用代码", "creditCode"),
+                    createBasicInfoItem("成立日期", "establishDate"),
+                    createBasicInfoItem("注册资本", "capital"),
+                    createBasicInfoItem("企业类型", "type"),
+                    createBasicInfoItem("经营状态", "status"),
+                    createBasicInfoItem("法定代表人", "legalPerson"),
+                    createBasicInfoItem("联系电话", "phone"),
+                    createBasicInfoItem("经营范围", "scope", true),
+                    createBasicInfoItem("注册地址", "address", true)
+                ].join("");
+            }
+
+            function renderTable(sectionName, tableBody, emptyText, renderCols) {
+                renderActionButtons(sectionName);
+                const addRowWrap = document.getElementById(`${sectionName}AddRowWrap`);
+                if (addRowWrap) addRowWrap.hidden = !state[sectionName].editing;
+                
+                const shell = tableBody.closest(".table-shell");
+                if (shell) {
+                    shell.classList.toggle("is-editing", state[sectionName].editing);
+                }
+
+                tableBody.innerHTML = "";
+
+                if (!state[sectionName].items.length) {
+                    tableBody.innerHTML = `<tr><td colspan="15" class="empty-tip">${emptyText}</td></tr>`;
+                    return;
+                }
+
+                state[sectionName].items.forEach((item, index) => {
+                    const row = document.createElement("tr");
+                    row.className = state[sectionName].editing ? "edit-row" : "view-row";
+                    
+                    const cols = renderCols(item, index, state[sectionName].editing);
+                    
+                    if (state[sectionName].editing) {
+                        row.innerHTML = `<td class="row-index">${item.id}</td>` + cols +
+                            `<td class="action-col"><button class="delete-btn" type="button" data-delete="${index}">&times;</button></td>`;
+                    } else {
+                        row.innerHTML = `<td class="row-index">${item.id}</td>` + cols + `<td class="action-col"></td>`;
+                    }
+
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function renderShareholders() {
+                renderTable("shareholder", shareholderTableBody, text.emptyShareholder, (item, index, editing) => {
+                    if (editing) {
+                        return `
+                            <td class="input-cell"><input data-field="name" data-index="${index}" data-section="shareholder" value="${escapeHtml(item.name)}"></td>
+                            <td class="input-cell"><input data-field="type" data-index="${index}" data-section="shareholder" value="${escapeHtml(item.type)}"></td>
+                            <td class="input-cell"><input data-field="ratio" data-index="${index}" data-section="shareholder" value="${escapeHtml(item.ratio)}"></td>
+                            <td class="input-cell"><input data-field="amount" data-index="${index}" data-section="shareholder" value="${escapeHtml(item.amount)}"></td>
+                            <td class="input-cell"><input data-field="date" data-index="${index}" data-section="shareholder" value="${escapeHtml(item.date)}"></td>
+                        `;
+                    }
+                    return `
+                        <td>${escapeHtml(item.name)}</td>
+                        <td>${escapeHtml(item.type)}</td>
+                        <td>${escapeHtml(item.ratio)}</td>
+                        <td>${escapeHtml(item.amount)}</td>
+                        <td>${escapeHtml(item.date)}</td>
+                    `;
+                });
+            }
+
+            function renderAccounts() {
+                renderTable("account", accountTableBody, text.emptyAccount, (item, index, editing) => {
+                    if (editing) {
+                        return `
+                            <td class="input-cell"><input data-field="bank" data-index="${index}" data-section="account" value="${escapeHtml(item.bank)}"></td>
+                            <td class="input-cell"><input data-field="account" data-index="${index}" data-section="account" value="${escapeHtml(item.account)}"></td>
+                            <td class="input-cell"><input data-field="avg" data-index="${index}" data-section="account" value="${escapeHtml(item.avg)}"></td>
+                            <td class="input-cell"><input data-field="m6" data-index="${index}" data-section="account" value="${escapeHtml(item.m6)}"></td>
+                            <td class="input-cell"><input data-field="m5" data-index="${index}" data-section="account" value="${escapeHtml(item.m5)}"></td>
+                            <td class="input-cell"><input data-field="m4" data-index="${index}" data-section="account" value="${escapeHtml(item.m4)}"></td>
+                            <td class="input-cell"><input data-field="m3" data-index="${index}" data-section="account" value="${escapeHtml(item.m3)}"></td>
+                            <td class="input-cell"><input data-field="m2" data-index="${index}" data-section="account" value="${escapeHtml(item.m2)}"></td>
+                            <td class="input-cell"><input data-field="m1" data-index="${index}" data-section="account" value="${escapeHtml(item.m1)}"></td>
+                            <td class="input-cell"><input data-field="date" data-index="${index}" data-section="account" value="${escapeHtml(item.date)}"></td>
+                        `;
+                    }
+                    return `
+                        <td>${escapeHtml(item.bank)}</td>
+                        <td>${escapeHtml(item.account)}</td>
+                        <td>${escapeHtml(item.avg)}</td>
+                        <td>${escapeHtml(item.m6)}</td>
+                        <td>${escapeHtml(item.m5)}</td>
+                        <td>${escapeHtml(item.m4)}</td>
+                        <td>${escapeHtml(item.m3)}</td>
+                        <td>${escapeHtml(item.m2)}</td>
+                        <td>${escapeHtml(item.m1)}</td>
+                        <td>${escapeHtml(item.date)}</td>
+                    `;
+                });
+            }
+
+            function renderCompanies() {
+                renderTable("company", companyTableBody, text.emptyCompany, (item, index, editing) => {
+                    if (editing) {
+                        return `
+                            <td class="input-cell"><input data-field="name" data-index="${index}" data-section="company" value="${escapeHtml(item.name)}"></td>
+                            <td class="input-cell"><input data-field="industry" data-index="${index}" data-section="company" value="${escapeHtml(item.industry)}"></td>
+                            <td class="input-cell"><input data-field="date" data-index="${index}" data-section="company" value="${escapeHtml(item.date)}"></td>
+                            <td class="input-cell"><input data-field="capital" data-index="${index}" data-section="company" value="${escapeHtml(item.capital)}"></td>
+                            <td class="input-cell"><input data-field="controller" data-index="${index}" data-section="company" value="${escapeHtml(item.controller)}"></td>
+                            <td class="input-cell"><input data-field="relationship" data-index="${index}" data-section="company" value="${escapeHtml(item.relationship)}"></td>
+                        `;
+                    }
+                    return `
+                        <td>${escapeHtml(item.name)}</td>
+                        <td>${escapeHtml(item.industry)}</td>
+                        <td>${escapeHtml(item.date)}</td>
+                        <td>${escapeHtml(item.capital)}</td>
+                        <td>${escapeHtml(item.controller)}</td>
+                        <td>${escapeHtml(item.relationship)}</td>
+                    `;
+                });
+            }
+
+            function enterSectionEdit(sectionName) {
+                if (state[sectionName].editing) return;
+                syncEditingSections();
+                if (sectionName === "basicInfo") {
+                    state.basicInfo.snapshot = clone(state.basicInfo.data);
+                } else {
+                    state[sectionName].snapshot = clone(state[sectionName].items);
+                }
+                state[sectionName].editing = true;
+                renderAll();
+            }
+
+            function cancelSectionEdit(sectionName) {
+                if (!state[sectionName].editing) return;
+                if (sectionName === "basicInfo") {
+                    state.basicInfo.data = clone(state.basicInfo.snapshot || initialBasicInfo);
+                } else {
+                    state[sectionName].items = clone(state[sectionName].snapshot || []);
+                }
+                state[sectionName].snapshot = null;
+                state[sectionName].editing = false;
+                renderAll();
+            }
+
+            function saveSectionEdit(sectionName) {
+                if (!state[sectionName].editing) return;
+                if (sectionName === "basicInfo") {
+                    syncBasicInfoFromInputs();
+                } else {
+                    syncTableFromInputs(sectionName);
+                    renumberItems(state[sectionName].items);
+                }
+                state[sectionName].snapshot = null;
+                state[sectionName].editing = false;
+                renderAll();
+            }
+
+            function setupDeleteListeners(sectionName, container) {
+                container.addEventListener("click", function (event) {
+                    const button = event.target.closest("[data-delete]");
+                    if (button) {
+                        const index = Number(button.dataset.delete);
+                        showPopConfirm(button, "确定删除此项吗？", () => {
+                            deleteRow(sectionName, index);
+                        });
+                    }
+                });
+            }
+
+            function showPopConfirm(anchor, title, onConfirm) {
+                const existing = document.querySelector('.popover-confirm');
+                if (existing) existing.remove();
+
+                const pop = document.createElement('div');
+                pop.className = 'popover-confirm';
+                pop.innerHTML = `
+                    <div class="popover-title">${escapeHtml(title)}</div>
+                    <div class="popover-btns">
+                        <button class="pop-btn-cancel">取消</button>
+                        <button class="pop-btn-delete">删除</button>
+                    </div>
+                `;
+                document.body.appendChild(pop);
+
+                const rect = anchor.getBoundingClientRect();
+                const popWidth = 180;
+                
+                // Position logic: Above the anchor, centered horizontally
+                pop.style.top = (rect.top + window.scrollY - 70) + 'px';
+                pop.style.left = (rect.left + window.scrollX - (popWidth / 2) + (rect.width / 2)) + 'px';
+
+                pop.querySelector('.pop-btn-cancel').onclick = (e) => { e.stopPropagation(); pop.remove(); };
+                pop.querySelector('.pop-btn-delete').onclick = (e) => {
+                    e.stopPropagation();
+                    onConfirm();
+                    pop.remove();
+                };
+
+                const closeOnOtherClick = (e) => {
+                    if (!pop.contains(e.target) && !anchor.contains(e.target)) {
+                        pop.remove();
+                        document.removeEventListener('click', closeOnOtherClick);
+                    }
+                };
+                setTimeout(() => document.addEventListener('click', closeOnOtherClick), 10);
+            }
+
+            function addRow(sectionName, newRowData) {
+                syncTableFromInputs(sectionName);
+                state[sectionName].items.push({
+                    id: state[sectionName].items.length + 1,
+                    ...newRowData
+                });
+                renderAll();
+            }
+
+            function deleteRow(sectionName, index) {
+                syncTableFromInputs(sectionName);
+                state[sectionName].items.splice(index, 1);
+                renumberItems(state[sectionName].items);
+                renderAll();
+            }
+
+            function renderAll() {
+                syncEditingSections();
+                renderBasicInfo();
+                renderShareholders();
+                renderAccounts();
+                renderCompanies();
+            }
+
+            renderAll();
+
+            // Global Apple Tooltip Logic
+            (function initAppleTooltip() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'apple-tooltip';
+                document.body.appendChild(tooltip);
+
+                document.addEventListener('mouseover', (e) => {
+                    const el = e.target;
+                    // Check if truncated
+                    if (el.scrollWidth > el.clientWidth) {
+                        tooltip.textContent = el.innerText || el.value;
+                        tooltip.classList.add('visible');
+                        
+                        const updatePos = (me) => {
+                            tooltip.style.left = (me.pageX + 10) + 'px';
+                            tooltip.style.top = (me.pageY + 10) + 'px';
+                        };
+                        updatePos(e);
+                        el.onmousemove = updatePos;
+                    }
+                });
+
+                document.addEventListener('mouseout', (e) => {
+                    tooltip.classList.remove('visible');
+                    if (e.target.onmousemove) e.target.onmousemove = null;
+                });
+            })();
         });
     </script>
+
 </body>
-</html> 
+</html>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,20 +7,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --page-bg: #f5f7fb;
+            --page-bg: #f8fafc;
             --card-bg: #ffffff;
             --line: #e8edf5;
             --line-strong: #dbe3ef;
             --text: #1f2a44;
             --muted: #7d8aa6;
-            --primary: #7c63ff;
-            --primary-soft: rgba(124, 99, 255, 0.12);
+            --primary: #8b5cf6;
+            --primary-soft: rgba(139, 92, 246, 0.12);
             --orange: #ff9d3d;
             --green: #40c27a;
             --red: #ff5c70;
             --cyan: #36c7d0;
             --shadow: 0 10px 28px rgba(20, 35, 90, 0.08);
-            --radius: 14px;
+            --radius: 20px;
         }
 
         * {
@@ -31,13 +31,13 @@
             margin: 0;
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
             color: var(--text);
-            background: linear-gradient(180deg, #f8faff 0%, var(--page-bg) 100%);
+            background: var(--page-bg);
         }
 
         .page {
-            max-width: 1420px;
+            max-width: 1160px;
             margin: 0 auto;
-            padding: 22px 24px 42px;
+            padding: 20px;
         }
 
         .content {
@@ -49,9 +49,9 @@
 
         .section {
             background: var(--card-bg);
-            border: 1px solid var(--line);
+            border: none;
             border-radius: var(--radius);
-            box-shadow: 0 8px 24px rgba(31, 42, 68, 0.06);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
             padding: 22px;
         }
 
@@ -209,9 +209,31 @@
             color: #5f6f8f;
         }
 
+        /* Apple Style Smart Tooltip */
+        .apple-tooltip {
+            position: absolute;
+            background: rgba(45, 45, 47, 0.94);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            max-width: 300px;
+            white-space: normal;
+            word-break: break-all;
+        }
+        .apple-tooltip.visible { opacity: 1; }
+
         .table-wrap {
             margin-top: 16px;
-            overflow-x: auto;
+            overflow: hidden;
             border: 1px solid var(--line);
             border-radius: 12px;
             background: #fff;
@@ -220,16 +242,21 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 780px;
+            table-layout: fixed;
         }
 
         th,
         td {
-            padding: 12px 14px;
+            height: 48px;
+            padding: 0 16px;
             border-bottom: 1px solid var(--line);
             text-align: left;
             font-size: 13px;
-            vertical-align: top;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-variant-numeric: tabular-nums;
         }
 
         thead th {
@@ -919,6 +946,30 @@
 
         renderDiamondWarningTable();
         renderCalendar();
+
+        // Global Apple Tooltip Logic
+        (function initAppleTooltip() {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'apple-tooltip';
+            document.body.appendChild(tooltip);
+            document.addEventListener('mouseover', (e) => {
+                const el = e.target.closest('td') || e.target;
+                if (el.scrollWidth > el.clientWidth) {
+                    tooltip.textContent = el.innerText || el.value;
+                    tooltip.classList.add('visible');
+                    const updatePos = (me) => {
+                        tooltip.style.left = (me.pageX + 10) + 'px';
+                        tooltip.style.top = (me.pageY + 10) + 'px';
+                    };
+                    updatePos(e);
+                    el.onmousemove = updatePos;
+                }
+            });
+            document.addEventListener('mouseout', (e) => {
+                tooltip.classList.remove('visible');
+                if (e.target.onmousemove) e.target.onmousemove = null;
+            });
+        })();
     </script>
 </body>
 </html>
