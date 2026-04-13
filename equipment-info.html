@@ -400,5 +400,24 @@
         });
     </script>
     
+
+    <script>
+        // 自动向父级发送当前高度，解决跨域/本地双击时的 iframe 截断问题
+        function sendHeightToParent() {
+            try {
+                const height = Math.max(
+                    document.body.scrollHeight, 
+                    document.documentElement.scrollHeight,
+                    document.body.offsetHeight
+                );
+                window.parent.postMessage({ type: 'resizeIframe', height: height }, '*');
+            } catch (e) {}
+        }
+        window.addEventListener('load', sendHeightToParent);
+        if (window.ResizeObserver) {
+            new ResizeObserver(sendHeightToParent).observe(document.body);
+        }
+    </script>
+
 </body>
 </html>

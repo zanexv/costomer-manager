@@ -80,14 +80,29 @@
             border-bottom: 1px solid var(--border);
             margin-bottom: 0;
             overflow-x: auto;
+            overflow-y: hidden; /* 明确杜绝偶发性上下滑动的情况 */
+            height: 56px; /* 锁死容器高度彻底固定 */
             background: var(--surface);
             border-radius: var(--radius) var(--radius) 0 0;
             padding: 0 8px;
             box-shadow: var(--shadow);
+            position: sticky; /* 赠送的极佳体验：长页滚动时 Tab 导航条自动吸顶防丢失 */
+            top: 0;
+            z-index: 100;
+        }
+
+        /* 横向滚动的苹果风滚动条（通常针对手机端横滑） */
+        .tab-navigation::-webkit-scrollbar {
+            height: 4px;
+        }
+        .tab-navigation::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
 
         .tab {
-            padding: 14px 20px;
+            padding: 0 20px;
+            height: 100%; /* 使其纵向撑满固定的 56px */
             cursor: pointer;
             position: relative;
             font-size: 14px;
@@ -96,6 +111,15 @@
             white-space: nowrap;
             transition: color 0.15s ease, font-weight 0.15s ease;
             letter-spacing: -0.1px;
+            display: flex;
+            align-items: center; /* 文本图标垂直到容器居中 */
+            gap: 6px;
+        }
+
+        .tab i {
+            font-size: 16px;
+            opacity: 0.8;
+            transition: color 0.15s ease, opacity 0.15s ease;
         }
 
         .tab:hover:not(.active) {
@@ -106,6 +130,11 @@
             color: var(--text-primary);
             font-weight: 600;
         }
+        
+        .tab.active i {
+            color: var(--accent); /* 核心主色 - 紫色 */
+            opacity: 1;
+        }
 
         .tab.active::after {
             content: '';
@@ -114,16 +143,17 @@
             left: 16px;
             right: 16px;
             height: 2px;
-            background: var(--text-primary);
+            background: var(--accent);
             border-radius: 2px 2px 0 0;
         }
 
-        /* iframe */
+        /* iframe container */
         .iframe-container {
             width: 100%;
-            height: 800px;
+            /* 不再写死固定的死高度，交给JS动态自适应。给一个 min-height 避免首次渲染坍塌 */
+            min-height: 800px;
             border: none;
-            overflow: hidden;
+            display: block;
             background: #f8fafc;
             border-radius: 0 0 var(--radius) var(--radius);
         }
@@ -131,8 +161,8 @@
         /* Responsive */
         @media (max-width: 768px) {
             .container { padding: 16px 16px 40px; }
-            .tab { padding: 12px 16px; font-size: 13px; }
-            .iframe-container { height: 600px; }
+            .tab { padding: 12px 14px; font-size: 13px; }
+            .iframe-container { min-height: 600px; }
             .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
             .page-title { font-size: 20px; }
         }
@@ -151,6 +181,8 @@
     </div>
     
     <script>
+        let iframeObserver = null;
+
         /**
          * 页面加载时执行初始化
          */
@@ -170,73 +202,122 @@
         function loadCustomerDetail(customerId) {
             const container = document.getElementById('customer-detail-content');
             
-            // 创建客户详情内容
-            container.innerHTML = createCustomerDetailContent(customerId);
+            // 恢复使用顶部 Tab 布局 (方案 1)
+            container.innerHTML = createCustomerDetailTabs(customerId);
             
-            // 初始化标签页
+            // 初始化导航
             initCustomerDetailTabs();
             
-            // 默认显示企业基本信息页面
+            // 默认显示第一个页面
             loadIframePage('enterprise-basic-info.html');
         }
         
         /**
-         * 创建客户详情内容
-         * @param {string} customerId - 客户ID
-         * @returns {string} HTML内容
+         * 创建客户详情的 Tab 标签栏结构
          */
-        function createCustomerDetailContent(customerId) {
+        function createCustomerDetailTabs(customerId) {
             return `
-                <div class="customer-detail-content">
-                    <!-- 客户信息 -->
-                    <div class="customer-info">
-                        <div class="tab-navigation">
-                            <div class="tab active" data-tab="basic-info" data-page="enterprise-basic-info.html">企业基本信息</div>
-                            <div class="tab" data-tab="business-info" data-page="business-info.html">经营信息</div>
-                            <div class="tab" data-tab="premise-info" data-page="venue-info.html">场地信息</div>
-                            <div class="tab" data-tab="equipment-info" data-page="equipment-info.html">设备信息</div>
-                            <div class="tab" data-tab="vehicle-info" data-page="vehicle-info.html">车辆信息</div>
-                            <div class="tab" data-tab="controller-info" data-page="controller-info.html">实控人信息</div>
+                <div class="customer-info">
+                    <div class="tab-navigation">
+                        <div class="tab active" data-page="enterprise-basic-info.html">
+                            <i class="ph ph-buildings"></i> 企业基本信息
                         </div>
-                        
-                        <!-- iframe 容器 -->
-                        <iframe id="content-iframe" class="iframe-container" src="" frameborder="0"></iframe>
+                        <div class="tab" data-page="business-info.html">
+                            <i class="ph ph-briefcase"></i> 经营信息
+                        </div>
+                        <div class="tab" data-page="venue-info.html">
+                            <i class="ph ph-map-pin"></i> 场地信息
+                        </div>
+                        <div class="tab" data-page="equipment-info.html">
+                            <i class="ph ph-desktop"></i> 设备信息
+                        </div>
+                        <div class="tab" data-page="vehicle-info.html">
+                            <i class="ph ph-car"></i> 车辆信息
+                        </div>
+                        <div class="tab" data-page="controller-info.html">
+                            <i class="ph ph-user-focus"></i> 实控人信息
+                        </div>
                     </div>
+                    
+                    <!-- 主 iframe。防截断修正：移除硬编码的 scrolling="no"，交由 js 根据读取情况动态判断 -->
+                    <iframe id="content-iframe" class="iframe-container" src="" frameborder="0" onload="onIframeLoad(this)"></iframe>
                 </div>
             `;
         }
         
         /**
-         * 初始化客户详情标签页
+         * 初始化标签页点击切换事件
          */
         function initCustomerDetailTabs() {
-            const tabs = document.querySelectorAll('.customer-info .tab');
+            const tabs = document.querySelectorAll('.tab');
             
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // 移除当前激活状态
-                    document.querySelector('.customer-info .tab.active').classList.remove('active');
-                    
-                    // 设置新的激活项
+                    if (this.classList.contains('active')) return;
+                    document.querySelector('.tab.active').classList.remove('active');
                     this.classList.add('active');
                     
-                    // 获取要加载的页面URL
                     const pageUrl = this.getAttribute('data-page');
-                    
-                    // 加载对应的页面到iframe
                     loadIframePage(pageUrl);
                 });
             });
         }
         
         /**
-         * 加载页面到iframe
-         * @param {string} pageUrl - 页面URL
+         * 加载新网页进 iframe
          */
         function loadIframePage(pageUrl) {
             const iframe = document.getElementById('content-iframe');
+            // 防止高度瞬间记忆坍塌闪过
+            iframe.style.height = '800px'; 
+            iframe.style.overflow = 'auto';
+            iframe.setAttribute('scrolling', 'auto');
             iframe.src = pageUrl;
         }
+
+        // ==========================================
+        // 核心高度自适应逻辑 (双轨制：直接读取 + PostMessage)
+        // ==========================================
+
+        /**
+         * 方法A：原生的直接拉伸尝试（如果使用 Live Server 跑在 localhost 可直通）
+         */
+        function onIframeLoad(iframe) {
+            try {
+                const innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (!innerDoc || !innerDoc.body) return;
+                
+                // 监听 iframe 内部高度变动
+                const observer = new ResizeObserver(() => {
+                    const scrollHeight = Math.max(innerDoc.body.scrollHeight, innerDoc.documentElement.scrollHeight);
+                    iframe.style.height = (scrollHeight + 30) + 'px';
+                    iframe.style.overflow = 'hidden';
+                    iframe.setAttribute('scrolling', 'no');
+                });
+                observer.observe(innerDoc.body);
+                
+                // 初次调整
+                iframe.style.height = (innerDoc.body.scrollHeight + 30) + 'px';
+            } catch (e) {
+                // 如果运行在 file:// 没有本地服务器，跨域规则会使得无法获取真实高度
+                console.log('DOM 直通读取失败，等待子页面 PostMessage 信使反馈高度...');
+            }
+        }
+
+        /**
+         * 方法B：监听子页面主动发送跨域 PostMessage（完美解决 file:// 模式跨域无法拉伸的痛点）
+         */
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'resizeIframe') {
+                const iframe = document.getElementById('content-iframe');
+                if (iframe) {
+                    iframe.style.height = (event.data.height + 30) + 'px';
+                    // 只要成功获取高度，立刻强制关掉局部滚动以实现“统一层级滑动”
+                    iframe.style.overflow = 'hidden';
+                    iframe.setAttribute('scrolling', 'no');
+                }
+            }
+        });
         
     </script>
 </body>
