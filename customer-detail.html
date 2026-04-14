@@ -6,255 +6,278 @@
     <title>客户详情</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <style>
-        /* Design System — Apple-Inspired (DESIGN.md) */
+        /* CSS Variables - Apple/Shadcn Inspired */
         :root {
-            --bg: #f5f5f7;
+            --bg: #f5f5f7; /* Apple Classic System Gray */
             --surface: #ffffff;
-            --text-primary: #1d1d1f;
-            --text-secondary: rgba(0, 0, 0, 0.56);
-            --text-tertiary: rgba(0, 0, 0, 0.36);
-            --accent: #7c3aed;
-            --border: rgba(0, 0, 0, 0.08);
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
-            --radius: 12px;
+            --text-primary: #0f172a; 
+            --text-secondary: #64748b; 
+            --accent: #7c3aed; 
+            --border: #e2e8f0; 
             --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --radius-md: 12px;
+            --radius-lg: 24px; 
+            --radius-full: 9999px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font);
-            font-size: 14px;
-            line-height: 1.5;
             color: var(--text-primary);
+            /* 替换为通体干净的系统灰，不再使用渐变色 */
             background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             -webkit-font-smoothing: antialiased;
         }
 
-        .container {
+        /* ------------------------------------- */
+        /*   Shadcn Nav Header Equivalent        */
+        /* ------------------------------------- */
+        .nav-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            border-bottom: 1px solid var(--border);
+            /* 导航栏也可以轻微透出底下的系统灰 */
+            background-color: rgba(245, 245, 247, 0.85); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .nav-header.shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .nav-container {
             max-width: 1160px;
             margin: 0 auto;
-            padding: 24px 24px 48px;
-        }
-
-        /* Page Header */
-        .page-header {
+            height: 64px; 
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
+            padding: 0 24px;
+            /* 已去除硬性的边框隔断 */
         }
 
-        .page-title {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            color: var(--text-primary);
-        }
-
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--surface);
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.1s ease, border-color 0.1s ease;
-            box-shadow: var(--shadow);
-        }
-
-        .back-button:hover {
-            color: var(--text-primary);
-            border-color: rgba(0, 0, 0, 0.16);
-        }
-
-        /* Tab Navigation */
-        .tab-navigation {
+        /* Left: Logo/Brand */
+        .nav-brand {
             display: flex;
-            gap: 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 0;
-            overflow-x: auto;
-            overflow-y: hidden; /* 明确杜绝偶发性上下滑动的情况 */
-            height: 56px; /* 锁死容器高度彻底固定 */
-            background: var(--surface);
-            border-radius: var(--radius) var(--radius) 0 0;
-            padding: 0 8px;
-            box-shadow: var(--shadow);
-            position: sticky; /* 赠送的极佳体验：长页滚动时 Tab 导航条自动吸顶防丢失 */
-            top: 0;
-            z-index: 100;
+            align-items: center;
+            gap: 12px; 
+            text-decoration: none;
+            color: var(--text-primary);
         }
 
-        /* 横向滚动的苹果风滚动条（通常针对手机端横滑） */
-        .tab-navigation::-webkit-scrollbar {
-            height: 4px;
-        }
-        .tab-navigation::-webkit-scrollbar-thumb {
-            background-color: rgba(0,0,0,0.1);
-            border-radius: 10px;
+        .sparkle-icon {
+            height: 40px; 
+            width: 40px; 
+            border-radius: var(--radius-full); 
+            background-color: var(--accent); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white; 
+            font-size: 20px; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .tab {
-            padding: 0 20px;
-            height: 100%; /* 使其纵向撑满固定的 56px */
+        .nav-brand:hover .sparkle-icon {
+            transform: rotate(5deg) scale(1.1); 
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 20px; 
+        }
+
+        /* Center: Nav Menu (Replaced 6 tabs) */
+        .nav-menu {
+            display: none; 
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-menu {
+                display: flex;
+            }
+        }
+
+        .nav-link {
+            font-size: 14px; 
+            font-weight: 500; 
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease; 
             cursor: pointer;
             position: relative;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            transition: color 0.15s ease, font-weight 0.15s ease;
-            letter-spacing: -0.1px;
-            display: flex;
-            align-items: center; /* 文本图标垂直到容器居中 */
-            gap: 6px;
         }
 
-        .tab i {
-            font-size: 16px;
-            opacity: 0.8;
-            transition: color 0.15s ease, opacity 0.15s ease;
+        .nav-link:hover {
+            color: var(--accent); 
         }
 
-        .tab:hover:not(.active) {
-            color: var(--text-primary);
-        }
-
-        .tab.active {
+        /* Active State */
+        .nav-link.active {
             color: var(--text-primary);
             font-weight: 600;
         }
-        
-        .tab.active i {
-            color: var(--accent); /* 核心主色 - 紫色 */
-            opacity: 1;
+
+        /* Right: Actions */
+        .nav-actions {
+            display: none; 
+            align-items: center;
+            gap: 12px;
         }
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 16px;
-            right: 16px;
-            height: 2px;
-            background: var(--accent);
-            border-radius: 2px 2px 0 0;
+        @media (min-width: 768px) {
+            .nav-actions {
+                display: flex;
+            }
         }
 
-        /* iframe container */
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px; 
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full); 
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            background-color: #e2e8f0; 
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            font-size: 24px; 
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .menu-btn {
+                display: none;
+            }
+        }
+
+        /* ------------------------------------- */
+        /*   Main Layout (Below Header)          */
+        /* ------------------------------------- */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            /* 彻底去掉最大宽度和 padding 限位边界，避免在 iframe 模块外部再套一层浅灰色的壳（因为 iframe 内部网页已经自带留白了） */
+            padding: 0;
+            margin: 0;
+        }
+
         .iframe-container {
             width: 100%;
-            /* 不再写死固定的死高度，交给JS动态自适应。给一个 min-height 避免首次渲染坍塌 */
             min-height: 800px;
-            border: none;
+            /* 深度解除画中画形态，做到通透无界式容器 */
+            border: none; 
+            border-radius: 0; 
+            background: transparent;
+            box-shadow: none; 
+            overflow: hidden;
             display: block;
-            background: #f8fafc;
-            border-radius: 0 0 var(--radius) var(--radius);
         }
 
-        /* Responsive */
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .container { padding: 16px 16px 40px; }
-            .tab { padding: 12px 14px; font-size: 13px; }
+            .nav-container { padding: 0 16px; }
+            .main-content { padding: 0; }
             .iframe-container { min-height: 600px; }
-            .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .page-title { font-size: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">客户详情</h1>
-            <button class="back-button" onclick="window.history.back()"><i class="ph ph-arrow-left" aria-hidden="true"></i> 返回</button>
-        </div>
-        
-        <div id="customer-detail-content">
-            <!-- 内容将通过JavaScript动态加载 -->
-        </div>
-    </div>
     
+    <!-- Shadcn Navigation Header (已去除边界矩形框死框架) -->
+    <header class="nav-header" id="nav-header">
+        <div class="nav-container">
+            <!-- Left: Logo & Title -->
+            <a href="javascript:void(0)" class="nav-brand">
+                <div class="sparkle-icon">
+                    <i class="ph ph-sparkle"></i>
+                </div>
+                <span class="brand-title">客户详情</span>
+            </a>
+            
+            <!-- Center: Navigation Links -->
+            <nav class="nav-menu" id="nav-menu">
+                <a class="nav-link active" data-page="enterprise-basic-info.html">企业基本信息</a>
+                <a class="nav-link" data-page="business-info.html">经营信息</a>
+                <a class="nav-link" data-page="venue-info.html">场地信息</a>
+                <a class="nav-link" data-page="equipment-info.html">设备信息</a>
+                <a class="nav-link" data-page="vehicle-info.html">车辆信息</a>
+                <a class="nav-link" data-page="controller-info.html">实控人信息</a>
+            </nav>
+            
+            <!-- Right: Actions -->
+            <div class="nav-actions">
+                <button class="btn-outline" onclick="window.history.back()">
+                    返回上页
+                </button>
+            </div>
+
+            <!-- Mobile Burger Menu -->
+            <button class="menu-btn">
+                <i class="ph ph-list"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Content Area (彻底去框融合形态) -->
+    <main class="main-content">
+        <!-- 保持与前端一致的高级自适应防截断双轨交互模式 iframe -->
+        <iframe id="content-iframe" class="iframe-container" src="" frameborder="0" onload="onIframeLoad(this)"></iframe>
+    </main>
+
     <script>
         let iframeObserver = null;
 
         /**
-         * 页面加载时执行初始化
+         * 页面初始化
          */
         document.addEventListener('DOMContentLoaded', function() {
-            // 获取URL参数中的客户ID，默认为1
-            const urlParams = new URLSearchParams(window.location.search);
-            const customerId = urlParams.get('id') || '1';
+            initNavigation();
+            initHeaderScroll();
             
-            // 加载客户详情内容
-            loadCustomerDetail(customerId);
-        });
-        
-        /**
-         * 加载客户详情
-         * @param {string} customerId - 客户ID
-         */
-        function loadCustomerDetail(customerId) {
-            const container = document.getElementById('customer-detail-content');
-            
-            // 恢复使用顶部 Tab 布局 (方案 1)
-            container.innerHTML = createCustomerDetailTabs(customerId);
-            
-            // 初始化导航
-            initCustomerDetailTabs();
-            
-            // 默认显示第一个页面
+            // 默认加载第一个 tab/nav 页面
             loadIframePage('enterprise-basic-info.html');
-        }
-        
+        });
+
         /**
-         * 创建客户详情的 Tab 标签栏结构
+         * 初始化导航栏交互 (Shadcn 风格)
          */
-        function createCustomerDetailTabs(customerId) {
-            return `
-                <div class="customer-info">
-                    <div class="tab-navigation">
-                        <div class="tab active" data-page="enterprise-basic-info.html">
-                            <i class="ph ph-buildings"></i> 企业基本信息
-                        </div>
-                        <div class="tab" data-page="business-info.html">
-                            <i class="ph ph-briefcase"></i> 经营信息
-                        </div>
-                        <div class="tab" data-page="venue-info.html">
-                            <i class="ph ph-map-pin"></i> 场地信息
-                        </div>
-                        <div class="tab" data-page="equipment-info.html">
-                            <i class="ph ph-desktop"></i> 设备信息
-                        </div>
-                        <div class="tab" data-page="vehicle-info.html">
-                            <i class="ph ph-car"></i> 车辆信息
-                        </div>
-                        <div class="tab" data-page="controller-info.html">
-                            <i class="ph ph-user-focus"></i> 实控人信息
-                        </div>
-                    </div>
-                    
-                    <!-- 主 iframe。防截断修正：移除硬编码的 scrolling="no"，交由 js 根据读取情况动态判断 -->
-                    <iframe id="content-iframe" class="iframe-container" src="" frameborder="0" onload="onIframeLoad(this)"></iframe>
-                </div>
-            `;
-        }
-        
-        /**
-         * 初始化标签页点击切换事件
-         */
-        function initCustomerDetailTabs() {
-            const tabs = document.querySelectorAll('.tab');
+        function initNavigation() {
+            const links = document.querySelectorAll('.nav-link');
             
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
                     if (this.classList.contains('active')) return;
-                    document.querySelector('.tab.active').classList.remove('active');
+                    
+                    document.querySelector('.nav-link.active')?.classList.remove('active');
                     this.classList.add('active');
                     
                     const pageUrl = this.getAttribute('data-page');
@@ -262,13 +285,27 @@
                 });
             });
         }
-        
+
         /**
-         * 加载新网页进 iframe
+         * 监听滚动让 NavBar 产生阴影，忠于 Shadcn 样例 {scrollY > 50 ? "shadow-md" : ""}
+         */
+        function initHeaderScroll() {
+            window.addEventListener("scroll", () => {
+                const header = document.getElementById("nav-header");
+                if (window.scrollY > 50) {
+                    header.classList.add("shadow-md");
+                } else {
+                    header.classList.remove("shadow-md");
+                }
+            });
+        }
+
+        /**
+         * 加载子页面
          */
         function loadIframePage(pageUrl) {
             const iframe = document.getElementById('content-iframe');
-            // 防止高度瞬间记忆坍塌闪过
+            // Reset to prevent memory of long height causing flash issues
             iframe.style.height = '800px'; 
             iframe.style.overflow = 'auto';
             iframe.setAttribute('scrolling', 'auto');
@@ -276,18 +313,15 @@
         }
 
         // ==========================================
-        // 核心高度自适应逻辑 (双轨制：直接读取 + PostMessage)
+        //         内聚防截断的自适应伸缩系统        
         // ==========================================
 
-        /**
-         * 方法A：原生的直接拉伸尝试（如果使用 Live Server 跑在 localhost 可直通）
-         */
         function onIframeLoad(iframe) {
             try {
                 const innerDoc = iframe.contentDocument || iframe.contentWindow.document;
                 if (!innerDoc || !innerDoc.body) return;
                 
-                // 监听 iframe 内部高度变动
+                // Live/Web Server 原生直读
                 const observer = new ResizeObserver(() => {
                     const scrollHeight = Math.max(innerDoc.body.scrollHeight, innerDoc.documentElement.scrollHeight);
                     iframe.style.height = (scrollHeight + 30) + 'px';
@@ -295,24 +329,17 @@
                     iframe.setAttribute('scrolling', 'no');
                 });
                 observer.observe(innerDoc.body);
-                
-                // 初次调整
                 iframe.style.height = (innerDoc.body.scrollHeight + 30) + 'px';
             } catch (e) {
-                // 如果运行在 file:// 没有本地服务器，跨域规则会使得无法获取真实高度
-                console.log('DOM 直通读取失败，等待子页面 PostMessage 信使反馈高度...');
+                // file:// 直读发生 CORS 错误时，依赖之前已写好给各页面的 PostMessage 代码兜底接管！
             }
         }
 
-        /**
-         * 方法B：监听子页面主动发送跨域 PostMessage（完美解决 file:// 模式跨域无法拉伸的痛点）
-         */
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'resizeIframe') {
                 const iframe = document.getElementById('content-iframe');
                 if (iframe) {
                     iframe.style.height = (event.data.height + 30) + 'px';
-                    // 只要成功获取高度，立刻强制关掉局部滚动以实现“统一层级滑动”
                     iframe.style.overflow = 'hidden';
                     iframe.setAttribute('scrolling', 'no');
                 }
