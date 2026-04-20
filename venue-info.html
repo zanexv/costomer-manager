@@ -38,17 +38,17 @@
         }
 
         body {
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-family: var(--font);
             font-size: 14px;
             line-height: 1.5;
             color: var(--text-primary);
-            background: var(--page-bg);
+            -webkit-font-smoothing: antialiased;
         }
 
         .page {
-            max-width: 1160px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
         }
 
         .stats-grid {
