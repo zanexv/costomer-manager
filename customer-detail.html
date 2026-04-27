@@ -687,7 +687,7 @@
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
                 <th class="row-index">序号</th><th>面积（㎡）</th><th>使用年限</th><th>租期（年）</th>
-                <th>支付方式</th><th>年租金（万元）</th><th>起租年份</th><th>付款时间</th>
+                <th>支付方式</th><th>年租金（万元）</th><th>起租年份</th><th>付租时间</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="v-rentalTableBody"></tbody>
@@ -722,8 +722,8 @@
         <div class="section-header"><h2 class="section-title">租赁设备</h2><div class="section-actions" id="eq-rentalActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>起租年份</th><th>品牌</th><th>规格</th>
-                <th>数量</th><th>价格（万元）</th><th>分拣效率（件/H）</th><th>融资余额（万元）</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th>起租年份</th><th>租赁期限（月）</th><th>月租金（万元）</th><th>支付方式</th><th>分拣效率（票/H）</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="eq-rentalTableBody"></tbody>
@@ -735,8 +735,8 @@
         <div class="section-header"><h2 class="section-title">自购设备</h2><div class="section-actions" id="eq-ownedActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>购买年份</th><th>品牌</th><th>规格</th>
-                <th>数量</th><th>价格（万元）</th><th>分拣效率（件/H）</th><th>融资余额（万元）</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th>购买年份</th><th>购置价格（万元）</th><th>资金来源</th><th>融资余额（万元）</th><th>分拣效率（票/H）</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="eq-ownedTableBody"></tbody>
@@ -758,8 +758,8 @@
         <div class="section-header"><h2 class="section-title">租赁车辆</h2><div class="section-actions" id="veh-rentalActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>租赁时间</th><th>品牌</th><th>规格</th>
-                <th>数量</th><th>金额（万元/辆）</th><th>付款方式</th><th>融资余额（万元）</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th>起租年份</th><th>租赁期限（月）</th><th>月租金（万元）</th><th>支付方式</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="veh-rentalTableBody"></tbody>
@@ -771,8 +771,8 @@
         <div class="section-header"><h2 class="section-title">自购车辆</h2><div class="section-actions" id="veh-ownedActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>购买年份</th><th>品牌</th><th>规格</th>
-                <th>数量</th><th>购置价格（万元/辆）</th><th>抵押情况</th><th>资金来源</th><th>融资余额（万元）</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th>购买年份</th><th>购置价格（万元）</th><th>资金来源</th><th>融资余额（万元）</th><th>抵押情况</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="veh-ownedTableBody"></tbody>
@@ -792,7 +792,7 @@
         <div class="section-header"><h2 class="section-title">房产信息</h2><div class="section-actions" id="c-propertyActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>购买年份</th><th>房产类型</th><th>面积(m²)</th>
+                <th class="row-index">序号</th><th>房产类型</th><th>面积(m²)</th><th>购买年份</th>
                 <th>购置价格（万元）</th><th>地址</th><th>持有人</th><th>抵押情况</th>
                 <th>融资余额（万元）</th><th class="action-col">操作</th>
             </tr></thead>
@@ -805,8 +805,8 @@
         <div class="section-header"><h2 class="section-title">车辆信息</h2><div class="section-actions" id="c-vehicleActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>购买时间</th><th>品牌</th><th>系列</th>
-                <th>购置价格（万元/辆）</th><th>持有人</th><th>抵押情况</th><th>融资余额（万元）</th>
+                <th class="row-index">序号</th><th>品牌</th><th>系列</th><th>购买年份</th>
+                <th>购置价格（万元）</th><th>持有人</th><th>抵押情况</th><th>融资余额（万元）</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="c-vehicleTableBody"></tbody>
@@ -830,9 +830,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>走访时间</th>
+                            <th>拜访时间</th>
                             <th>参与人员</th>
-                            <th>走访类型</th>
+                            <th>拜访类型</th>
                             <th>沟通摘要</th>
                             <th>现场照片</th>
                         </tr>
@@ -902,14 +902,14 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">参与人员</label>
+                <label class="form-label">同行参与人员</label>
                 <div class="tag-input" id="visit-memberTagInput">
                     <input type="text" class="tag-input-field" id="visit-memberInputField" placeholder="输入姓名后按回车或空格">
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-label">沟通摘要 <span style="color:#ef4444">*</span></label>
-                <textarea class="form-control" id="visit-summaryInput" rows="4" placeholder="记录沟通内容"></textarea>
+                <textarea class="form-control" id="visit-summaryInput" rows="4" placeholder="参考格式：1.拜访了谁；2.沟通核心问题；3.客户反馈意见；4.解决方案；5.下一步计划；"></textarea>
             </div>
             <div class="form-group">
                 <label class="form-label">现场照片 <span style="color:#ef4444">*</span></label>
@@ -1019,6 +1019,12 @@ function buildSelect(field, index, section, opts, selected) {
     return `<select data-field="${field}" data-index="${index}" data-section="${section}">`
         + opts.map(o=>`<option value="${escHtml(o)}"${o===selected?' selected':''}>${escHtml(o)}</option>`).join('')
         + `</select>`;
+}
+function buildYearSelect(field, index, section, selected, startYear = 2000, endYear = new Date().getFullYear() + 10) {
+    const normalized = /^\d{4}$/.test(String(selected || '')) ? String(selected) : String(new Date().getFullYear());
+    const years = [];
+    for (let y = endYear; y >= startYear; y -= 1) years.push(String(y));
+    return buildSelect(field, index, section, years, normalized);
 }
 function showPopConfirm(anchor, title, onConfirm) {
     document.querySelector('.popover-confirm')?.remove();
@@ -1201,6 +1207,7 @@ function createTableModule(cfg) {
 // ══════════════════════════════════════════════════════════
 function initEnterpriseTab() {
     const P = 'e';
+    const relationOpts = ['直接控股','间接控股','亲属关系','其他关系'];
     const state = {
         basicInfo: { data: {
             name:'杭州云恒科技有限公司', creditCode:'91330106MA2CDX7Y3R',
@@ -1331,14 +1338,15 @@ function initEnterpriseTab() {
             : `<td>${escHtml(item.bank)}</td><td>${escHtml(item.account)}</td><td>${escHtml(item.avg)}</td><td>${escHtml(item.m6)}</td><td>${escHtml(item.m5)}</td><td>${escHtml(item.m4)}</td><td>${escHtml(item.m3)}</td><td>${escHtml(item.m2)}</td><td>${escHtml(item.m1)}</td><td>${escHtml(item.date)}</td>`
         );
         renderTable('company', (item, idx, editing) => editing
-            ? ['name','industry','date','capital','controller','relationship'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="company" value="${escHtml(item[f])}"></td>`).join('')
+            ? ['name','industry','date','capital','controller'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="company" value="${escHtml(item[f])}"></td>`).join('')
+              + `<td class="input-cell">${buildSelect('relationship', idx, 'company', relationOpts, item.relationship)}</td>`
             : `<td>${escHtml(item.name)}</td><td>${escHtml(item.industry)}</td><td>${escHtml(item.date)}</td><td>${escHtml(item.capital)}</td><td>${escHtml(item.controller)}</td><td>${escHtml(item.relationship)}</td>`
         );
     }
     // Add row buttons
     document.getElementById('e-addShareholderRowBtn')?.addEventListener('click', ()=>{ syncSection('shareholder'); state.shareholder.items.push({id:state.shareholder.items.length+1,name:'',type:'',ratio:'',amount:'',date:''}); renderAll(); });
     document.getElementById('e-addAccountRowBtn')?.addEventListener('click', ()=>{ syncSection('account'); state.account.items.push({id:state.account.items.length+1,bank:'',account:'',avg:'',m6:'',m5:'',m4:'',m3:'',m2:'',m1:'',date:''}); renderAll(); });
-    document.getElementById('e-addCompanyRowBtn')?.addEventListener('click', ()=>{ syncSection('company'); state.company.items.push({id:state.company.items.length+1,name:'',industry:'',date:'',capital:'',controller:'',relationship:''}); renderAll(); });
+    document.getElementById('e-addCompanyRowBtn')?.addEventListener('click', ()=>{ syncSection('company'); state.company.items.push({id:state.company.items.length+1,name:'',industry:'',date:'',capital:'',controller:'',relationship:relationOpts[0]}); renderAll(); });
     renderAll();
 }
 
@@ -1456,6 +1464,7 @@ function initBusinessCharts() {
 // TAB 3 — 场地信息
 // ══════════════════════════════════════════════════════════
 function initVenueTab() {
+    const currentYear = String(new Date().getFullYear());
     const payOpts = ['月付','按季付','季付','半年付','年付','一次性付清'];
     const mortOpts = ['无抵押','部分抵押','全部抵押'];
     const state = {
@@ -1508,7 +1517,7 @@ function initVenueTab() {
               <td class="input-cell"><input data-field="period" data-index="${idx}" data-section="rental" value="${escHtml(item.period)}"></td>
               <td class="input-cell">${buildSelect('paymentMethod',idx,'rental',payOpts,item.paymentMethod)}</td>
               <td class="input-cell"><input type="number" data-field="annualFee" data-index="${idx}" data-section="rental" value="${escHtml(item.annualFee)}"></td>
-              <td class="input-cell"><input type="date" data-field="startYear" data-index="${idx}" data-section="rental" value="${escHtml(item.startYear)}"></td>
+              <td class="input-cell">${buildYearSelect('startYear',idx,'rental',item.startYear)}</td>
               <td class="input-cell"><input data-field="paymentTime" data-index="${idx}" data-section="rental" value="${escHtml(item.paymentTime)}"></td>`
             :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.period)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.annualFee)}</td><td>${escHtml(item.startYear)}</td><td>${escHtml(item.paymentTime)}</td>`
         );
@@ -1519,13 +1528,13 @@ function initVenueTab() {
               <td class="input-cell"><input type="number" data-field="purchasePrice" data-index="${idx}" data-section="owned" value="${escHtml(item.purchasePrice)}"></td>
               <td class="input-cell"><input type="number" data-field="currentValue" data-index="${idx}" data-section="owned" value="${escHtml(item.currentValue)}"></td>
               <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="owned" value="${escHtml(item.financingBalance)}"></td>
-              <td class="input-cell"><input type="date" data-field="purchaseYear" data-index="${idx}" data-section="owned" value="${escHtml(item.purchaseYear)}"></td>`
+              <td class="input-cell">${buildYearSelect('purchaseYear',idx,'owned',item.purchaseYear)}</td>`
             :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.currentValue)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.purchaseYear)}</td>`
         );
         updateStats();
     }
-    document.getElementById('v-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,area:'',usageYears:'',period:'',paymentMethod:payOpts[0],annualFee:'',startYear:'',paymentTime:''});renderAll();});
-    document.getElementById('v-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,area:'',usageYears:'',mortgage:mortOpts[0],purchasePrice:'',currentValue:'',financingBalance:'',purchaseYear:''});renderAll();});
+    document.getElementById('v-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,area:'',usageYears:'',period:'',paymentMethod:payOpts[0],annualFee:'',startYear:currentYear,paymentTime:''});renderAll();});
+    document.getElementById('v-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,area:'',usageYears:'',mortgage:mortOpts[0],purchasePrice:'',currentValue:'',financingBalance:'',purchaseYear:currentYear});renderAll();});
     renderAll();
 }
 
@@ -1534,25 +1543,28 @@ function initVenueTab() {
 // TAB 4 — 设备信息
 // ══════════════════════════════════════════════════════════
 function initEquipmentTab() {
+    const currentYear = String(new Date().getFullYear());
+    const payOpts=['月付','季付','半年付','年付','一次性付清'];
+    const fundOpts=['自有资金','银行贷款','融资租赁','混合资金'];
     const state = {
         rental:{ items:[
-            {id:1,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:2,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:3,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:4,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'}
+            {id:1,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'36',price:'58.69',paymentMethod:'月付',efficiency:'1949'},
+            {id:2,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'24',price:'58.69',paymentMethod:'季付',efficiency:'1949'},
+            {id:3,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'18',price:'58.69',paymentMethod:'半年付',efficiency:'1949'},
+            {id:4,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'12',price:'58.69',paymentMethod:'年付',efficiency:'1949'}
         ], editing:false, snapshot:null },
         owned:{ items:[
-            {id:1,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:2,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:3,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'},
-            {id:4,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',efficiency:'1949',financingBalance:'3'}
+            {id:1,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'自有资金',financingBalance:'3',efficiency:'1949'},
+            {id:2,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'银行贷款',financingBalance:'3',efficiency:'1949'},
+            {id:3,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'融资租赁',financingBalance:'3',efficiency:'1949'},
+            {id:4,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'混合资金',financingBalance:'3',efficiency:'1949'}
         ], editing:false, snapshot:null }
     };
     function updateStats(){
         const te=state.rental.items.reduce((s,i)=>s+Number(i.quantity||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.quantity||0),0);
         const ta=state.rental.items.reduce((s,i)=>s+Number(i.price||0)*Number(i.quantity||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.price||0)*Number(i.quantity||0),0);
         const tv=state.owned.items.reduce((s,i)=>s+Number(i.price||0)*Number(i.quantity||0),0);
-        const tf=state.rental.items.reduce((s,i)=>s+Number(i.financingBalance||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.financingBalance||0),0);
+        const tf=state.owned.items.reduce((s,i)=>s+Number(i.financingBalance||0),0);
         document.getElementById('eq-totalEquipment').textContent=String(te);
         document.getElementById('eq-totalMonthlyRent').textContent=fmtMoney(ta);
         document.getElementById('eq-totalValue').textContent=fmtMoney(tv);
@@ -1567,26 +1579,41 @@ function initEquipmentTab() {
         if(!tbody)return;
         if(wrap)wrap.hidden=!state[sec].editing;if(shell)shell.classList.toggle('is-editing',state[sec].editing);
         tbody.innerHTML='';
-        if(!state[sec].items.length){tbody.innerHTML='<tr><td colspan="15" class="empty-tip">暂无数据</td></tr>';return;}
+        if(!state[sec].items.length){tbody.innerHTML='<tr><td colspan="10" class="empty-tip">暂无数据</td></tr>';return;}
         state[sec].items.forEach((item,idx)=>{
             const row=document.createElement('tr');row.className=state[sec].editing?'edit-row':'view-row';
-            const cols=state[sec].editing
-                ?`<td class="input-cell"><input type="date" data-field="${yearField}" data-index="${idx}" data-section="${sec}" value="${escHtml(item[yearField])}"></td>
-                  <td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="${sec}" value="${escHtml(item.brand)}"></td>
-                  <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="${sec}" value="${escHtml(item.spec)}"></td>
-                  <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="${sec}" value="${escHtml(item.quantity)}"></td>
-                  <td class="input-cell"><input type="number" data-field="price" data-index="${idx}" data-section="${sec}" value="${escHtml(item.price)}"></td>
-                  <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>
-                  <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="${sec}" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item[yearField])}</td><td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.price)}</td><td>${escHtml(item.efficiency)}</td><td>${escHtml(item.financingBalance)}</td>`;
+            let cols='';
+            if(sec==='rental'){
+                cols=state[sec].editing
+                    ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="${sec}" value="${escHtml(item.brand)}"></td>
+                      <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="${sec}" value="${escHtml(item.spec)}"></td>
+                      <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="${sec}" value="${escHtml(item.quantity)}"></td>
+                      <td class="input-cell">${buildYearSelect(yearField,idx,sec,item[yearField])}</td>
+                      <td class="input-cell"><input type="number" data-field="leaseTerm" data-index="${idx}" data-section="${sec}" value="${escHtml(item.leaseTerm)}"></td>
+                      <td class="input-cell"><input type="number" data-field="price" data-index="${idx}" data-section="${sec}" value="${escHtml(item.price)}"></td>
+                      <td class="input-cell">${buildSelect('paymentMethod',idx,sec,payOpts,item.paymentMethod)}</td>
+                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>`
+                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${escHtml(item.leaseTerm)}</td><td>${escHtml(item.price)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.efficiency)}</td>`;
+            }else{
+                cols=state[sec].editing
+                    ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="${sec}" value="${escHtml(item.brand)}"></td>
+                      <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="${sec}" value="${escHtml(item.spec)}"></td>
+                      <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="${sec}" value="${escHtml(item.quantity)}"></td>
+                      <td class="input-cell">${buildYearSelect(yearField,idx,sec,item[yearField])}</td>
+                      <td class="input-cell"><input type="number" data-field="price" data-index="${idx}" data-section="${sec}" value="${escHtml(item.price)}"></td>
+                      <td class="input-cell">${buildSelect('fundingSource',idx,sec,fundOpts,item.fundingSource)}</td>
+                      <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="${sec}" value="${escHtml(item.financingBalance)}"></td>
+                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>`
+                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${escHtml(item.price)}</td><td>${escHtml(item.fundingSource)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.efficiency)}</td>`;
+            }
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
         });
         tbody.onclick=e=>{const btn=e.target.closest('[data-del]');if(btn){const s=btn.dataset.del,i=Number(btn.dataset.idx);showPopConfirm(btn,'确认删除？',()=>{syncSec(s);state[s].items.splice(i,1);renumber(state[s].items);renderAll();});}};
     }
     function renderAll(){renderT('rental','startYear');renderT('owned','purchaseYear');updateStats();}
-    document.getElementById('eq-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,startYear:'',brand:'',spec:'',quantity:'',price:'',efficiency:'',financingBalance:''});renderAll();});
-    document.getElementById('eq-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:'',brand:'',spec:'',quantity:'',price:'',efficiency:'',financingBalance:''});renderAll();});
+    document.getElementById('eq-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,startYear:currentYear,brand:'',spec:'',quantity:'',leaseTerm:'',price:'',paymentMethod:payOpts[0],efficiency:''});renderAll();});
+    document.getElementById('eq-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:currentYear,brand:'',spec:'',quantity:'',price:'',fundingSource:fundOpts[0],financingBalance:'',efficiency:''});renderAll();});
     renderAll();
 }
 
@@ -1595,28 +1622,29 @@ function initEquipmentTab() {
 // TAB 5 — 车辆信息
 // ══════════════════════════════════════════════════════════
 function initVehicleTab() {
-    const payOpts=['月付','季付','半年付'];
+    const currentYear = String(new Date().getFullYear());
+    const payOpts=['月付','季付','半年付','年付','一次性付清'];
     const mortOpts=['无抵押','部分抵押','全部抵押'];
     const fundOpts=['自有资金','银行贷款','融资租赁','混合资金'];
     const state = {
         rental:{ items:[
-            {id:1,rentalTime:'',brand:'东风',spec:'4m2',quantity:'3',amount:'12',paymentMethod:'月付',financingBalance:'3'},
-            {id:2,rentalTime:'2023',brand:'东风',spec:'9m6',quantity:'3',amount:'32',paymentMethod:'季付',financingBalance:'3'},
-            {id:3,rentalTime:'2023',brand:'东风',spec:'9m6',quantity:'3',amount:'32',paymentMethod:'半年付',financingBalance:'3'},
-            {id:4,rentalTime:'2023',brand:'东风',spec:'9m6',quantity:'3',amount:'32',paymentMethod:'半年付',financingBalance:'3'}
+            {id:1,rentalTime:'2023',brand:'东风',spec:'4m2',quantity:'3',leaseTerm:'12',amount:'12',paymentMethod:'月付'},
+            {id:2,rentalTime:'2023',brand:'东风',spec:'9m6',quantity:'3',leaseTerm:'24',amount:'32',paymentMethod:'季付'},
+            {id:3,rentalTime:'2024',brand:'东风',spec:'9m6',quantity:'3',leaseTerm:'18',amount:'32',paymentMethod:'半年付'},
+            {id:4,rentalTime:'2024',brand:'东风',spec:'9m6',quantity:'3',leaseTerm:'36',amount:'32',paymentMethod:'年付'}
         ], editing:false, snapshot:null },
         owned:{ items:[
             {id:1,purchaseYear:'2024',brand:'本田',spec:'4m2',quantity:'3',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'},
-            {id:2,purchaseYear:'2021-2024',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'},
-            {id:3,purchaseYear:'2021-2024',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'},
-            {id:4,purchaseYear:'2021-2024',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'}
+            {id:2,purchaseYear:'2022',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'},
+            {id:3,purchaseYear:'2021',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'},
+            {id:4,purchaseYear:'2020',brand:'本田',spec:'4m2',quantity:'12',amount:'33.33',mortgage:'无抵押',fundingSource:'混合资金',financingBalance:'3'}
         ], editing:false, snapshot:null }
     };
     function updateStats(){
         const tv=state.rental.items.reduce((s,i)=>s+Number(i.quantity||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.quantity||0),0);
         const ta=state.rental.items.reduce((s,i)=>s+Number(i.amount||0)*Number(i.quantity||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.amount||0)*Number(i.quantity||0),0);
         const oa=state.owned.items.reduce((s,i)=>s+Number(i.amount||0)*Number(i.quantity||0),0);
-        const tf=state.rental.items.reduce((s,i)=>s+Number(i.financingBalance||0),0)+state.owned.items.reduce((s,i)=>s+Number(i.financingBalance||0),0);
+        const tf=state.owned.items.reduce((s,i)=>s+Number(i.financingBalance||0),0);
         document.getElementById('veh-totalVehicles').textContent=String(tv);
         document.getElementById('veh-totalAmount').textContent=fmtMoney(ta);
         document.getElementById('veh-ownedAmount').textContent=fmtMoney(oa);
@@ -1633,32 +1661,32 @@ function initVehicleTab() {
             const row=document.createElement('tr');row.className=state[sec].editing?'edit-row':'view-row';
             let cols;
             if(sec==='rental'){cols=state[sec].editing
-                ?`<td class="input-cell"><input type="date" data-field="rentalTime" data-index="${idx}" data-section="rental" value="${escHtml(item.rentalTime)}"></td>
-                  <td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="rental" value="${escHtml(item.brand)}"></td>
+                ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="rental" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="rental" value="${escHtml(item.spec)}"></td>
                   <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="rental" value="${escHtml(item.quantity)}"></td>
+                  <td class="input-cell">${buildYearSelect('rentalTime',idx,'rental',item.rentalTime)}</td>
+                  <td class="input-cell"><input type="number" data-field="leaseTerm" data-index="${idx}" data-section="rental" value="${escHtml(item.leaseTerm)}"></td>
                   <td class="input-cell"><input type="number" data-field="amount" data-index="${idx}" data-section="rental" value="${escHtml(item.amount)}"></td>
-                  <td class="input-cell">${buildSelect('paymentMethod',idx,'rental',payOpts,item.paymentMethod)}</td>
-                  <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="rental" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.rentalTime)}</td><td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.financingBalance)}</td>`;}
+                  <td class="input-cell">${buildSelect('paymentMethod',idx,'rental',payOpts,item.paymentMethod)}</td>`
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.rentalTime)}</td><td>${escHtml(item.leaseTerm)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.paymentMethod)}</td>`;}
             else{cols=state[sec].editing
-                ?`<td class="input-cell"><input data-field="purchaseYear" data-index="${idx}" data-section="owned" value="${escHtml(item.purchaseYear)}"></td>
-                  <td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="owned" value="${escHtml(item.brand)}"></td>
+                ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="owned" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="owned" value="${escHtml(item.spec)}"></td>
                   <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="owned" value="${escHtml(item.quantity)}"></td>
+                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'owned',item.purchaseYear)}</td>
                   <td class="input-cell"><input type="number" data-field="amount" data-index="${idx}" data-section="owned" value="${escHtml(item.amount)}"></td>
-                  <td class="input-cell">${buildSelect('mortgage',idx,'owned',mortOpts,item.mortgage)}</td>
                   <td class="input-cell">${buildSelect('fundingSource',idx,'owned',fundOpts,item.fundingSource)}</td>
-                  <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="owned" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.fundingSource)}</td><td>${escHtml(item.financingBalance)}</td>`;}
+                  <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="owned" value="${escHtml(item.financingBalance)}"></td>
+                  <td class="input-cell">${buildSelect('mortgage',idx,'owned',mortOpts,item.mortgage)}</td>`
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.fundingSource)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.mortgage)}</td>`;}
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
         });
         tbody.onclick=e=>{const btn=e.target.closest('[data-del]');if(btn){const s=btn.dataset.del,i=Number(btn.dataset.idx);showPopConfirm(btn,'确认删除？',()=>{syncSec(s);state[s].items.splice(i,1);renumber(state[s].items);renderAll();});}};
     }
     function renderAll(){renderT('rental');renderT('owned');updateStats();}
-    document.getElementById('veh-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,rentalTime:'',brand:'',spec:'',quantity:'',amount:'',paymentMethod:payOpts[0],financingBalance:''});renderAll();});
-    document.getElementById('veh-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:'',brand:'',spec:'',quantity:'',amount:'',mortgage:mortOpts[0],fundingSource:fundOpts[0],financingBalance:''});renderAll();});
+    document.getElementById('veh-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,rentalTime:currentYear,brand:'',spec:'',quantity:'',leaseTerm:'',amount:'',paymentMethod:payOpts[0]});renderAll();});
+    document.getElementById('veh-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:currentYear,brand:'',spec:'',quantity:'',amount:'',mortgage:mortOpts[0],fundingSource:fundOpts[0],financingBalance:''});renderAll();});
     renderAll();
 }
 
@@ -1920,30 +1948,31 @@ function initVisitTab() {
 // TAB 6 — 实控人信息
 // ══════════════════════════════════════════════════════════
 function initControllerTab() {
+    const currentYear = String(new Date().getFullYear());
     const mortOpts=['无抵押','已抵押'];
-    const propTypeOpts=['土地','厂房','房产'];
+    const propTypeOpts=['请选择','住宅','商铺','写字楼','厂房','其他'];
     const eduOpts=['大专','本科','硕士','博士'];
     const yesnoOpts=['是','否'];
     const state = {
         basic: {
-            values:{name:'张三',idCard:'888888888888888888',phone:'18788888888',age:'33',gender:'男',address:'湖北省',education:'大专',isTonglu:'是',hobby:'听经书',productPreference:'利率敏感',marketingPreference:'低利率',connections:'省总/总部总监级',backgroundResource:'政府层面',relatedOutletCount:'3'},
+            values:{name:'张三',idCard:'888888888888888888',phone:'18788888888',age:'33',gender:'男',address:'湖北省',education:'大专',isTonglu:'是',hobby:'听经书',productPreference:'利率敏感',marketingPreference:'低利率',connections:'省总/总部总监级',backgroundResource:'政府层面',innerRelatedOutletCount:'2',outerRelatedOutletCount:'1'},
             editing:false, snapshot:null
         },
         property: { items:[
-            {id:1,purchaseYear:'2024',propertyType:'土地',area:'300',purchasePrice:'2025',address:'市区',holder:'李四',mortgage:'无抵押',financingBalance:'3'},
-            {id:2,purchaseYear:'2025',propertyType:'土地',area:'300',purchasePrice:'3333',address:'市区',holder:'李四',mortgage:'无抵押',financingBalance:'3'},
+            {id:1,purchaseYear:'2024',propertyType:'住宅',area:'300',purchasePrice:'2025',address:'市区',holder:'李四',mortgage:'无抵押',financingBalance:'3'},
+            {id:2,purchaseYear:'2025',propertyType:'商铺',area:'300',purchasePrice:'3333',address:'市区',holder:'李四',mortgage:'无抵押',financingBalance:'3'},
             {id:3,purchaseYear:'2025',propertyType:'厂房',area:'300',purchasePrice:'3333',address:'市区',holder:'李四',mortgage:'无抵押',financingBalance:'3'},
-            {id:4,purchaseYear:'2025',propertyType:'房产',area:'300',purchasePrice:'3333',address:'XX市XX区',holder:'李四',mortgage:'已抵押',financingBalance:'3'}
+            {id:4,purchaseYear:'2025',propertyType:'写字楼',area:'300',purchasePrice:'3333',address:'XX市XX区',holder:'李四',mortgage:'已抵押',financingBalance:'3'}
         ], editing:false, snapshot:null },
         vehicle: { items:[
-            {id:1,purchaseTime:'2024',brand:'本田',series:'CRV',purchasePrice:'33.33',holder:'张三',mortgage:'无抵押',financingBalance:'3'},
-            {id:2,purchaseTime:'2021-2024',brand:'奔驰',series:'AMG',purchasePrice:'33.33',holder:'张三',mortgage:'无抵押',financingBalance:'3'},
-            {id:3,purchaseTime:'2021-2024',brand:'奥迪',series:'RS',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'},
-            {id:4,purchaseTime:'2021-2024',brand:'小米',series:'YU7',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'}
+            {id:1,purchaseYear:'2024',brand:'本田',series:'CRV',purchasePrice:'33.33',holder:'张三',mortgage:'无抵押',financingBalance:'3'},
+            {id:2,purchaseYear:'2022',brand:'奔驰',series:'AMG',purchasePrice:'33.33',holder:'张三',mortgage:'无抵押',financingBalance:'3'},
+            {id:3,purchaseYear:'2021',brand:'奥迪',series:'RS',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'},
+            {id:4,purchaseYear:'2020',brand:'小米',series:'YU7',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'}
         ], editing:false, snapshot:null }
     };
     const readonlyFields=[{key:'name',label:'实控人姓名'},{key:'idCard',label:'身份证号'},{key:'phone',label:'联系方式'},{key:'age',label:'年龄'},{key:'gender',label:'性别'}];
-    const editableFields=[{key:'address',label:'户籍地',type:'text'},{key:'education',label:'最高学历',type:'select',options:eduOpts},{key:'isTonglu',label:'是否桐庐系',type:'select',options:yesnoOpts},{key:'hobby',label:'个人爱好',type:'text'},{key:'productPreference',label:'产品偏好',type:'text'},{key:'marketingPreference',label:'营销偏好',type:'text'},{key:'connections',label:'人脉资源',type:'text'},{key:'backgroundResource',label:'背景资源',type:'text'},{key:'relatedOutletCount',label:'关联网点数',type:'text'}];
+    const editableFields=[{key:'address',label:'户籍地',type:'text'},{key:'education',label:'最高学历',type:'select',options:eduOpts},{key:'isTonglu',label:'是否桐庐系',type:'select',options:yesnoOpts},{key:'hobby',label:'个人爱好',type:'text'},{key:'productPreference',label:'产品偏好',type:'text'},{key:'marketingPreference',label:'营销偏好',type:'text'},{key:'connections',label:'人脉资源',type:'text'},{key:'backgroundResource',label:'背景资源',type:'text'},{key:'innerRelatedOutletCount',label:'体系内关联网点数',type:'text'},{key:'outerRelatedOutletCount',label:'体系外关联网点数',type:'text'}];
 
     function renderBasicAct(){
         const el=document.getElementById('c-basicInfoActions');if(!el)return;
@@ -1979,32 +2008,32 @@ function initControllerTab() {
             const row=document.createElement('tr');row.className=state[sec].editing?'edit-row':'view-row';
             let cols;
             if(sec==='property'){cols=state[sec].editing
-                ?`<td class="input-cell"><input data-field="purchaseYear" data-index="${idx}" data-section="property" value="${escHtml(item.purchaseYear)}"></td>
-                  <td class="input-cell">${buildSelect('propertyType',idx,'property',propTypeOpts,item.propertyType)}</td>
+                ?`<td class="input-cell">${buildSelect('propertyType',idx,'property',propTypeOpts,item.propertyType)}</td>
                   <td class="input-cell"><input data-field="area" data-index="${idx}" data-section="property" value="${escHtml(item.area)}"></td>
+                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'property',item.purchaseYear)}</td>
                   <td class="input-cell"><input data-field="purchasePrice" data-index="${idx}" data-section="property" value="${escHtml(item.purchasePrice)}"></td>
                   <td class="input-cell"><input data-field="address" data-index="${idx}" data-section="property" value="${escHtml(item.address)}"></td>
                   <td class="input-cell"><input data-field="holder" data-index="${idx}" data-section="property" value="${escHtml(item.holder)}"></td>
                   <td class="input-cell">${buildSelect('mortgage',idx,'property',mortOpts,item.mortgage)}</td>
                   <td class="input-cell"><input data-field="financingBalance" data-index="${idx}" data-section="property" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.propertyType)}</td><td>${escHtml(item.area)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.address)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
+                :`<td>${escHtml(item.propertyType)}</td><td>${escHtml(item.area)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.address)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
             else{cols=state[sec].editing
-                ?`<td class="input-cell"><input data-field="purchaseTime" data-index="${idx}" data-section="vehicle" value="${escHtml(item.purchaseTime)}"></td>
-                  <td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="vehicle" value="${escHtml(item.brand)}"></td>
+                ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="vehicle" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="series" data-index="${idx}" data-section="vehicle" value="${escHtml(item.series)}"></td>
+                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'vehicle',item.purchaseYear)}</td>
                   <td class="input-cell"><input data-field="purchasePrice" data-index="${idx}" data-section="vehicle" value="${escHtml(item.purchasePrice)}"></td>
                   <td class="input-cell"><input data-field="holder" data-index="${idx}" data-section="vehicle" value="${escHtml(item.holder)}"></td>
                   <td class="input-cell">${buildSelect('mortgage',idx,'vehicle',mortOpts,item.mortgage)}</td>
                   <td class="input-cell"><input data-field="financingBalance" data-index="${idx}" data-section="vehicle" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.purchaseTime)}</td><td>${escHtml(item.brand)}</td><td>${escHtml(item.series)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.series)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
         });
         tbody.onclick=e=>{const btn=e.target.closest('[data-del]');if(btn){const s=btn.dataset.del,i=Number(btn.dataset.idx);showPopConfirm(btn,'确认删除？',()=>{syncSec(s);state[s].items.splice(i,1);renumber(state[s].items);renderTables();});}};
     }
     function renderTables(){renderT('property');renderT('vehicle');}
-    document.getElementById('c-addPropertyRowBtn')?.addEventListener('click',()=>{syncSec('property');state.property.items.push({id:state.property.items.length+1,purchaseYear:'',propertyType:propTypeOpts[0],area:'',purchasePrice:'',address:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
-    document.getElementById('c-addVehicleRowBtn')?.addEventListener('click',()=>{syncSec('vehicle');state.vehicle.items.push({id:state.vehicle.items.length+1,purchaseTime:'',brand:'',series:'',purchasePrice:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
+    document.getElementById('c-addPropertyRowBtn')?.addEventListener('click',()=>{syncSec('property');state.property.items.push({id:state.property.items.length+1,purchaseYear:currentYear,propertyType:propTypeOpts[0],area:'',purchasePrice:'',address:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
+    document.getElementById('c-addVehicleRowBtn')?.addEventListener('click',()=>{syncSec('vehicle');state.vehicle.items.push({id:state.vehicle.items.length+1,purchaseYear:currentYear,brand:'',series:'',purchasePrice:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
     renderBasicSection();
     renderTables();
 }
