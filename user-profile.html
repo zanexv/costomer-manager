@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户画像交互原型 - 本地版</title>
+  
+  <!-- 引入 Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 引入 React 和 ReactDOM (CDN) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- 引入 Babel 用于在浏览器中实时编译 JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    /* 隐藏滚动条让抽屉和弹窗体验更好 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</head>
+<body>
+  <!-- React 应用挂载点 -->
+  <div id="root"></div>
+
+  <!-- React 业务代码 -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- 内置图标组件 (替代 lucide-react，确保离线可用) ---
+    const Icon = ({ name, size = 18, className = "" }) => {
+      const icons = {
+        Settings: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+        TagIcon: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>,
+        Edit2: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>,
+        Star: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+        X: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+        Check: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>,
+        ShieldAlert: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+        ShieldCheck: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>,
+        User: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        ChevronLeft: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 18 9 12 15 6"/></svg>,
+        Plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        Trash2: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
+        MoreHorizontal: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      };
+      return icons[name] || null;
+    };
+
+    // --- Mock Data ---
+    const INITIAL_DIMENSIONS = [
+      { name: '专业技能', value: 4 },
+      { name: '沟通协作', value: 3 },
+      { name: '创新能力', value: 2 },
+      { name: '领导力', value: 1 },
+      { name: '执行力', value: 5 }
+    ];
+
+    const INITIAL_TAG_GROUPS = [
+      {
+        id: 'g1',
+        name: '基础属性',
+        tags: [
+          { id: 't1', name: '高价值客户' },
+          { id: 't2', name: '活跃用户' },
+          { id: 't3', name: '新注册' }
+        ]
+      },
+      {
+        id: 'g2',
+        name: '消费偏好',
+        tags: [
+          { id: 't4', name: '价格敏感' },
+          { id: 't5', name: '品牌忠诚' },
+          { id: 't6', name: '冲动消费' },
+          { id: 't7', name: '注重品质' }
+        ]
+      },
+      {
+        id: 'g3',
+        name: '流失风险',
+        tags: [
+          { id: 't8', name: '低风险' },
+          { id: 't9', name: '预警' },
+          { id: 't10', name: '高流失风险' }
+        ]
+      }
+    ];
+
+    // --- Radar Chart Component ---
+    const RadarChart = ({ dimensions, size = 300 }) => {
+      const center = size / 2;
+      const maxRadius = (size / 2) * 0.7; 
+      const levels = 5;
+      const angles = dimensions.map((_, i) => (Math.PI * 2 * i) / dimensions.length - Math.PI / 2);
+
+      const getPoint = (angle, value) => {
+        const r = (value / levels) * maxRadius;
+        return {
+          x: center + r * Math.cos(angle),
+          y: center + r * Math.sin(angle)
+        };
+      };
+
+      const grids = Array.from({ length: levels }).map((_, levelIndex) => {
+        const value = levelIndex + 1;
+        const points = angles.map(angle => getPoint(angle, value));
+        const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+        return (
+          <path 
+            key={`grid-${levelIndex}`} d={pathData} 
+            fill={levelIndex % 2 === 0 ? 'rgba(0,0,0,0.02)' : 'rgba(0,0,0,0.05)'} 
+            stroke="#e5e7eb" strokeWidth="1" 
+          />
+        );
+      });
+
+      const axes = angles.map((angle, i) => {
+        const endPoint = getPoint(angle, 5);
+        return (
+          <line key={`axis-${i}`} x1={center} y1={center} x2={endPoint.x} y2={endPoint.y} stroke="#e5e7eb" strokeWidth="1" />
+        );
+      });
+
+      const dataPoints = dimensions.map((dim, i) => getPoint(angles[i], dim.value));
+      const dataPath = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+
+      const labels = dimensions.map((dim, i) => {
+        const labelPoint = getPoint(angles[i], 5.8); 
+        return (
+          <g key={`label-${i}`} transform={`translate(${labelPoint.x}, ${labelPoint.y})`}>
+            <text textAnchor="middle" dominantBaseline="middle" className="text-xs font-medium fill-gray-600">
+              {dim.name}
+            </text>
+            <text y="14" textAnchor="middle" dominantBaseline="middle" className="text-[10px] fill-indigo-500 font-bold">
+              {dim.value} 星
+            </text>
+          </g>
+        );
+      });
+
+      return (
+        <div className="relative flex justify-center items-center group w-full h-full min-h-[250px]">
+          <svg width={size} height={size} className="overflow-visible">
+            {grids}
+            {axes}
+            <path d={dataPath} fill="rgba(99, 102, 241, 0.4)" stroke="#6366f1" strokeWidth="2" className="transition-all duration-300 ease-in-out" />
+            {dataPoints.map((p, i) => (
+              <circle key={`point-${i}`} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#6366f1" strokeWidth="2" className="transition-all duration-300 ease-in-out" />
+            ))}
+            {labels}
+          </svg>
+        </div>
+      );
+    };
+
+    // --- Main Application ---
+    function App() {
+      const [hasPermission, setPermission] = useState(true);
+      const [activeTags, setActiveTags] = useState([
+        { id: 't1', name: '高价值客户' },
+        { id: 't5', name: '品牌忠诚' },
+        { id: 't99', name: '早期内测用户' } // 添加一个不存在于库中的历史标签，方便预览样式
+      ]); 
+      const [dimensions, setDimensions] = useState(INITIAL_DIMENSIONS);
+      
+      const [tagGroups, setTagGroups] = useState(INITIAL_TAG_GROUPS);
+      const [currentView, setCurrentView] = useState('profile');
+
+      // Modals / Drawers state
+      const [isTagDrawerOpen, setTagDrawerOpen] = useState(false);
+      const [isChartModalOpen, setChartModalOpen] = useState(false);
+      
+      // Temporary state for editing
+      const [tempTags, setTempTags] = useState([]);
+      const [tempDimensions, setTempDimensions] = useState([]);
+
+      // Tag Management Inline Editing State
+      const [editingGroupId, setEditingGroupId] = useState(null);
+      const [editingGroupName, setEditingGroupName] = useState('');
+      const [activeMenuId, setActiveMenuId] = useState(null);
+      const [addingTag, setAddingTag] = useState({ groupId: null, value: '' });
+
+      // Toast
+      const [toastMessage, setToastMessage] = useState('');
+      const showToast = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(''), 3000);
+      };
+
+      // --- Profile Handlers ---
+      const openTagDrawer = () => {
+        if (!hasPermission) return;
+        setTempTags(activeTags.map(t => t.id));
+        setTagDrawerOpen(true);
+      };
+
+      const saveTags = () => {
+        const newActiveTags = tempTags.map(id => {
+          // 在当前标签库中查找以获取最新名称
+          for (const group of tagGroups) {
+            const tag = group.tags.find(t => t.id === id);
+            if (tag) return { id: tag.id, name: tag.name };
+          }
+          // 如果库中没有，说明是历史快照保留的标签，保持原样
+          return activeTags.find(t => t.id === id);
+        }).filter(Boolean);
+        
+        setActiveTags(newActiveTags);
+        setTagDrawerOpen(false);
+        showToast('贴标签成功！');
+      };
+
+      const toggleTempTag = (tagId) => {
+        if (tempTags.includes(tagId)) {
+          setTempTags(tempTags.filter(id => id !== tagId));
+        } else {
+          setTempTags([...tempTags, tagId]);
+        }
+      };
+
+      const openChartModal = () => {
+        if (!hasPermission) return;
+        setTempDimensions(JSON.parse(JSON.stringify(dimensions)));
+        setChartModalOpen(true);
+      };
+
+      const saveChart = () => {
+        setDimensions(tempDimensions);
+        setChartModalOpen(false);
+        showToast('能力图谱更新成功！');
+      };
+
+      const updateTempDimension = (index, value) => {
+        const newDims = [...tempDimensions];
+        newDims[index].value = value;
+        setTempDimensions(newDims);
+      };
+
+      // --- Tag Management Handlers ---
+
+      // 新建标签组卡片点击事件
+      const handleAddGroupCardClick = () => {
+        const newId = `g${Date.now()}`;
+        const defaultName = '新建标签组';
+        setTagGroups([...tagGroups, { id: newId, name: defaultName, tags: [] }]);
+        setEditingGroupId(newId);
+        setEditingGroupName(defaultName);
+      };
+
+      // 保存/结束 标签组名称的内联编辑
+      const handleSaveGroupName = (groupId, originalName) => {
+        const newName = editingGroupName.trim();
+        if (newName === '') {
+          setEditingGroupId(null);
+          return; 
+        }
+        if (newName !== originalName) {
+          setTagGroups(tagGroups.map(g => g.id === groupId ? { ...g, name: newName } : g));
+        }
+        setEditingGroupId(null);
+      };
+
+      // 删除标签组
+      const handleDeleteGroup = (groupId) => {
+        if (window.confirm('确定从标签库中删除该标签组吗？\n\n注：已打在用户身上的相关标签将作为【历史快照】继续保留。')) {
+          setTagGroups(tagGroups.filter(g => g.id !== groupId));
+          // [取消了级联删除 activeTags 的逻辑]
+          showToast('标签组已删除');
+        }
+      };
+
+      // 新增具体标签
+      const handleAddTag = (groupId) => {
+        if (!addingTag.value.trim()) {
+          setAddingTag({ groupId: null, value: '' });
+          return;
+        }
+        setTagGroups(tagGroups.map(g => {
+          if (g.id === groupId) {
+            return { ...g, tags: [...g.tags, { id: `t${Date.now()}`, name: addingTag.value.trim() }] };
+          }
+          return g;
+        }));
+        setAddingTag({ groupId: null, value: '' });
+      };
+
+      // 删除具体标签
+      const handleDeleteTag = (groupId, tagId) => {
+        if (window.confirm('确定从标签库中删除该标签吗？\n\n注：已应用该标签的用户将保留历史快照。')) {
+          setTagGroups(tagGroups.map(g => {
+            if (g.id === groupId) {
+              return { ...g, tags: g.tags.filter(t => t.id !== tagId) };
+            }
+            return g;
+          }));
+          // [取消了级联删除 activeTags 的逻辑]
+        }
+      };
+
+      const getTagDetails = (tagId) => {
+        for (const group of tagGroups) {
+          const tag = group.tags.find(t => t.id === tagId);
+          if (tag) return tag;
+        }
+        return null;
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
+          
+          {/* Toast Notification */}
+          {toastMessage && (
+            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 animate-bounce">
+              <Icon name="Check" size={18} className="text-green-400" />
+              <span>{toastMessage}</span>
+            </div>
+          )}
+
+          {/* --- View 1: 用户画像详情页 --- */}
+          {currentView === 'profile' && (
+            <>
+              <div className="max-w-5xl mx-auto mb-6 flex justify-between items-end">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <Icon name="User" className="text-indigo-600" />
+                    用户档案详情
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">查看和维护目标用户的画像数据。</p>
+                </div>
+                
+                <button 
+                  onClick={() => setPermission(!hasPermission)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    hasPermission ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'
+                  }`}
+                >
+                  {hasPermission ? <Icon name="ShieldCheck" size={18} /> : <Icon name="ShieldAlert" size={18} />}
+                  {hasPermission ? '当前：有编辑权限' : '当前：无编辑权限'}
+                </button>
+              </div>
+
+              <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center gap-2">
+                   <h2 className="text-lg font-semibold text-gray-800">用户画像</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                  
+                  {/* AREA A: 用户标签 */}
+                  <div className="p-6 flex flex-col h-full min-h-[350px]">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-base font-medium text-gray-700 flex items-center gap-2">
+                        <Icon name="TagIcon" size={18} className="text-indigo-500" /> 用户标签
+                      </h3>
+                      <div className="flex gap-2 relative group/buttons">
+                        <button 
+                          onClick={openTagDrawer} disabled={!hasPermission}
+                          className="px-3 py-1.5 text-sm bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-indigo-50 flex items-center gap-1 group"
+                        >
+                          <Icon name="Edit2" size={14} /> 贴标签
+                        </button>
+                        <button 
+                          disabled={!hasPermission}
+                          onClick={() => hasPermission && setCurrentView('tagManagement')}
+                          className="p-1.5 text-gray-500 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="标签管理"
+                        >
+                          <Icon name="Settings" size={18} />
+                        </button>
+                        {!hasPermission && (
+                          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-3 rounded opacity-0 group-hover/buttons:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            暂无编辑权限
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      {activeTags.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                          <Icon name="TagIcon" size={32} className="mb-2 opacity-20" />
+                          <p className="text-sm">暂无标签</p>
+                          {hasPermission && (
+                            <button onClick={openTagDrawer} className="text-indigo-500 text-sm mt-2 hover:underline">立即添加</button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {activeTags.map(tag => {
+                            // 检查该标签是否还在标签库中
+                            const isInLibrary = tagGroups.some(g => g.tags.some(t => t.id === tag.id));
+                            
+                            return (
+                              <span 
+                                key={tag.id} 
+                                title={!isInLibrary ? "该标签已从标签库移除，仅作历史保留" : ""}
+                                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${
+                                  isInLibrary 
+                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-100' 
+                                    : 'bg-gray-100 text-gray-500 border-gray-200'
+                                }`}
+                              >
+                                {tag.name}
+                                {!isInLibrary && <span className="ml-1 opacity-60 text-xs font-normal">(历史)</span>}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AREA B: 能力图谱 */}
+                  <div className="p-6 flex flex-col h-full min-h-[350px]">
+                    <div className="flex justify-between items-center mb-6 relative group/buttons2">
+                      <h3 className="text-base font-medium text-gray-700 flex items-center gap-2">
+                        <Icon name="Star" size={18} className="text-amber-500" /> 能力图谱
+                      </h3>
+                      <button 
+                        onClick={openChartModal} disabled={!hasPermission}
+                        className="px-3 py-1.5 text-sm bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-indigo-50 flex items-center gap-1"
+                      >
+                        <Icon name="Edit2" size={14} /> 编辑图谱
+                      </button>
+                      {!hasPermission && (
+                        <div className="absolute -top-10 right-0 bg-gray-800 text-white text-xs py-1 px-3 rounded opacity-0 group-hover/buttons2:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                          暂无编辑权限
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 flex items-center justify-center">
+                       <RadarChart dimensions={dimensions} size={280} />
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </>
+          )}
+
+
+          {/* --- View 2: 标签管理/维护页 --- */}
+          {currentView === 'tagManagement' && (
+            <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px] flex flex-col">
+              
+              <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setCurrentView('profile')} className="p-1.5 text-gray-500 hover:bg-gray-200 rounded-md transition-colors">
+                    <Icon name="ChevronLeft" size={20} />
+                  </button>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800">标签管理</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">维护目标用户的专属标签库</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 flex-1 overflow-y-auto bg-gray-50/30">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                  
+                  {/* 已有的标签组循环 */}
+                  {tagGroups.map(group => (
+                    <div key={group.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                        
+                        {/* 内联编辑标题区 */}
+                        {editingGroupId === group.id ? (
+                          <input 
+                            autoFocus
+                            type="text"
+                            maxLength={20}
+                            value={editingGroupName}
+                            onFocus={(e) => e.target.select()} // 自动全选
+                            onChange={(e) => setEditingGroupName(e.target.value)}
+                            onBlur={() => handleSaveGroupName(group.id, group.name)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveGroupName(group.id, group.name);
+                              if (e.key === 'Escape') setEditingGroupId(null);
+                            }}
+                            className="font-semibold text-gray-800 px-2 py-1 border-2 border-indigo-400 rounded outline-none flex-1 -ml-2"
+                            placeholder="请输入名称"
+                          />
+                        ) : (
+                          <h3 
+                            className="font-semibold text-gray-800 px-2 py-1 -ml-2 rounded cursor-text hover:bg-gray-100 transition-colors border-2 border-transparent truncate"
+                            title="点击修改名称"
+                            onClick={() => {
+                              setEditingGroupId(group.id);
+                              setEditingGroupName(group.name);
+                            }}
+                          >
+                            {group.name}
+                          </h3>
+                        )}
+
+                        {/* 防误触 更多菜单(···) */}
+                        <div className="relative ml-2">
+                          <button 
+                            onClick={() => setActiveMenuId(activeMenuId === group.id ? null : group.id)}
+                            className={`p-1.5 rounded transition-colors ${activeMenuId === group.id ? 'bg-gray-200 text-gray-800' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                          >
+                            <Icon name="MoreHorizontal" size={18} />
+                          </button>
+
+                          {activeMenuId === group.id && (
+                            <>
+                              <div className="fixed inset-0 z-10" onClick={() => setActiveMenuId(null)} />
+                              <div className="absolute right-0 top-8 w-36 bg-white border border-gray-100 shadow-lg rounded-lg z-20 py-1 overflow-hidden">
+                                <button 
+                                  onClick={() => {
+                                    setActiveMenuId(null);
+                                    handleDeleteGroup(group.id);
+                                  }}
+                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                >
+                                  <Icon name="Trash2" size={14} /> 删除标签组
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {group.tags.map(tag => (
+                          <span key={tag.id} className="group/tag inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm bg-gray-50 border border-gray-200 text-gray-700">
+                            {tag.name}
+                            <button onClick={() => handleDeleteTag(group.id, tag.id)} className="text-gray-400 hover:text-red-500 focus:outline-none">
+                              <Icon name="X" size={14} />
+                            </button>
+                          </span>
+                        ))}
+
+                        {/* 具体标签的内联新增 */}
+                        {addingTag.groupId === group.id ? (
+                          <input 
+                            autoFocus
+                            type="text"
+                            value={addingTag.value}
+                            onChange={(e) => setAddingTag({ ...addingTag, value: e.target.value })}
+                            onBlur={() => handleAddTag(group.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddTag(group.id);
+                              if (e.key === 'Escape') setAddingTag({ groupId: null, value: '' });
+                            }}
+                            className="px-3 py-1.5 text-sm border-2 border-indigo-400 rounded-md outline-none w-24 focus:w-32 transition-all bg-white"
+                            placeholder="输入后回车"
+                          />
+                        ) : (
+                          <button 
+                            onClick={() => setAddingTag({ groupId: group.id, value: '' })}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm border border-dashed border-gray-300 text-gray-500 hover:text-indigo-500 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+                          >
+                            <Icon name="Plus" size={14} /> 新增标签
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* 新建标签组 追加卡片 */}
+                  <div 
+                    onClick={handleAddGroupCardClick}
+                    className="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all min-h-[140px] group"
+                  >
+                    <div className="flex items-center gap-2 group-hover:scale-105 transition-transform">
+                      <Icon name="Plus" size={20} />
+                      <span className="font-medium">新建标签组</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= OVERLAYS (Drawers & Modals) ================= */}
+
+          {/* 贴标签 Drawer */}
+          {isTagDrawerOpen && (
+            <div className="fixed inset-0 z-40 flex justify-end">
+              <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" onClick={() => setTagDrawerOpen(false)} />
+              
+              <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col transform transition-transform duration-300">
+                <div className="flex justify-between items-center p-5 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-800">贴标签</h3>
+                  <button onClick={() => setTagDrawerOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <Icon name="X" size={20} />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-5">
+                  {tagGroups.map(group => (
+                    <div key={group.id} className="mb-6 last:mb-0">
+                      <h4 className="text-sm font-medium text-gray-500 mb-3">{group.name}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {group.tags.map(tag => {
+                          const isSelected = tempTags.includes(tag.id);
+                          return (
+                            <button
+                              key={tag.id}
+                              onClick={() => toggleTempTag(tag.id)}
+                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors border ${
+                                isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                              }`}
+                            >
+                              {tag.name}
+                              {isSelected && <Icon name="Check" size={14} />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* 渲染已被库删除，但用户身上仍保留的【历史快照标签】 */}
+                  {activeTags.filter(at => !tagGroups.some(g => g.tags.some(t => t.id === at.id))).length > 0 && (
+                    <div className="mb-6 last:mb-0 pt-4 border-t border-gray-100">
+                      <h4 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-1">
+                        历史快照
+                        <span className="text-xs font-normal text-gray-400" title="取消选中后将永久移除，无法再选回">(取消后不可恢复)</span>
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {activeTags.filter(at => !tagGroups.some(g => g.tags.some(t => t.id === at.id))).map(tag => {
+                          const isSelected = tempTags.includes(tag.id);
+                          if (!isSelected) return null; // 如果取消选中了，直接隐藏不给重选机会
+                          return (
+                            <button
+                              key={tag.id}
+                              onClick={() => toggleTempTag(tag.id)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors border bg-gray-100 border-gray-300 text-gray-600 font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                              title="点击取消保留"
+                            >
+                              {tag.name}
+                              <Icon name="Check" size={14} />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-8 pt-4 border-t border-gray-100 text-center">
+                    <button 
+                      onClick={() => {
+                        setTagDrawerOpen(false);
+                        setCurrentView('tagManagement');
+                      }}
+                      className="text-sm text-indigo-500 hover:text-indigo-700 hover:underline flex items-center justify-center w-full gap-1"
+                    >
+                      <Icon name="Settings" size={14} /> 管理标签库
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
+                  <button onClick={() => setTagDrawerOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                  <button onClick={saveTags} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">保存</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 编辑能力图谱 Modal */}
+          {isChartModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => {
+                 if(JSON.stringify(tempDimensions) !== JSON.stringify(dimensions)) {
+                    if(window.confirm('您有未保存的修改，确认退出吗？')) setChartModalOpen(false);
+                 } else {
+                   setChartModalOpen(false);
+                 }
+              }} />
+              
+              <div className="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+                <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50/50">
+                  <h3 className="text-lg font-semibold text-gray-800">编辑能力图谱</h3>
+                  <button onClick={() => setChartModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <Icon name="X" size={20} />
+                  </button>
+                </div>
+
+                <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
+                  <div className="w-full md:w-1/2 p-6 bg-gray-50/30 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100">
+                    <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider font-semibold">实时预览 (Real-time Preview)</p>
+                    <RadarChart dimensions={tempDimensions} size={260} />
+                  </div>
+
+                  <div className="w-full md:w-1/2 p-6 md:p-8">
+                    <div className="space-y-6">
+                      {tempDimensions.map((dim, index) => (
+                        <div key={dim.name} className="flex flex-col gap-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-700">{dim.name}</span>
+                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{dim.value} 星</span>
+                          </div>
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((starValue) => {
+                              const isActive = starValue <= dim.value;
+                              return (
+                                <button
+                                  key={starValue}
+                                  onClick={() => updateTempDimension(index, starValue)}
+                                  className="p-1 focus:outline-none group/star transition-transform hover:scale-110"
+                                >
+                                  <Icon 
+                                    name="Star" 
+                                    size={28} 
+                                    className={`transition-colors duration-200 ${isActive ? 'fill-amber-400 text-amber-400' : 'fill-gray-100 text-gray-200 group-hover/star:fill-amber-200 group-hover/star:text-amber-200'}`} 
+                                  />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
+                  <button onClick={() => setChartModalOpen(false)} className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">取消</button>
+                  <button onClick={saveChart} className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 shadow-sm">保存更新</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // --- 渲染到 DOM ---
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

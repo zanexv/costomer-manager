@@ -558,11 +558,29 @@
 
                     <div class="nav-section-label">业务</div>
 
-                    <li class="nav-item" data-page="customer">
+                    <li class="nav-item has-submenu" data-page="customer">
                         <div class="nav-item-link" data-tooltip="客户管理">
                             <span class="nav-icon"><i class="ph ph-users-three"></i></span>
                             <span class="nav-label">客户管理</span>
+                            <span class="nav-arrow"><i class="ph ph-caret-right"></i></span>
                         </div>
+                        <ul class="nav-submenu">
+                            <li class="nav-item" data-page="customer-list">
+                                <div class="nav-item-link">
+                                    <span class="nav-label">客户列表</span>
+                                </div>
+                            </li>
+                            <li class="nav-item" data-page="corporate-relationship-graph">
+                                <div class="nav-item-link">
+                                    <span class="nav-label">企业关系图谱</span>
+                                </div>
+                            </li>
+                            <li class="nav-item" data-page="user-profile">
+                                <div class="nav-item-link">
+                                    <span class="nav-label">用户画像</span>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="nav-item has-submenu" data-page="finance">
@@ -700,6 +718,9 @@
             const pageMapping = {
                 'dashboard': { url: 'dashboard.html', title: '驾驶舱' },
                 'customer': { url: 'customer.html', title: '客户管理' },
+                'customer-list': { url: 'customer.html', title: '客户列表' },
+                'corporate-relationship-graph': { url: 'corporate-relationship-graph.html', title: '企业关系图谱' },
+                'user-profile': { url: 'user-profile.html', title: '用户画像' },
                 'task': { url: 'task.html', title: '任务管理' },
                 'schedule': { url: 'schedule.html', title: '日程管理' },
                 'report': { url: 'report.html', title: '数据报表' },

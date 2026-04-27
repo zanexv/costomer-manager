@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>企业关系图谱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html,body,#root{height:100%;overflow:hidden;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+    @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .animate-spin-slow{animation:spin-slow 4s linear infinite;transform-origin:center;transform-box:fill-box}
+    .canvas-bg{background-image:radial-gradient(#D9D9D9 1px,transparent 1px);background-size:20px 20px}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#8A2BE2!important;box-shadow:0 0 0 2px rgba(138,43,226,0.1)!important}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:#E8E8E8;border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:#D9D9D9}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+var h = React.createElement;
+var useState = React.useState, useRef = React.useRef, useCallback = React.useCallback;
+
+/* ── Icons ── */
+function Ico(p){var s=Object.assign({size:24,color:'currentColor',sw:2},p);return h('svg',{xmlns:'http://www.w3.org/2000/svg',width:s.size,height:s.size,viewBox:'0 0 24 24',fill:'none',stroke:s.color,strokeWidth:s.sw,strokeLinecap:'round',strokeLinejoin:'round',style:s.style||{}},s.children)}
+function IcoBuilding(p){return h(Ico,p,h('path',{d:'M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z'}),h('path',{d:'M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2'}),h('path',{d:'M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2'}),h('path',{d:'M10 6h4'}),h('path',{d:'M10 10h4'}),h('path',{d:'M10 14h4'}),h('path',{d:'M10 18h4'}))}
+function IcoUser(p){return h(Ico,p,h('path',{d:'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'}),h('circle',{cx:12,cy:7,r:4}))}
+function IcoUsers(p){return h(Ico,p,h('path',{d:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'}),h('circle',{cx:9,cy:7,r:4}),h('path',{d:'M22 21v-2a4 4 0 0 0-3-3.87'}),h('path',{d:'M16 3.13a4 4 0 0 1 0 7.75'}))}
+function IcoBag(p){return h(Ico,p,h('path',{d:'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z'}),h('path',{d:'M3 6h18'}),h('path',{d:'M16 10a4 4 0 0 1-8 0'}))}
+function IcoStore(p){return h(Ico,p,h('path',{d:'m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7'}),h('path',{d:'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8'}),h('path',{d:'M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4'}),h('path',{d:'M2 7h20'}))}
+function IcoPin(p){return h(Ico,p,h('path',{d:'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'}),h('circle',{cx:12,cy:10,r:3}))}
+function IcoSettings(p){return h(Ico,p,h('path',{d:'M20 7h-9'}),h('path',{d:'M14 17H5'}),h('circle',{cx:17,cy:17,r:3}),h('circle',{cx:7,cy:7,r:3}))}
+function IcoUndo(p){return h(Ico,p,h('path',{d:'M3 7v6h6'}),h('path',{d:'M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13'}))}
+function IcoRedo(p){return h(Ico,p,h('path',{d:'M21 7v6h-6'}),h('path',{d:'M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13'}))}
+function IcoPlus(p){return h(Ico,p,h('path',{d:'M5 12h14'}),h('path',{d:'M12 5v14'}))}
+function IcoPointer(p){return h(Ico,p,h('path',{d:'m4 4 7.07 17 2.51-7.39L21 11.07z'}))}
+function IcoX(p){return h(Ico,p,h('path',{d:'M18 6 6 18'}),h('path',{d:'m6 6 12 12'}))}
+function IcoSave(p){return h(Ico,p,h('path',{d:'M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'}),h('polyline',{points:'17 21 17 13 7 13 7 21'}),h('polyline',{points:'7 3 7 8 15 8'}))}
+function IcoLink(p){return h(Ico,p,h('path',{d:'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'}),h('path',{d:'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'}))}
+function IcoUserPlus(p){return h(Ico,p,h('path',{d:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'}),h('circle',{cx:9,cy:7,r:4}),h('line',{x1:19,y1:8,x2:19,y2:14}),h('line',{x1:22,y1:11,x2:16,y2:11}))}
+function IcoTrash(p){return h(Ico,p,h('path',{d:'M3 6h18'}),h('path',{d:'M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'}),h('path',{d:'M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'}))}
+function IcoLayout(p){return h(Ico,p,h('rect',{width:18,height:18,x:3,y:3,rx:2}),h('path',{d:'M3 9h18'}),h('path',{d:'M9 21V9'}))}
+function IcoShare(p){return h(Ico,p,h('circle',{cx:18,cy:5,r:3}),h('circle',{cx:6,cy:12,r:3}),h('circle',{cx:18,cy:19,r:3}),h('line',{x1:8.59,y1:13.51,x2:15.42,y2:17.49}),h('line',{x1:15.41,y1:6.51,x2:8.59,y2:10.49}))}
+function IcoSwap(p){return h(Ico,p,h('path',{d:'m16 3 4 4-4 4'}),h('path',{d:'M20 7H4'}),h('path',{d:'m8 21-4-4 4-4'}),h('path',{d:'M4 17h16'}))}
+
+/* ── Config ── */
+var NT={
+  ENTERPRISE:{id:'enterprise',name:'企业',color:'#8A2BE2',size:64,icon:IcoBuilding},
+  PERSON:{id:'person',name:'企业人员',color:'#F59E0B',size:52,icon:IcoUser},
+  RELATION:{id:'relation',name:'关系人员',color:'#EC4899',size:48,icon:IcoUsers},
+  PLATFORM:{id:'platform',name:'店铺平台',color:'#F43F5E',size:44,icon:IcoBag},
+  SHOP:{id:'shop',name:'店铺',color:'#10B981',size:40,icon:IcoStore},
+  NETWORK:{id:'network',name:'网点',color:'#6366F1',size:44,icon:IcoPin},
+};
+var EC={PERSON_PERSON:'#EC4899',PERSON_ENTERPRISE:'#BFBFBF',ENTERPRISE_NETWORK_NORMAL:'#52C41A',ENTERPRISE_NETWORK_TRANSFER:'#BFBFBF',ENTERPRISE_PLATFORM:'#F59E0B',PLATFORM_SHOP:'#F59E0B'};
+var PE_ROLES=['法人','历史法人','实控人','历史实控人','股东','总经理','财务','联系人','合同经办人','办公室负责人','财务负责人','客服负责人','职业经理人','其他'];
+var PP_ROLES=['配偶','朋友','合伙人','亲属','长辈','同事','其他'];
+
+/* ── Data ── */
+var initN=[
+  {id:'n1',type:'ENTERPRISE',label:'星辰服饰有限公司',creditCode:'91310000MA1G0XYZ3K',x:450,y:300},
+  {id:'n2',type:'PERSON',label:'张建国',phone:'138****1234',idCard:'310***********1234',role:'法人',notes:'创始人',x:280,y:130},
+  {id:'n3',type:'RELATION',label:'李梅',phone:'139****5678',idCard:'310***********5678',role:'配偶',notes:'',x:100,y:130},
+  {id:'n4',type:'PERSON',label:'王强',phone:'137****9012',idCard:'310***********9012',role:'股东',notes:'持股30%',x:620,y:130},
+  {id:'n5',type:'PLATFORM',label:'星辰专属淘宝',x:450,y:470},
+  {id:'n6',type:'SHOP',label:'星辰男装旗舰店',x:320,y:600},
+  {id:'n7',type:'SHOP',label:'星辰女装专营店',x:580,y:600},
+  {id:'n8',type:'NETWORK',label:'华东总仓网点',netCode:'WD20240001',netProvince:'上海市',x:720,y:300},
+];
+var initE=[
+  {id:'e1',source:'n2',target:'n1',label:'法人',type:'PERSON_ENTERPRISE'},
+  {id:'e2',source:'n4',target:'n1',label:'股东',type:'PERSON_ENTERPRISE'},
+  {id:'e3',source:'n3',target:'n2',label:'配偶',type:'PERSON_PERSON'},
+  {id:'e4',source:'n1',target:'n5',label:'经营',type:'ENTERPRISE_PLATFORM'},
+  {id:'e5',source:'n5',target:'n6',label:'平台',type:'PLATFORM_SHOP'},
+  {id:'e6',source:'n5',target:'n7',label:'平台',type:'PLATFORM_SHOP'},
+  {id:'e7',source:'n1',target:'n8',label:'正常经营',type:'ENTERPRISE_NETWORK_NORMAL'},
+];
+
+/* ── Field ── */
+function Field(p){
+  var ls={display:'block',fontSize:13,color:'#666',marginBottom:8};
+  var rs={fontSize:14,color:'#333',background:'#F9FAFB',padding:'8px 12px',borderRadius:6,border:'1px solid #F0F0F0'};
+  var is={width:'100%',fontSize:14,color:'#333',padding:'0 11px',height:32,border:'1px solid #D9D9D9',borderRadius:6,background:'#fff',boxSizing:'border-box',transition:'all 0.2s',fontFamily:'inherit'};
+  if(p.readOnly)return h('div',{style:{marginBottom:16}},h('div',{style:ls},p.label),h('div',{style:rs},p.value||'—'));
+  if(p.type==='select')return h('div',{style:{marginBottom:16}},h('div',{style:ls},p.label),h('select',{value:p.value||'',onChange:function(e){p.onChange(e.target.value)},style:is},(p.options||[]).map(function(o){return h('option',{key:o,value:o},o)})));
+  if(p.type==='textarea')return h('div',{style:{marginBottom:16}},h('div',{style:ls},p.label),h('textarea',{value:p.value||'',onChange:function(e){p.onChange(e.target.value)},rows:2,style:Object.assign({},is,{height:'auto',padding:'8px 11px',resize:'vertical'})}));
+  return h('div',{style:{marginBottom:16}},h('div',{style:ls},p.label),h('input',{type:'text',value:p.value||'',onChange:function(e){p.onChange(e.target.value)},style:is}));
+}
+
+/* ── Auto Layout ── */
+function autoLayout(nodes,edges){
+  var ent=nodes.find(function(n){return n.type==='ENTERPRISE'});
+  if(!ent)return nodes;
+  var cx=500,cy=320;
+  var result=nodes.map(function(n){return Object.assign({},n)});
+  var entN=result.find(function(n){return n.id===ent.id});
+  entN.x=cx;entN.y=cy;
+  /* Group by type */
+  var persons=[],relations=[],platforms=[],shops=[],networks=[],others=[];
+  result.forEach(function(n){
+    if(n.id===ent.id)return;
+    if(n.type==='PERSON')persons.push(n);
+    else if(n.type==='RELATION')relations.push(n);
+    else if(n.type==='PLATFORM')platforms.push(n);
+    else if(n.type==='SHOP')shops.push(n);
+    else if(n.type==='NETWORK')networks.push(n);
+    else others.push(n);
+  });
+  function spread(arr,y,startX,gap){arr.forEach(function(n,i){n.x=startX+i*gap;n.y=y})}
+  var pTotal=persons.length||1;
+  spread(persons,cy-180,cx-(pTotal-1)*90,180);
+  /* relations: spread under their connected person */
+  relations.forEach(function(r,i){
+    var linked=edges.find(function(e){return e.source===r.id||e.target===r.id});
+    var parent=null;
+    if(linked){var pid=linked.source===r.id?linked.target:linked.source;parent=result.find(function(n){return n.id===pid})}
+    if(parent){r.x=parent.x+(i%2===0?-120:120);r.y=parent.y+(i%2===0?60:-60)}
+    else{r.x=cx-200+i*120;r.y=cy-100}
+  });
+  spread(platforms,cy+170,cx-(((platforms.length||1)-1)*140)/2,140);
+  var sTotal=shops.length||1;
+  spread(shops,cy+310,cx-((sTotal-1)*140)/2,140);
+  spread(networks,cy,cx+280,0);
+  if(networks.length>1){var ns=networks.length;networks.forEach(function(n,i){n.x=cx+280;n.y=cy-60*(ns-1)/2+i*60})}
+  spread(others,cy+100,cx+200,80);
+  return result;
+}
+
+/* ═══ App ═══ */
+function App(){
+  var _e=useState(false),isEdit=_e[0],setEdit=_e[1];
+  var _n=useState(initN),nodes=_n[0],setNodes=_n[1];
+  var _g=useState(initE),edges=_g[0],setEdges=_g[1];
+  var _s=useState(null),sel=_s[0],setSel=_s[1];
+  var _d=useState(null),drag=_d[0],setDrag=_d[1];
+  var svg=useRef(null);
+  var _h=useState([{n:initN,e:initE}]),hist=_h[0],setHist=_h[1];
+  var _i=useState(0),hi=_i[0],setHi=_i[1];
+
+  var _tr=useState({x:0,y:0,k:1}),tr=_tr[0],setTr=_tr[1];
+  var _bgDrag=useState(false),bgDrag=_bgDrag[0],setBgDrag=_bgDrag[1];
+
+  var sv=useCallback(function(nn,ne){var nh=hist.slice(0,hi+1);nh.push({n:nn,e:ne});setHist(nh);setHi(nh.length-1)},[hist,hi]);
+  function undo(){if(hi>0){setHi(hi-1);setNodes(hist[hi-1].n);setEdges(hist[hi-1].e)}}
+  function redo(){if(hi<hist.length-1){setHi(hi+1);setNodes(hist[hi+1].n);setEdges(hist[hi+1].e)}}
+
+  function onND(e,node){e.stopPropagation();if(isEdit)setDrag(node.id);setSel({type:'node',data:node})}
+  
+  function onCanvasDown(e){
+    if(e.target.tagName==='svg'||e.target.className.includes('canvas-bg')){
+      setBgDrag({x:e.clientX,y:e.clientY,tx:tr.x,ty:tr.y});
+      setSel(null);
+    }
+  }
+
+  function onMM(e){
+    if(drag&&svg.current){
+      var C=svg.current.getBoundingClientRect();
+      setNodes(nodes.map(function(n){return n.id===drag?Object.assign({},n,{x:(e.clientX-C.left-tr.x)/tr.k,y:(e.clientY-C.top-tr.y)/tr.k}):n}));
+    } else if(bgDrag){
+      setTr(Object.assign({},tr,{x:bgDrag.tx+(e.clientX-bgDrag.x),y:bgDrag.ty+(e.clientY-bgDrag.y)}));
+    }
+  }
+  
+  function onMU(){
+    if(drag){sv(nodes,edges);setDrag(null)}
+    if(bgDrag)setBgDrag(false);
+  }
+
+  function onWheel(e){
+    if(!svg.current)return;
+    var C=svg.current.getBoundingClientRect();
+    // Delta Y > 0 means scroll down (zoom out), Delta Y < 0 means scroll up (zoom in)
+    var deltaK=e.deltaY>0?-0.1:0.1;
+    var currentK=Math.round(tr.k*10)/10;
+    var nk=Math.max(0.2,Math.min(2.5,currentK+deltaK));
+    if(nk===tr.k)return;
+    var ratio=nk/tr.k;
+    var nx=e.clientX-C.left, ny=e.clientY-C.top;
+    setTr({x:nx-(nx-tr.x)*ratio, y:ny-(ny-tr.y)*ratio, k:nk});
+  }
+
+  function onED(e,edge){e.stopPropagation();setSel({type:'edge',data:edge})}
+
+  function addPerson(){
+    if(!sel||sel.data.type!=='ENTERPRISE')return;
+    var p=sel.data,nid='n_'+Date.now();
+    var nn={id:nid,type:'PERSON',label:'新增人员',phone:'',idCard:'',role:'其他',notes:'',x:p.x+90,y:p.y-110};
+    var ne={id:'e_'+Date.now(),source:nid,target:p.id,label:'其他',type:'PERSON_ENTERPRISE'};
+    var ns=nodes.concat(nn),es=edges.concat(ne);setNodes(ns);setEdges(es);sv(ns,es);setSel({type:'node',data:nn});
+  }
+  function addRelation(){
+    if(!sel||(sel.data.type!=='PERSON'&&sel.data.type!=='RELATION'))return;
+    var p=sel.data,nid='n_'+Date.now();
+    var nn={id:nid,type:'RELATION',label:'新增关系人',phone:'',idCard:'',role:'朋友',notes:'',x:p.x+100,y:p.y+80};
+    var ne={id:'e_'+Date.now(),source:nid,target:p.id,label:'朋友',type:'PERSON_PERSON'};
+    var ns=nodes.concat(nn),es=edges.concat(ne);setNodes(ns);setEdges(es);sv(ns,es);setSel({type:'node',data:nn});
+  }
+
+  /* 删除节点 (递归/拓扑) */
+  function deleteNode(){
+    if(!sel||sel.type!=='node')return;
+    var nid=sel.data.id;
+    if(sel.data.type==='ENTERPRISE')return; /* 企业不可删 */
+
+    /* 1. 临时移除目标节点及其边 */
+    var nextN = nodes.filter(function(n){return n.id!==nid});
+    var nextE = edges.filter(function(e){return e.source!==nid && e.target!==nid});
+
+    /* 2. 计算从根节点(企业)可达的所有节点 */
+    var roots = nextN.filter(function(n){return n.type==='ENTERPRISE'}).map(function(n){return n.id});
+    var reachable = [].concat(roots);
+    var stack = [].concat(roots);
+
+    while(stack.length > 0){
+      var curr = stack.pop();
+      nextE.forEach(function(e){
+        var other = (e.source === curr) ? e.target : (e.target === curr ? e.source : null);
+        if(other && !reachable.includes(other)){
+          reachable.push(other);
+          stack.push(other);
+        }
+      });
+    }
+
+    /* 3. 仅保留可达节点及其边 */
+    var finalN = nextN.filter(function(n){return reachable.includes(n.id)});
+    var finalE = nextE.filter(function(e){return reachable.includes(e.source) && reachable.includes(e.target)});
+
+    setNodes(finalN);
+    setEdges(finalE);
+    sv(finalN, finalE);
+    setSel(null);
+  }
+
+  /* 翻转边方向 */
+  function flipEdge(){
+    if(!sel||sel.type!=='edge')return;
+    var ne=edges.map(function(e){return e.id===sel.data.id?Object.assign({},e,{source:e.target,target:e.source}):e});
+    var flipped=ne.find(function(e){return e.id===sel.data.id});
+    setEdges(ne);setSel({type:'edge',data:flipped});sv(nodes,ne);
+  }
+
+  function updN(u){
+    var nn=nodes.map(function(n){return n.id===sel.data.id?Object.assign({},n,u):n});
+    setNodes(nn);setSel({type:'node',data:Object.assign({},sel.data,u)});sv(nn,edges);
+    if(u.role!==undefined){var ne2=edges.map(function(e){return e.source===sel.data.id?Object.assign({},e,{label:u.role}):e});setEdges(ne2);sv(nn,ne2)}
+  }
+  function updE(u){var ne=edges.map(function(e){return e.id===sel.data.id?Object.assign({},e,u):e});setEdges(ne);setSel({type:'edge',data:Object.assign({},sel.data,u)});sv(nodes,ne)}
+
+  function doLayout(){var nn=autoLayout(nodes,edges);setNodes(nn);sv(nn,edges)}
+
+  function eStyle(t){
+    switch(t){
+      case 'PERSON_PERSON':return{stroke:EC.PERSON_PERSON,dash:''};
+      case 'PERSON_ENTERPRISE':return{stroke:EC.PERSON_ENTERPRISE,dash:''};
+      case 'ENTERPRISE_NETWORK_NORMAL':return{stroke:EC.ENTERPRISE_NETWORK_NORMAL,dash:''};
+      case 'ENTERPRISE_NETWORK_TRANSFER':return{stroke:EC.ENTERPRISE_NETWORK_TRANSFER,dash:'5,5'};
+      default:return{stroke:EC.ENTERPRISE_PLATFORM||'#BFBFBF',dash:''};
+    }
+  }
+
+  var canP=sel&&sel.type==='node'&&sel.data.type==='ENTERPRISE';
+  var canR=sel&&sel.type==='node'&&(sel.data.type==='PERSON'||sel.data.type==='RELATION');
+  var canDel=sel&&sel.type==='node'&&sel.data.type!=='ENTERPRISE'&&sel.data.type!=='NETWORK'&&sel.data.type!=='PLATFORM'&&sel.data.type!=='SHOP';
+  var canSave=sel&&(sel.type==='edge'||(sel.type==='node'&&(sel.data.type==='PERSON'||sel.data.type==='RELATION')));
+  var sc='#8A2BE2';
+  /* Btn style helper */
+  var btnS=function(active){return{display:'flex',alignItems:'center',justifyContent:'center',width:32,height:32,borderRadius:6,cursor:'pointer',border:'1px solid '+(active?'#8A2BE2':'#D9D9D9'),background:active?'#FAF5FF':'#fff'}};
+
+  return h('div',{style:{display:'flex',flexDirection:'column',width:'100%',height:'100vh',backgroundColor:'#F0F2F5',fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",color:'#333',overflow:'hidden'}},
+
+    /* ▸ Header — reference style */
+    h('header',{style:{height:56,backgroundColor:'#fff',borderBottom:'1px solid #E8E8E8',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 24px',boxShadow:'0 1px 4px rgba(0,0,0,0.02)',zIndex:10,flexShrink:0}},
+      h('div',{style:{display:'flex',alignItems:'center',gap:16}},
+        h('div',{style:{fontSize:16,fontWeight:600,color:'#1F1F1F',display:'flex',alignItems:'center',gap:8}},h(IcoShare,{size:20,color:'#8A2BE2',sw:2}),'星辰服饰 — 关联图谱'),
+        h('div',{style:{height:16,width:1,background:'#E8E8E8'}}),
+        /* toolbar */
+        h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+          h('div',{onClick:undo,style:Object.assign({},btnS(false),{opacity:hi===0?0.4:1,cursor:hi===0?'not-allowed':'pointer'}),title:'撤销'},h(IcoUndo,{size:14,color:'#666'})),
+          h('div',{onClick:redo,style:Object.assign({},btnS(false),{opacity:hi===hist.length-1?0.4:1,cursor:hi===hist.length-1?'not-allowed':'pointer'}),title:'重做'},h(IcoRedo,{size:14,color:'#666'})),
+          h('div',{style:{height:16,width:1,background:'#E8E8E8',margin:'0 4px'}}),
+          /* Zoom Control */
+          h('div',{style:{display:'flex',alignItems:'center',gap:6,background:'#F9FAFB',padding:'4px 10px',borderRadius:20,border:'1px solid #E8E8E8'}},
+            h('span',{style:{fontSize:12,color:'#666',width:36,textAlign:'right',fontVariantNumeric:'tabular-nums'}},Math.round(tr.k*100)+'%'),
+            h('input',{
+              type:'range',min:20,max:250,step:10,value:Math.round(tr.k*100),
+              onChange:function(e){
+                var nk=parseFloat(e.target.value)/100;
+                if(!svg.current)return;
+                var C=svg.current.getBoundingClientRect();
+                var nx=C.width/2, ny=C.height/2;
+                var ratio=nk/tr.k;
+                setTr({x:nx-(nx-tr.x)*ratio,y:ny-(ny-tr.y)*ratio,k:nk});
+              },
+              style:{width:80,cursor:'pointer',accentColor:'#8A2BE2'}
+            })
+          ),
+          h('div',{style:{height:16,width:1,background:'#E8E8E8',margin:'0 4px'}}),
+          h('div',{onClick:doLayout,style:Object.assign({},btnS(false),{width:'auto',padding:'0 12px',gap:4,fontSize:14,color:'#333'}),title:'一键布局'},h(IcoLayout,{size:14,color:'#666'}),'一键布局'),
+          isEdit&&canP&&h('div',{onClick:addPerson,style:{display:'flex',alignItems:'center',justifyContent:'center',height:32,padding:'0 12px',borderRadius:6,cursor:'pointer',border:'1px dashed #8A2BE2',background:'#FAF5FF',color:'#8A2BE2',fontSize:14,fontWeight:500,gap:4}},h(IcoPlus,{size:14}),'添加人员'),
+          isEdit&&canR&&h('div',{onClick:addRelation,style:{display:'flex',alignItems:'center',justifyContent:'center',height:32,padding:'0 12px',borderRadius:6,cursor:'pointer',border:'1px dashed #EC4899',background:'#FDF2F8',color:'#EC4899',fontSize:14,fontWeight:500,gap:4}},h(IcoPlus,{size:14}),'添加关系人')
+        )
+      ),
+      h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+        h('div',{onClick:function(){setEdit(false);setSel(null)},style:Object.assign({},btnS(!isEdit),{width:'auto',padding:'0 14px',gap:5,fontSize:14,fontWeight:500,color:!isEdit?'#8A2BE2':'#666'})},h(IcoPointer,{size:14,color:!isEdit?'#8A2BE2':'#666'}),'查看'),
+        h('div',{onClick:function(){setEdit(true)},style:Object.assign({},btnS(isEdit),{width:'auto',padding:'0 14px',gap:5,fontSize:14,fontWeight:500,color:isEdit?'#8A2BE2':'#666'})},h(IcoSettings,{size:14,color:isEdit?'#8A2BE2':'#666'}),'编辑')
+      )
+    ),
+
+    /* ▸ Body */
+    h('div',{style:{display:'flex',flex:1,overflow:'hidden'}},
+      /* Canvas */
+      h('div',{className:'canvas-bg',style:{flex:1,position:'relative',cursor:bgDrag?'grabbing':drag?'grabbing':'grab',backgroundPosition:tr.x+'px '+tr.y+'px',backgroundSize:(20*tr.k)+'px '+(20*tr.k)+'px'},onWheel:onWheel,onMouseMove:onMM,onMouseUp:onMU,onMouseLeave:onMU,onMouseDown:onCanvasDown},
+        h('svg',{ref:svg,style:{width:'100%',height:'100%',pointerEvents:'auto'}},
+          h('defs',null,
+            Array.from(new Set(Object.values(EC).concat(sc))).map(function(c){return h('marker',{key:c,id:'a-'+c.replace('#',''),viewBox:'0 -5 10 10',refX:5,refY:0,markerWidth:5.5,markerHeight:5.5,orient:'auto'},h('path',{d:'M0,-5L10,0L0,5',fill:c}))}),
+            h('filter',{id:'sh',x:'-20%',y:'-20%',width:'140%',height:'140%'},h('feDropShadow',{dx:0,dy:2,stdDeviation:4,floodColor:'rgba(0,0,0,0.08)',floodOpacity:1}))
+          ),
+          h('g',{transform:'translate('+tr.x+','+tr.y+') scale('+tr.k+')'},
+          edges.map(function(edge){
+            var sn=nodes.find(function(n){return n.id===edge.source}),tn=nodes.find(function(n){return n.id===edge.target});
+            if(!sn||!tn)return null;
+
+            var dx=tn.x-sn.x,dy=tn.y-sn.y,dist=Math.sqrt(dx*dx+dy*dy)||1;
+            var tr=(NT[tn.type].size/2+4), sr=(NT[sn.type].size/2+4);
+            var tx=tn.x-(dx*tr)/dist, ty=tn.y-(dy*tr)/dist;
+            var sx=sn.x+(dx*sr)/dist, sy=sn.y+(dy*sr)/dist;
+
+            var es=eStyle(edge.type),isSel=sel&&sel.data&&sel.data.id===edge.id;
+            var stc=isSel?sc:es.stroke,mx=(sn.x+tn.x)/2,my=(sn.y+tn.y)/2;
+            return h('g',{key:edge.id,onMouseDown:function(e){onED(e,edge)},style:{cursor:'pointer'}},
+              h('line',{x1:sn.x,y1:sn.y,x2:tn.x,y2:tn.y,stroke:'transparent',strokeWidth:15}),
+              h('line',{x1:sx,y1:sy,x2:tx,y2:ty,stroke:stc,strokeWidth:isSel?2:1.2,strokeDasharray:es.dash,markerEnd:'url(#a-'+stc.replace('#','')+')'}),
+              h('text',{x:mx,y:my+4,textAnchor:'middle',fontSize:11,stroke:'#fff',strokeWidth:4,strokeLinejoin:'round',style:{pointerEvents:'none',userSelect:'none'}},edge.label),
+              h('text',{x:mx,y:my+4,textAnchor:'middle',fontSize:11,fill:isSel?'#8A2BE2':'#666',fontWeight:500,style:{pointerEvents:'none',userSelect:'none'}},edge.label)
+            );
+          }),
+          nodes.map(function(node){
+            var tc=NT[node.type],isSel=sel&&sel.data&&sel.data.id===node.id,is=tc.size*0.4;
+            return h('g',{key:node.id,transform:'translate('+node.x+','+node.y+')',onMouseDown:function(e){onND(e,node)},style:{cursor:isEdit?'move':'pointer'}},
+              h('g',{style:{transform:isSel?'scale(1.08)':'scale(1)',transformOrigin:'center',transformBox:'fill-box',transition:'transform 0.2s'}},
+                isSel&&h('circle',{r:tc.size/2+10,fill:'none',stroke:sc,strokeWidth:2,strokeDasharray:'5 3',className:'animate-spin-slow'}),
+                isSel&&h('circle',{r:tc.size/2+5,fill:'none',stroke:'rgba(138,43,226,0.1)',strokeWidth:8}),
+                h('circle',{r:tc.size/2+3,fill:'none',stroke:tc.color,strokeWidth:3,strokeOpacity:0.25}),
+                h('circle',{r:tc.size/2,fill:tc.color,stroke:'#ffffff',strokeWidth:1.5,filter:'url(#sh)'}),
+                h('foreignObject',{x:-is/2,y:-is/2,width:is,height:is},React.createElement(tc.icon,{size:is,color:'white',sw:2.5})),
+                h('text',{y:tc.size/2+18,textAnchor:'middle',fontSize:12,fill:'#333',fontWeight:600,style:{userSelect:'none',textShadow:'0 1px 2px rgba(255,255,255,0.8)'}},node.label),
+                h('text',{y:tc.size/2+32,textAnchor:'middle',fontSize:10,fill:'#999',style:{userSelect:'none'}},tc.name)
+              )
+            );
+          })
+          )
+        ),
+        /* Legend */
+        h('div',{style:{position:'absolute',bottom:20,left:20,padding:'12px 16px',borderRadius:6,background:'#fff',boxShadow:'0 2px 8px rgba(0,0,0,0.08)',border:'1px solid #E8E8E8',display:'flex',flexDirection:'column',gap:7,pointerEvents:'none'}},
+          h('div',{style:{fontSize:10,fontWeight:600,color:'#999',textTransform:'uppercase',letterSpacing:1}},'图例'),
+          Object.values(NT).map(function(t){return h('div',{key:t.id,style:{display:'flex',alignItems:'center',gap:8}},h('div',{style:{width:18,height:18,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:t.color}},React.createElement(t.icon,{size:9,color:'white',sw:3})),h('span',{style:{fontSize:12,color:'#666'}},t.name))})
+        )
+      ),
+
+      /* ▸ Right Panel */
+      h('div',{style:{width:320,backgroundColor:'#fff',borderLeft:'1px solid #E8E8E8',position:'absolute',right:0,top:0,height:'100%',zIndex:20,display:'flex',flexDirection:'column',transform:sel?'translateX(0)':'translateX(100%)',transition:'transform 0.3s ease',boxShadow:sel?'-2px 0 8px rgba(0,0,0,0.02)':'none'}},
+        sel&&h(React.Fragment,null,
+          /* Header */
+          h('div',{style:{padding:'16px 20px 0 20px',borderBottom:'1px solid #F0F0F0',background:'#F9FAFB'}},
+            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}},
+              h('div',{style:{fontSize:16,fontWeight:600,color:'#1F1F1F'}},sel.type==='node'?'节点属性':'关系属性'),
+              h('button',{onClick:function(){setSel(null)},style:{padding:4,color:'#999',background:'none',border:'none',cursor:'pointer'}},h(IcoX,{size:18}))
+            ),
+            sel.type==='node'&&h('div',{style:{display:'flex',alignItems:'center',gap:8,paddingBottom:12}},
+              h('div',{style:{width:28,height:28,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:NT[sel.data.type].color}},React.createElement(NT[sel.data.type].icon,{size:13,color:'white'})),
+              h('span',{style:{fontSize:14,fontWeight:500,color:'#333'}},sel.data.label),
+              h('span',{style:{fontSize:12,color:'#999',marginLeft:4}},NT[sel.data.type].name)
+            )
+          ),
+          /* Content */
+          h('div',{style:{flex:1,overflowY:'auto',padding:20}},
+            /* Enterprise */
+            sel.type==='node'&&sel.data.type==='ENTERPRISE'&&h('div',null,
+              h(Field,{label:'企业名称',value:sel.data.label,readOnly:true}),
+              h(Field,{label:'统一社会信用代码',value:sel.data.creditCode,readOnly:true}),
+              isEdit&&h('div',{style:{paddingTop:12,borderTop:'1px solid #F0F0F0',marginTop:4}},
+                h('button',{onClick:addPerson,style:{width:'100%',height:32,border:'1px dashed #8A2BE2',color:'#8A2BE2',borderRadius:6,background:'#FAF5FF',cursor:'pointer',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:4}},h(IcoUserPlus,{size:14}),'添加企业人员')
+              )
+            ),
+            /* Person */
+            sel.type==='node'&&sel.data.type==='PERSON'&&h('div',null,
+              isEdit?h(React.Fragment,null,
+                h(Field,{label:'姓名',value:sel.data.label,onChange:function(v){updN({label:v})}}),
+                h(Field,{label:'手机号码',value:sel.data.phone,onChange:function(v){updN({phone:v})}}),
+                h(Field,{label:'身份证号码',value:sel.data.idCard,onChange:function(v){updN({idCard:v})}}),
+                h(Field,{label:'企业人员身份',value:sel.data.role,type:'select',options:PE_ROLES,onChange:function(v){updN({role:v})}}),
+                h(Field,{label:'企业人员注释',value:sel.data.notes,type:'textarea',onChange:function(v){updN({notes:v})}}),
+                h('div',{style:{paddingTop:12,borderTop:'1px solid #F0F0F0'}},
+                  h('button',{onClick:addRelation,style:{width:'100%',height:32,border:'1px dashed #EC4899',color:'#EC4899',borderRadius:6,background:'#FDF2F8',cursor:'pointer',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:4}},h(IcoUsers,{size:14}),'添加关系人员')
+                )
+              ):h(React.Fragment,null,
+                h(Field,{label:'姓名',value:sel.data.label,readOnly:true}),
+                h(Field,{label:'手机号码',value:sel.data.phone,readOnly:true}),
+                h(Field,{label:'身份证号码',value:sel.data.idCard,readOnly:true}),
+                h(Field,{label:'企业人员身份',value:sel.data.role,readOnly:true}),
+                h(Field,{label:'企业人员注释',value:sel.data.notes||'—',readOnly:true})
+              )
+            ),
+            /* Relation */
+            sel.type==='node'&&sel.data.type==='RELATION'&&h('div',null,
+              isEdit?h(React.Fragment,null,
+                h(Field,{label:'关系人姓名',value:sel.data.label,onChange:function(v){updN({label:v})}}),
+                h(Field,{label:'关系人手机号',value:sel.data.phone,onChange:function(v){updN({phone:v})}}),
+                h(Field,{label:'关系人身份证号',value:sel.data.idCard,onChange:function(v){updN({idCard:v})}}),
+                h(Field,{label:'关系人身份',value:sel.data.role,type:'select',options:PP_ROLES,onChange:function(v){updN({role:v})}}),
+                h(Field,{label:'关系人注释',value:sel.data.notes,type:'textarea',onChange:function(v){updN({notes:v})}}),
+                h('div',{style:{paddingTop:12,borderTop:'1px solid #F0F0F0'}},
+                  h('button',{onClick:addRelation,style:{width:'100%',height:32,border:'1px dashed #EC4899',color:'#EC4899',borderRadius:6,background:'#FDF2F8',cursor:'pointer',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:4}},h(IcoUsers,{size:14}),'继续添加关系人')
+                )
+              ):h(React.Fragment,null,
+                h(Field,{label:'关系人姓名',value:sel.data.label,readOnly:true}),
+                h(Field,{label:'关系人手机号',value:sel.data.phone,readOnly:true}),
+                h(Field,{label:'关系人身份证号',value:sel.data.idCard,readOnly:true}),
+                h(Field,{label:'关系人身份',value:sel.data.role,readOnly:true}),
+                h(Field,{label:'关系人注释',value:sel.data.notes||'—',readOnly:true})
+              )
+            ),
+            /* Network */
+            sel.type==='node'&&sel.data.type==='NETWORK'&&h('div',null,
+              h(Field,{label:'网点编码',value:sel.data.netCode||'—',readOnly:true}),
+              h(Field,{label:'网点名称',value:sel.data.label,readOnly:true}),
+              h(Field,{label:'网点省区',value:sel.data.netProvince||'—',readOnly:true})
+            ),
+            /* Other nodes */
+            sel.type==='node'&&sel.data.type!=='ENTERPRISE'&&sel.data.type!=='PERSON'&&sel.data.type!=='RELATION'&&sel.data.type!=='NETWORK'&&h('div',null,
+              h(Field,{label:'类型',value:NT[sel.data.type].name,readOnly:true}),
+              h(Field,{label:'名称',value:sel.data.label,readOnly:true})
+            ),
+            /* Edge */
+            sel.type==='edge'&&h('div',null,
+              h('div',{style:{display:'flex',alignItems:'center',gap:10,background:'#F9FAFB',padding:14,borderRadius:6,border:'1px solid #F0F0F0',marginBottom:16}},
+                h('div',{style:{flex:1,textAlign:'center'}},h('div',{style:{fontSize:12,color:'#999',marginBottom:2}},'起始'),h('div',{style:{fontSize:14,fontWeight:600,color:'#333'}},(nodes.find(function(n){return n.id===sel.data.source})||{}).label)),
+                h('div',{style:{color:'#999',fontSize:16,fontWeight:700}},'→'),
+                h('div',{style:{flex:1,textAlign:'center'}},h('div',{style:{fontSize:12,color:'#999',marginBottom:2}},'目标'),h('div',{style:{fontSize:14,fontWeight:600,color:'#333'}},(nodes.find(function(n){return n.id===sel.data.target})||{}).label))
+              ),
+              /* Direction toggle for person-person */
+              isEdit&&sel.data.type==='PERSON_PERSON'&&h('div',{style:{marginBottom:16}},
+                h('button',{onClick:flipEdge,style:{width:'100%',height:32,border:'1px solid #D9D9D9',borderRadius:6,background:'#fff',cursor:'pointer',fontSize:14,color:'#333',display:'flex',alignItems:'center',justifyContent:'center',gap:6}},h(IcoSwap,{size:14,color:'#666'}),'切换箭头方向')
+              ),
+              isEdit?h(React.Fragment,null,
+                sel.data.type==='PERSON_ENTERPRISE'?h(Field,{label:'关系类型',value:sel.data.label,type:'select',options:PE_ROLES,onChange:function(v){updE({label:v})}}):
+                sel.data.type==='PERSON_PERSON'?h(Field,{label:'关系类型',value:sel.data.label,type:'select',options:PP_ROLES,onChange:function(v){updE({label:v})}}):
+                h(Field,{label:'关系类型',value:sel.data.label,readOnly:true})
+              ):h(Field,{label:'关系类型',value:sel.data.label,readOnly:true})
+            )
+          ),
+          /* Footer */
+          isEdit&&(canDel||canSave)&&h('div',{style:{padding:'16px 20px',borderTop:'1px solid #F0F0F0',display:'flex',gap:12,background:'#fff'}},
+            canDel&&h('button',{onClick:deleteNode,style:{flex:1,height:32,border:'1px solid #FF4D4F',background:'#fff',color:'#FF4D4F',borderRadius:6,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center',gap:4}},h(IcoTrash,{size:14}),'删除节点'),
+            canSave&&h('button',{onClick:function(){
+              /* 必填校验 */
+              var inv=[];
+              nodes.forEach(function(n){
+                if(n.type==='PERSON'||n.type==='RELATION'){
+                  if(!n.label||!n.phone||!n.role){inv.push(n.label||'未命名节点')}
+                }
+              });
+              if(inv.length>0){alert('请完整填写人员信息：\n' + inv.join('\n')); return;}
+              setSel(null);
+            },style:{flex:1,height:32,border:'none',background:'#8A2BE2',color:'#fff',borderRadius:6,cursor:'pointer',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:4}},h(IcoSave,{size:14}),'保存属性')
+          )
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
