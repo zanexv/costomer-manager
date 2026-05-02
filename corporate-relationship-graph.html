@@ -4,12 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>企业关系图谱</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./vendor/react.production.min.js"></script>
+  <script src="./vendor/react-dom.production.min.js"></script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html,body,#root{height:100%;overflow:hidden;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -25,7 +21,7 @@
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel" data-presets="react">
+<script>
 var h = React.createElement;
 var useState = React.useState, useRef = React.useRef, useCallback = React.useCallback;
 
