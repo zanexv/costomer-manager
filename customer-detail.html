@@ -149,6 +149,8 @@
         .info-item:hover { background: #f9fafb; }
         .info-item.full-width { grid-column: span 2; }
         .info-label { width: 110px; min-width: 110px; color: var(--text-secondary); font-size: 13px; font-weight: 500; padding-top: 1px; }
+        .info-label.no-wrap { white-space: nowrap; }
+        #p-basicInfoGrid .info-label { width: 160px; min-width: 160px; }
         .info-value { flex: 1; color: var(--text-primary); font-size: 14px; line-height: 1.6; word-break: break-all; }
         .info-grid.editing .info-item { padding: 10px 16px; }
         .info-grid.editing .info-item:hover { background: var(--purple-soft); }
@@ -167,9 +169,121 @@
         /* 3-col info grid for controller tab */
         .info-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; }
         .info-grid-3 .info-item.full-width { grid-column: span 3; }
+        #ci-basicInfoGrid .customer-stat-group {
+            grid-column: span 3;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+            background: #fafafa;
+            margin: 6px 0;
+        }
+        #ci-basicInfoGrid .cost-stat-group {
+            grid-column: span 3;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+            background: #fafafa;
+            margin: 6px 0;
+        }
+        #ci-basicInfoGrid .customer-stat-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        #ci-basicInfoGrid .customer-stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+        #ci-basicInfoGrid .customer-stat-cell {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        #ci-basicInfoGrid .cost-stat-cell {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        #ci-basicInfoGrid .customer-stat-cell.is-total {
+            border-color: #c4b5fd;
+            background: #f5f3ff;
+        }
+        #ci-basicInfoGrid .customer-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        #ci-basicInfoGrid .cost-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        #ci-basicInfoGrid .customer-stat-value {
+            font-size: 14px;
+            color: #111827;
+            line-height: 1.4;
+        }
+        #ci-basicInfoGrid .cost-stat-value {
+            font-size: 14px;
+            color: #111827;
+            line-height: 1.4;
+        }
+        #ci-basicInfoGrid .customer-stat-value input {
+            width: 100%;
+            height: 34px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0 10px;
+            font-size: 14px;
+            color: #111827;
+            background: #fff;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        #ci-basicInfoGrid .customer-stat-value input:focus {
+            border-color: #c4b5fd;
+            box-shadow: 0 0 0 3px var(--purple-ring);
+        }
+        #ci-basicInfoGrid .cost-stat-value input {
+            width: 100%;
+            height: 34px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0 10px;
+            font-size: 14px;
+            color: #111827;
+            background: #fff;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        #ci-basicInfoGrid .cost-stat-value input:focus {
+            border-color: #c4b5fd;
+            box-shadow: 0 0 0 3px var(--purple-ring);
+        }
+        #ci-basicInfoGrid .customer-stat-value input[readonly] {
+            background: #f9fafb;
+            color: #374151;
+        }
+        #ci-basicInfoGrid.editing .customer-stat-cell { background: #fff; }
+        #ci-basicInfoGrid .cost-stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+        #ci-basicInfoGrid.editing .cost-stat-cell { background: #fff; }
         @media (max-width: 1024px) {
             .info-grid-3 { grid-template-columns: repeat(2,1fr); }
             .info-grid-3 .info-item.full-width { grid-column: span 2; }
+            #ci-basicInfoGrid .customer-stat-group { grid-column: span 2; }
+            #ci-basicInfoGrid .customer-stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            #ci-basicInfoGrid .cost-stat-group { grid-column: span 2; }
+            #ci-basicInfoGrid .cost-stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
         /* ── Stats Grid ── */
@@ -218,6 +332,11 @@
         }
         .input-cell input:focus, .input-cell select:focus {
             border-color: #c4b5fd; box-shadow: 0 0 0 3px var(--purple-ring);
+        }
+        .input-cell input.is-readonly {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
         }
         .action-col { display: none; width: 1%; text-align: center; white-space: nowrap; }
         .is-editing .action-col {
@@ -512,6 +631,8 @@
             <div class="tab-item" data-tab="venue">场地信息</div>
             <div class="tab-item" data-tab="equipment">设备信息</div>
             <div class="tab-item" data-tab="vehicle">车辆信息</div>
+            <div class="tab-item" data-tab="personnel">人员信息</div>
+            <div class="tab-item" data-tab="customer-info">客户信息</div>
             <div class="tab-item" data-tab="controller">实控人信息</div>
             <div class="tab-item" data-tab="visit">客户拜访</div>
         </nav>
@@ -550,24 +671,22 @@
             </div>
         </div>
     </section>
-    <!-- 企业对公账户流水 -->
+    <!-- 管理层名录 -->
     <section class="section-card">
         <div class="section-header">
-            <h2 class="section-title">企业对公账户流水</h2>
-            <div class="section-actions" id="e-accountActions"></div>
+            <h2 class="section-title">管理层名录</h2>
+            <div class="section-actions" id="e-managementActions"></div>
         </div>
         <div class="table-shell">
             <div class="table-scroll"><table>
                 <thead><tr>
-                    <th class="row-index">序号</th><th>银行名称</th><th>银行账户</th>
-                    <th>平均值(万元)</th><th>六月流水</th><th>五月流水</th><th>四月流水</th>
-                    <th>三月流水</th><th>二月流水</th><th>一月流水</th><th>更新时间</th>
+                    <th class="row-index">序号</th><th>姓名</th><th>职位</th><th>工号</th><th>手机号</th><th>身份证号</th>
                     <th class="action-col">操作</th>
                 </tr></thead>
-                <tbody id="e-accountTableBody"></tbody>
+                <tbody id="e-managementTableBody"></tbody>
             </table></div>
-            <div class="add-row-wrap" id="e-accountAddRowWrap" hidden>
-                <button class="add-row-btn" type="button" id="e-addAccountRowBtn">＋ 添加一行数据</button>
+            <div class="add-row-wrap" id="e-managementAddRowWrap" hidden>
+                <button class="add-row-btn" type="button" id="e-addManagementRowBtn">＋ 添加一行数据</button>
             </div>
         </div>
     </section>
@@ -671,6 +790,12 @@
                 <tr><td><span class="badge">生效</span></td><td>2024-03-13</td><td>圆通、极兔</td><td>联合经营</td><td>否</td><td>黄龙</td><td>2024-09-24</td></tr>
             </tbody></table></div>
         </section>
+        <section class="section-card">
+            <h2 class="section-title" style="margin-bottom:16px">停派数据</h2>
+            <div class="table-wrap"><table><thead><tr>
+                <th>停派状态</th><th>停派开始时间</th><th>停派结束时间</th><th>停派原因</th>
+            </tr></thead><tbody id="stopDispatchTable"></tbody></table></div>
+        </section>
     </div>
 </div>
 
@@ -688,6 +813,7 @@
             <thead><tr>
                 <th class="row-index">序号</th><th>面积（㎡）</th><th>使用年限</th><th>租期（年）</th>
                 <th>支付方式</th><th>年租金（万元）</th><th>起租年份</th><th>付租时间</th>
+                <th>场地配置</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="v-rentalTableBody"></tbody>
@@ -701,6 +827,7 @@
             <thead><tr>
                 <th class="row-index">序号</th><th>面积（㎡）</th><th>使用年限</th><th>抵押情况</th>
                 <th>购置价格（万元）</th><th>当前估值（万元）</th><th>融资余额（万元）</th><th>购买年份</th>
+                <th>场地配置</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="v-ownedTableBody"></tbody>
@@ -722,8 +849,9 @@
         <div class="section-header"><h2 class="section-title">租赁设备</h2><div class="section-actions" id="eq-rentalActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>格口数量</th>
                 <th>起租年份</th><th>租赁期限（月）</th><th>月租金（万元）</th><th>支付方式</th><th>分拣效率（票/H）</th>
+                <th>配套设备</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="eq-rentalTableBody"></tbody>
@@ -735,8 +863,9 @@
         <div class="section-header"><h2 class="section-title">自购设备</h2><div class="section-actions" id="eq-ownedActions"></div></div>
         <div class="table-shell"><div class="table-scroll"><table>
             <thead><tr>
-                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>数量</th>
+                <th class="row-index">序号</th><th>品牌</th><th>规格</th><th>格口数量</th>
                 <th>购买年份</th><th>购置价格（万元）</th><th>资金来源</th><th>融资余额（万元）</th><th>分拣效率（票/H）</th>
+                <th>配套设备</th>
                 <th class="action-col">操作</th>
             </tr></thead>
             <tbody id="eq-ownedTableBody"></tbody>
@@ -782,6 +911,22 @@
     </section>
 </div>
 
+<!-- ═══════════════════ TAB 6: 人员信息 ═══════════════════ -->
+<div class="tab-panel" id="panel-personnel">
+    <section class="section-card">
+        <div class="section-header"><h2 class="section-title">人员基本信息</h2><div class="section-actions" id="p-basicInfoActions"></div></div>
+        <div class="info-grid" id="p-basicInfoGrid"></div>
+    </section>
+</div>
+
+<!-- ═══════════════════ TAB 7: 客户信息 ═══════════════════ -->
+<div class="tab-panel" id="panel-customer-info">
+    <section class="section-card">
+        <div class="section-header"><h2 class="section-title">客户基本信息</h2><div class="section-actions" id="ci-basicInfoActions"></div></div>
+        <div class="info-grid-3" id="ci-basicInfoGrid"></div>
+    </section>
+</div>
+
 <!-- ═══════════════════ TAB 6: 实控人信息 ═══════════════════ -->
 <div class="tab-panel" id="panel-controller">
     <section class="section-card">
@@ -812,6 +957,18 @@
             <tbody id="c-vehicleTableBody"></tbody>
         </table></div>
         <div class="add-row-wrap" id="c-vehicleAddWrap" hidden><button class="add-row-btn" type="button" id="c-addVehicleRowBtn">＋ 添加一行数据</button></div>
+        </div>
+    </section>
+    <section class="section-card">
+        <div class="section-header"><h2 class="section-title">银行贷款情况</h2><div class="section-actions" id="c-loanActions"></div></div>
+        <div class="table-shell"><div class="table-scroll"><table>
+            <thead><tr>
+                <th class="row-index">序号</th><th>银行名称</th><th>借款类型</th><th>贷款额度</th><th>有无抵押</th>
+                <th class="action-col">操作</th>
+            </tr></thead>
+            <tbody id="c-loanTableBody"></tbody>
+        </table></div>
+        <div class="add-row-wrap" id="c-loanAddWrap" hidden><button class="add-row-btn" type="button" id="c-addLoanRowBtn">＋ 添加一行数据</button></div>
         </div>
     </section>
 </div>
@@ -951,6 +1108,8 @@ function ensureTabInitialized(tabName) {
         venue: initVenueTab,
         equipment: initEquipmentTab,
         vehicle: initVehicleTab,
+        personnel: initPersonnelTab,
+        'customer-info': initCustomerInfoTab,
         controller: initControllerTab,
         visit: initVisitTab
     };
@@ -1013,7 +1172,14 @@ function escHtml(v) {
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function cloneObj(d) { return JSON.parse(JSON.stringify(d)); }
-function fmtMoney(v) { return Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtMoney(v) {
+    const raw = String(v ?? '').trim();
+    if (!raw) return '';
+    const num = Number(raw.replace(/,/g, ''));
+    if (!Number.isFinite(num)) return raw;
+    if (Number.isInteger(num)) return num.toLocaleString('en-US');
+    return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 function renumber(arr) { arr.forEach((item,i)=>{ item.id = i+1; }); }
 function buildSelect(field, index, section, opts, selected) {
     return `<select data-field="${field}" data-index="${index}" data-section="${section}">`
@@ -1208,6 +1374,7 @@ function createTableModule(cfg) {
 function initEnterpriseTab() {
     const P = 'e';
     const relationOpts = ['直接控股','间接控股','亲属关系','其他关系'];
+    const companyIndustryOpts = ['圆通网点','农业行业','工业行业','服务业行业','金融行业','房地产行业','教育行业','医疗行业','交通运输行业','旅游行业','通信行业','电力行业','能源行业','化工行业','采矿行业','制造业行业','其他'];
     const state = {
         basicInfo: { data: {
             name:'杭州云恒科技有限公司', creditCode:'91330106MA2CDX7Y3R',
@@ -1222,15 +1389,14 @@ function initEnterpriseTab() {
             {id:3,name:'杭州晨光投资有限公司',type:'企业法人',ratio:'20%',amount:'1000',date:'2019-03-20'},
             {id:4,name:'浙江科创创业投资基金',type:'有限合伙企业',ratio:'10%',amount:'500',date:'2020-08-12'}
         ], editing:false, snapshot:null },
-        account: { items:[
-            {id:1,bank:'建设银行',account:'3305 0168 8800 0001 234',avg:'367.5',m6:'425.6',m5:'382.3',m4:'356.7',m3:'345.2',m2:'358.9',m1:'336.3',date:'2023-07-05'},
-            {id:2,bank:'工商银行',account:'1202 0215 0901 2345 678',avg:'215.8',m6:'245.3',m5:'228.7',m4:'205.6',m3:'193.4',m2:'210.5',m1:'211.3',date:'2023-07-05'},
-            {id:3,bank:'招商银行',account:'5712 3456 7890 1234',avg:'128.3',m6:'142.8',m5:'135.2',m4:'126.7',m3:'118.5',m2:'122.9',m1:'123.7',date:'2023-07-04'}
+        management: { items:[
+            {id:1,name:'李明远',position:'总经理',jobNumber:'YT0001',phone:'13812345678',idCard:'330106198901011234'},
+            {id:2,name:'王建国',position:'运营总监',jobNumber:'YT0002',phone:'13912345678',idCard:'330106198805061256'}
         ], editing:false, snapshot:null },
         company: { items:[
-            {id:1,name:'杭州数智信息技术有限公司',industry:'软件和信息技术服务',date:'2017-03-18',capital:'1000万元',controller:'李明远',relationship:'直接控股'},
-            {id:2,name:'浙江云极大数据科技有限公司',industry:'大数据服务',date:'2019-08-25',capital:'2000万元',controller:'李明远',relationship:'间接控股'},
-            {id:3,name:'杭州智联物联网科技有限公司',industry:'物联网技术',date:'2020-05-12',capital:'1500万元',controller:'王建国',relationship:'亲属关系'}
+            {id:1,name:'杭州数智信息技术有限公司',industry:'服务业行业',date:'2017-03-18',capital:'1000万元',controller:'李明远',relationship:'直接控股'},
+            {id:2,name:'浙江云极大数据科技有限公司',industry:'通信行业',date:'2019-08-25',capital:'2000万元',controller:'李明远',relationship:'间接控股'},
+            {id:3,name:'杭州智联物联网科技有限公司',industry:'工业行业',date:'2020-05-12',capital:'1500万元',controller:'王建国',relationship:'亲属关系'}
         ], editing:false, snapshot:null }
     };
 
@@ -1289,6 +1455,13 @@ function initEnterpriseTab() {
     function renderActions(sec) {
         const el = document.getElementById(`e-${sec}Actions`);
         if (!el) return;
+        if (sec === 'shareholder') {
+            state[sec].editing = false;
+            state[sec].snapshot = null;
+            el.innerHTML = '';
+            el.onclick = null;
+            return;
+        }
         const editing = state[sec].editing;
         el.innerHTML = editing
             ? `<button class="btn btn-secondary" type="button" data-action="cancel">取消</button>
@@ -1325,28 +1498,33 @@ function initEnterpriseTab() {
                 showPopConfirm(btn,'确认删除此项？', ()=>{ syncSection(s); state[s].items.splice(i,1); renumber(state[s].items); renderAll(); });
             }
         };
+        tbody.oninput = null;
     }
     function renderAll() {
         if (state.basicInfo.editing) syncBasic();
         renderBasicGrid(); renderBasicActions();
         renderTable('shareholder', (item, idx, editing) => editing
             ? ['name','type','ratio','amount','date'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="shareholder" value="${escHtml(item[f])}"></td>`).join('')
-            : `<td>${escHtml(item.name)}</td><td>${escHtml(item.type)}</td><td>${escHtml(item.ratio)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.date)}</td>`
+            : `<td>${escHtml(item.name)}</td><td>${escHtml(item.type)}</td><td>${escHtml(item.ratio)}</td><td>${fmtMoney(item.amount)}</td><td>${escHtml(item.date)}</td>`
         );
-        renderTable('account', (item, idx, editing) => editing
-            ? ['bank','account','avg','m6','m5','m4','m3','m2','m1','date'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="account" value="${escHtml(item[f])}"></td>`).join('')
-            : `<td>${escHtml(item.bank)}</td><td>${escHtml(item.account)}</td><td>${escHtml(item.avg)}</td><td>${escHtml(item.m6)}</td><td>${escHtml(item.m5)}</td><td>${escHtml(item.m4)}</td><td>${escHtml(item.m3)}</td><td>${escHtml(item.m2)}</td><td>${escHtml(item.m1)}</td><td>${escHtml(item.date)}</td>`
+        renderTable('management', (item, idx, editing) => editing
+            ? ['name','position','jobNumber','phone','idCard'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="management" value="${escHtml(item[f])}"></td>`).join('')
+            : `<td>${escHtml(item.name)}</td><td>${escHtml(item.position)}</td><td>${escHtml(item.jobNumber)}</td><td>${escHtml(item.phone)}</td><td>${escHtml(item.idCard)}</td>`
         );
         renderTable('company', (item, idx, editing) => editing
-            ? ['name','industry','date','capital','controller'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="company" value="${escHtml(item[f])}"></td>`).join('')
+            ? `<td class="input-cell"><input data-field="name" data-index="${idx}" data-section="company" value="${escHtml(item.name)}"></td>
+               <td class="input-cell">${buildSelect('industry', idx, 'company', companyIndustryOpts, item.industry)}</td>
+               <td class="input-cell"><input type="date" data-field="date" data-index="${idx}" data-section="company" value="${escHtml(item.date)}"></td>
+               <td class="input-cell"><input data-field="capital" data-index="${idx}" data-section="company" value="${escHtml(item.capital)}"></td>
+               <td class="input-cell"><input data-field="controller" data-index="${idx}" data-section="company" value="${escHtml(item.controller)}"></td>`
               + `<td class="input-cell">${buildSelect('relationship', idx, 'company', relationOpts, item.relationship)}</td>`
             : `<td>${escHtml(item.name)}</td><td>${escHtml(item.industry)}</td><td>${escHtml(item.date)}</td><td>${escHtml(item.capital)}</td><td>${escHtml(item.controller)}</td><td>${escHtml(item.relationship)}</td>`
         );
     }
     // Add row buttons
     document.getElementById('e-addShareholderRowBtn')?.addEventListener('click', ()=>{ syncSection('shareholder'); state.shareholder.items.push({id:state.shareholder.items.length+1,name:'',type:'',ratio:'',amount:'',date:''}); renderAll(); });
-    document.getElementById('e-addAccountRowBtn')?.addEventListener('click', ()=>{ syncSection('account'); state.account.items.push({id:state.account.items.length+1,bank:'',account:'',avg:'',m6:'',m5:'',m4:'',m3:'',m2:'',m1:'',date:''}); renderAll(); });
-    document.getElementById('e-addCompanyRowBtn')?.addEventListener('click', ()=>{ syncSection('company'); state.company.items.push({id:state.company.items.length+1,name:'',industry:'',date:'',capital:'',controller:'',relationship:relationOpts[0]}); renderAll(); });
+    document.getElementById('e-addManagementRowBtn')?.addEventListener('click', ()=>{ syncSection('management'); state.management.items.push({id:state.management.items.length+1,name:'',position:'',jobNumber:'',phone:'',idCard:''}); renderAll(); });
+    document.getElementById('e-addCompanyRowBtn')?.addEventListener('click', ()=>{ syncSection('company'); state.company.items.push({id:state.company.items.length+1,name:'',industry:companyIndustryOpts[0],date:'',capital:'',controller:'',relationship:relationOpts[0]}); renderAll(); });
     renderAll();
 }
 
@@ -1366,6 +1544,10 @@ function initBusinessCharts() {
         payroll:[1.7,5.2,5.7,3.8,1.1,5.8,8.7,8.0,4.5,4.6,5.0,8.5]
     };
     const diamondWarnings=[["2026-07",1,3,20,20,20,20,20],["2026-06",3,33,202,2,20,202,20],["2026-05",5,23,20,1,20,20,20],["2025-04",2,12,2,2,20,202,20],["2025-03",2,20,202,20,20,20,20]];
+    const stopDispatchRows = [
+        { status: '有效', startTime: '2026-04-25', endTime: '', reason: '自然灾害' },
+        { status: '无效', startTime: '2025-12-15', endTime: '2026-01-02', reason: '内部整顿' }
+    ];
 
     function withAlpha(color, alpha) {
         const hex = color.replace('#','');
@@ -1446,6 +1628,16 @@ function initBusinessCharts() {
 
     const dtbody = document.getElementById('diamondWarningTable');
     if (dtbody) dtbody.innerHTML = diamondWarnings.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+    const stopDispatchBody = document.getElementById('stopDispatchTable');
+    if (stopDispatchBody) {
+        const sortedRows = stopDispatchRows.slice().sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+        stopDispatchBody.innerHTML = sortedRows.map(row => `<tr>
+            <td>${escHtml(row.status)}</td>
+            <td>${escHtml(row.startTime)}</td>
+            <td>${escHtml(row.endTime || '-')}</td>
+            <td>${escHtml(row.reason)}</td>
+        </tr>`).join('');
+    }
 
     const cg = document.getElementById('calendarGrid'); if (!cg) return;
     const weekDays=['Su','Mo','Tu','We','Th','Fr','Sa'];
@@ -1467,18 +1659,19 @@ function initVenueTab() {
     const currentYear = String(new Date().getFullYear());
     const payOpts = ['月付','按季付','季付','半年付','年付','一次性付清'];
     const mortOpts = ['无抵押','部分抵押','全部抵押'];
+    const venueConfigOpts = ['简易操作分区','简易仓库','标准物流仓库','专业分拨场地'];
     const state = {
         rental:{ items:[
-            {id:1,area:'2018',usageYears:'30',period:'5',paymentMethod:'按季付',annualFee:'100.00',startYear:'2020',paymentTime:'每月10日'},
-            {id:2,area:'2018',usageYears:'30',period:'5',paymentMethod:'季付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日'},
-            {id:3,area:'2018',usageYears:'30',period:'5',paymentMethod:'年付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日'},
-            {id:4,area:'2018',usageYears:'30',period:'5',paymentMethod:'年付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日'}
+            {id:1,area:'2018',usageYears:'30',period:'5',paymentMethod:'按季付',annualFee:'100.00',startYear:'2020',paymentTime:'每月10日',venueConfig:'标准物流仓库'},
+            {id:2,area:'2018',usageYears:'30',period:'5',paymentMethod:'季付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日',venueConfig:'简易仓库'},
+            {id:3,area:'2018',usageYears:'30',period:'5',paymentMethod:'年付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日',venueConfig:'简易操作分区'},
+            {id:4,area:'2018',usageYears:'30',period:'5',paymentMethod:'年付',annualFee:'100.00',startYear:'2020',paymentTime:'每年1月1日',venueConfig:'专业分拨场地'}
         ], editing:false, snapshot:null },
         owned:{ items:[
-            {id:1,area:'2018',usageYears:'30',mortgage:'全部抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020'},
-            {id:2,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020'},
-            {id:3,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020'},
-            {id:4,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020'}
+            {id:1,area:'2018',usageYears:'30',mortgage:'全部抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020',venueConfig:'标准物流仓库'},
+            {id:2,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020',venueConfig:'简易仓库'},
+            {id:3,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020',venueConfig:'简易操作分区'},
+            {id:4,area:'2018',usageYears:'30',mortgage:'部分抵押',purchasePrice:'1300.33',currentValue:'1000.00',financingBalance:'300.00',purchaseYear:'2020',venueConfig:'专业分拨场地'}
         ], editing:false, snapshot:null }
     };
     function updateStats() {
@@ -1517,9 +1710,10 @@ function initVenueTab() {
               <td class="input-cell"><input data-field="period" data-index="${idx}" data-section="rental" value="${escHtml(item.period)}"></td>
               <td class="input-cell">${buildSelect('paymentMethod',idx,'rental',payOpts,item.paymentMethod)}</td>
               <td class="input-cell"><input type="number" data-field="annualFee" data-index="${idx}" data-section="rental" value="${escHtml(item.annualFee)}"></td>
-              <td class="input-cell">${buildYearSelect('startYear',idx,'rental',item.startYear)}</td>
-              <td class="input-cell"><input data-field="paymentTime" data-index="${idx}" data-section="rental" value="${escHtml(item.paymentTime)}"></td>`
-            :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.period)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.annualFee)}</td><td>${escHtml(item.startYear)}</td><td>${escHtml(item.paymentTime)}</td>`
+              <td class="input-cell"><input type="number" data-field="startYear" data-index="${idx}" data-section="rental" value="${escHtml(item.startYear)}"></td>
+              <td class="input-cell"><input data-field="paymentTime" data-index="${idx}" data-section="rental" value="${escHtml(item.paymentTime)}"></td>
+              <td class="input-cell">${buildSelect('venueConfig',idx,'rental',venueConfigOpts,item.venueConfig)}</td>`
+            :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.period)}</td><td>${escHtml(item.paymentMethod)}</td><td>${fmtMoney(item.annualFee)}</td><td>${escHtml(item.startYear)}</td><td>${escHtml(item.paymentTime)}</td><td>${escHtml(item.venueConfig)}</td>`
         );
         renderTable('owned',(item,idx,editing)=>editing
             ?`<td class="input-cell"><input type="number" data-field="area" data-index="${idx}" data-section="owned" value="${escHtml(item.area)}"></td>
@@ -1528,13 +1722,14 @@ function initVenueTab() {
               <td class="input-cell"><input type="number" data-field="purchasePrice" data-index="${idx}" data-section="owned" value="${escHtml(item.purchasePrice)}"></td>
               <td class="input-cell"><input type="number" data-field="currentValue" data-index="${idx}" data-section="owned" value="${escHtml(item.currentValue)}"></td>
               <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="owned" value="${escHtml(item.financingBalance)}"></td>
-              <td class="input-cell">${buildYearSelect('purchaseYear',idx,'owned',item.purchaseYear)}</td>`
-            :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.currentValue)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.purchaseYear)}</td>`
+              <td class="input-cell"><input type="number" data-field="purchaseYear" data-index="${idx}" data-section="owned" value="${escHtml(item.purchaseYear)}"></td>
+              <td class="input-cell">${buildSelect('venueConfig',idx,'owned',venueConfigOpts,item.venueConfig)}</td>`
+            :`<td>${escHtml(item.area)}</td><td>${escHtml(item.usageYears)}</td><td>${escHtml(item.mortgage)}</td><td>${fmtMoney(item.purchasePrice)}</td><td>${fmtMoney(item.currentValue)}</td><td>${fmtMoney(item.financingBalance)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.venueConfig)}</td>`
         );
         updateStats();
     }
-    document.getElementById('v-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,area:'',usageYears:'',period:'',paymentMethod:payOpts[0],annualFee:'',startYear:currentYear,paymentTime:''});renderAll();});
-    document.getElementById('v-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,area:'',usageYears:'',mortgage:mortOpts[0],purchasePrice:'',currentValue:'',financingBalance:'',purchaseYear:currentYear});renderAll();});
+    document.getElementById('v-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,area:'',usageYears:'',period:'',paymentMethod:payOpts[0],annualFee:'',startYear:currentYear,paymentTime:'',venueConfig:venueConfigOpts[0]});renderAll();});
+    document.getElementById('v-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,area:'',usageYears:'',mortgage:mortOpts[0],purchasePrice:'',currentValue:'',financingBalance:'',purchaseYear:currentYear,venueConfig:venueConfigOpts[0]});renderAll();});
     renderAll();
 }
 
@@ -1546,18 +1741,20 @@ function initEquipmentTab() {
     const currentYear = String(new Date().getFullYear());
     const payOpts=['月付','季付','半年付','年付','一次性付清'];
     const fundOpts=['自有资金','银行贷款','融资租赁','混合资金'];
+    const specOpts=['简易流水线','直线窄带分拣机','环线窄带分拣','交叉带分拣机AGV机器人集群'];
+    const supportingDeviceOpts=['简易扫码集包台','伸缩装车机','WCS','WMS调度系统'];
     const state = {
         rental:{ items:[
-            {id:1,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'36',price:'58.69',paymentMethod:'月付',efficiency:'1949'},
-            {id:2,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'24',price:'58.69',paymentMethod:'季付',efficiency:'1949'},
-            {id:3,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'18',price:'58.69',paymentMethod:'半年付',efficiency:'1949'},
-            {id:4,startYear:'2018',brand:'富士通',spec:'小型',quantity:'4',leaseTerm:'12',price:'58.69',paymentMethod:'年付',efficiency:'1949'}
+            {id:1,startYear:'2018',brand:'富士通',spec:'简易流水线',quantity:'4',leaseTerm:'36',price:'58.69',paymentMethod:'月付',efficiency:'1949',supportingDevice:'简易扫码集包台'},
+            {id:2,startYear:'2018',brand:'富士通',spec:'直线窄带分拣机',quantity:'4',leaseTerm:'24',price:'58.69',paymentMethod:'季付',efficiency:'1949',supportingDevice:'伸缩装车机'},
+            {id:3,startYear:'2018',brand:'富士通',spec:'环线窄带分拣',quantity:'4',leaseTerm:'18',price:'58.69',paymentMethod:'半年付',efficiency:'1949',supportingDevice:'WCS'},
+            {id:4,startYear:'2018',brand:'富士通',spec:'交叉带分拣机AGV机器人集群',quantity:'4',leaseTerm:'12',price:'58.69',paymentMethod:'年付',efficiency:'1949',supportingDevice:'WMS调度系统'}
         ], editing:false, snapshot:null },
         owned:{ items:[
-            {id:1,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'自有资金',financingBalance:'3',efficiency:'1949'},
-            {id:2,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'银行贷款',financingBalance:'3',efficiency:'1949'},
-            {id:3,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'融资租赁',financingBalance:'3',efficiency:'1949'},
-            {id:4,purchaseYear:'2018',brand:'富士通',spec:'小型',quantity:'4',price:'58.69',fundingSource:'混合资金',financingBalance:'3',efficiency:'1949'}
+            {id:1,purchaseYear:'2018',brand:'富士通',spec:'简易流水线',quantity:'4',price:'58.69',fundingSource:'自有资金',financingBalance:'3',efficiency:'1949',supportingDevice:'简易扫码集包台'},
+            {id:2,purchaseYear:'2018',brand:'富士通',spec:'直线窄带分拣机',quantity:'4',price:'58.69',fundingSource:'银行贷款',financingBalance:'3',efficiency:'1949',supportingDevice:'伸缩装车机'},
+            {id:3,purchaseYear:'2018',brand:'富士通',spec:'环线窄带分拣',quantity:'4',price:'58.69',fundingSource:'融资租赁',financingBalance:'3',efficiency:'1949',supportingDevice:'WCS'},
+            {id:4,purchaseYear:'2018',brand:'富士通',spec:'交叉带分拣机AGV机器人集群',quantity:'4',price:'58.69',fundingSource:'混合资金',financingBalance:'3',efficiency:'1949',supportingDevice:'WMS调度系统'}
         ], editing:false, snapshot:null }
     };
     function updateStats(){
@@ -1586,25 +1783,27 @@ function initEquipmentTab() {
             if(sec==='rental'){
                 cols=state[sec].editing
                     ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="${sec}" value="${escHtml(item.brand)}"></td>
-                      <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="${sec}" value="${escHtml(item.spec)}"></td>
+                      <td class="input-cell">${buildSelect('spec',idx,sec,specOpts,item.spec)}</td>
                       <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="${sec}" value="${escHtml(item.quantity)}"></td>
-                      <td class="input-cell">${buildYearSelect(yearField,idx,sec,item[yearField])}</td>
+                      <td class="input-cell"><input type="number" data-field="${yearField}" data-index="${idx}" data-section="${sec}" value="${escHtml(item[yearField])}"></td>
                       <td class="input-cell"><input type="number" data-field="leaseTerm" data-index="${idx}" data-section="${sec}" value="${escHtml(item.leaseTerm)}"></td>
                       <td class="input-cell"><input type="number" data-field="price" data-index="${idx}" data-section="${sec}" value="${escHtml(item.price)}"></td>
                       <td class="input-cell">${buildSelect('paymentMethod',idx,sec,payOpts,item.paymentMethod)}</td>
-                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>`
-                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${escHtml(item.leaseTerm)}</td><td>${escHtml(item.price)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.efficiency)}</td>`;
+                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>
+                      <td class="input-cell">${buildSelect('supportingDevice',idx,sec,supportingDeviceOpts,item.supportingDevice)}</td>`
+                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${escHtml(item.leaseTerm)}</td><td>${fmtMoney(item.price)}</td><td>${escHtml(item.paymentMethod)}</td><td>${escHtml(item.efficiency)}</td><td>${escHtml(item.supportingDevice)}</td>`;
             }else{
                 cols=state[sec].editing
                     ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="${sec}" value="${escHtml(item.brand)}"></td>
-                      <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="${sec}" value="${escHtml(item.spec)}"></td>
+                      <td class="input-cell">${buildSelect('spec',idx,sec,specOpts,item.spec)}</td>
                       <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="${sec}" value="${escHtml(item.quantity)}"></td>
-                      <td class="input-cell">${buildYearSelect(yearField,idx,sec,item[yearField])}</td>
+                      <td class="input-cell"><input type="number" data-field="${yearField}" data-index="${idx}" data-section="${sec}" value="${escHtml(item[yearField])}"></td>
                       <td class="input-cell"><input type="number" data-field="price" data-index="${idx}" data-section="${sec}" value="${escHtml(item.price)}"></td>
                       <td class="input-cell">${buildSelect('fundingSource',idx,sec,fundOpts,item.fundingSource)}</td>
                       <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="${sec}" value="${escHtml(item.financingBalance)}"></td>
-                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>`
-                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${escHtml(item.price)}</td><td>${escHtml(item.fundingSource)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.efficiency)}</td>`;
+                      <td class="input-cell"><input type="number" data-field="efficiency" data-index="${idx}" data-section="${sec}" value="${escHtml(item.efficiency)}"></td>
+                      <td class="input-cell">${buildSelect('supportingDevice',idx,sec,supportingDeviceOpts,item.supportingDevice)}</td>`
+                    :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item[yearField])}</td><td>${fmtMoney(item.price)}</td><td>${escHtml(item.fundingSource)}</td><td>${fmtMoney(item.financingBalance)}</td><td>${escHtml(item.efficiency)}</td><td>${escHtml(item.supportingDevice)}</td>`;
             }
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
@@ -1612,8 +1811,8 @@ function initEquipmentTab() {
         tbody.onclick=e=>{const btn=e.target.closest('[data-del]');if(btn){const s=btn.dataset.del,i=Number(btn.dataset.idx);showPopConfirm(btn,'确认删除？',()=>{syncSec(s);state[s].items.splice(i,1);renumber(state[s].items);renderAll();});}};
     }
     function renderAll(){renderT('rental','startYear');renderT('owned','purchaseYear');updateStats();}
-    document.getElementById('eq-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,startYear:currentYear,brand:'',spec:'',quantity:'',leaseTerm:'',price:'',paymentMethod:payOpts[0],efficiency:''});renderAll();});
-    document.getElementById('eq-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:currentYear,brand:'',spec:'',quantity:'',price:'',fundingSource:fundOpts[0],financingBalance:'',efficiency:''});renderAll();});
+    document.getElementById('eq-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,startYear:currentYear,brand:'',spec:specOpts[0],quantity:'',leaseTerm:'',price:'',paymentMethod:payOpts[0],efficiency:'',supportingDevice:supportingDeviceOpts[0]});renderAll();});
+    document.getElementById('eq-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:currentYear,brand:'',spec:specOpts[0],quantity:'',price:'',fundingSource:fundOpts[0],financingBalance:'',efficiency:'',supportingDevice:supportingDeviceOpts[0]});renderAll();});
     renderAll();
 }
 
@@ -1664,21 +1863,21 @@ function initVehicleTab() {
                 ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="rental" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="rental" value="${escHtml(item.spec)}"></td>
                   <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="rental" value="${escHtml(item.quantity)}"></td>
-                  <td class="input-cell">${buildYearSelect('rentalTime',idx,'rental',item.rentalTime)}</td>
+                  <td class="input-cell"><input type="number" data-field="rentalTime" data-index="${idx}" data-section="rental" value="${escHtml(item.rentalTime)}"></td>
                   <td class="input-cell"><input type="number" data-field="leaseTerm" data-index="${idx}" data-section="rental" value="${escHtml(item.leaseTerm)}"></td>
                   <td class="input-cell"><input type="number" data-field="amount" data-index="${idx}" data-section="rental" value="${escHtml(item.amount)}"></td>
                   <td class="input-cell">${buildSelect('paymentMethod',idx,'rental',payOpts,item.paymentMethod)}</td>`
-                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.rentalTime)}</td><td>${escHtml(item.leaseTerm)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.paymentMethod)}</td>`;}
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.rentalTime)}</td><td>${escHtml(item.leaseTerm)}</td><td>${fmtMoney(item.amount)}</td><td>${escHtml(item.paymentMethod)}</td>`;}
             else{cols=state[sec].editing
                 ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="owned" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="spec" data-index="${idx}" data-section="owned" value="${escHtml(item.spec)}"></td>
                   <td class="input-cell"><input type="number" data-field="quantity" data-index="${idx}" data-section="owned" value="${escHtml(item.quantity)}"></td>
-                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'owned',item.purchaseYear)}</td>
+                  <td class="input-cell"><input type="number" data-field="purchaseYear" data-index="${idx}" data-section="owned" value="${escHtml(item.purchaseYear)}"></td>
                   <td class="input-cell"><input type="number" data-field="amount" data-index="${idx}" data-section="owned" value="${escHtml(item.amount)}"></td>
                   <td class="input-cell">${buildSelect('fundingSource',idx,'owned',fundOpts,item.fundingSource)}</td>
                   <td class="input-cell"><input type="number" data-field="financingBalance" data-index="${idx}" data-section="owned" value="${escHtml(item.financingBalance)}"></td>
                   <td class="input-cell">${buildSelect('mortgage',idx,'owned',mortOpts,item.mortgage)}</td>`
-                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.amount)}</td><td>${escHtml(item.fundingSource)}</td><td>${escHtml(item.financingBalance)}</td><td>${escHtml(item.mortgage)}</td>`;}
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.spec)}</td><td>${escHtml(item.quantity)}</td><td>${escHtml(item.purchaseYear)}</td><td>${fmtMoney(item.amount)}</td><td>${escHtml(item.fundingSource)}</td><td>${fmtMoney(item.financingBalance)}</td><td>${escHtml(item.mortgage)}</td>`;}
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
         });
@@ -1688,6 +1887,350 @@ function initVehicleTab() {
     document.getElementById('veh-addRentalRowBtn')?.addEventListener('click',()=>{syncSec('rental');state.rental.items.push({id:state.rental.items.length+1,rentalTime:currentYear,brand:'',spec:'',quantity:'',leaseTerm:'',amount:'',paymentMethod:payOpts[0]});renderAll();});
     document.getElementById('veh-addOwnedRowBtn')?.addEventListener('click',()=>{syncSec('owned');state.owned.items.push({id:state.owned.items.length+1,purchaseYear:currentYear,brand:'',spec:'',quantity:'',amount:'',mortgage:mortOpts[0],fundingSource:fundOpts[0],financingBalance:''});renderAll();});
     renderAll();
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB 6 — 人员信息
+// ══════════════════════════════════════════════════════════
+function initPersonnelTab() {
+    const manageModeOpts = ['夫妻店','零散用工','专职团队','分层管理','公司化运营'];
+    const yesnoOpts = ['是','否'];
+    const state = {
+        basic: {
+            values: {
+                manageMode: '专职团队',
+                outletStaffCount: '56',
+                directStaffCount: '18',
+                standardizedGovernance: '是',
+                courierCount: '25',
+                sortingOperatorCount: '12',
+                customerServiceCount: '4',
+                financeCount: '3',
+                marketingCount: '2',
+                fleetWarehouseCount: '10'
+            },
+            editing: false,
+            snapshot: null
+        }
+    };
+    const fields = [
+        { key: 'manageMode', label: '管理模式', type: 'select', options: manageModeOpts },
+        { key: 'outletStaffCount', label: '网点人员数量', type: 'number' },
+        { key: 'directStaffCount', label: '直营人员数量', type: 'number' },
+        { key: 'standardizedGovernance', label: '是否标准化公司治理', type: 'select', options: yesnoOpts },
+        { key: 'courierCount', label: '快递员人数', type: 'number' },
+        { key: 'sortingOperatorCount', label: '操作分拣员人数', type: 'number' },
+        { key: 'customerServiceCount', label: '客服人数', type: 'number' },
+        { key: 'financeCount', label: '财务人数', type: 'number' },
+        { key: 'marketingCount', label: '市场人数', type: 'number' },
+        { key: 'fleetWarehouseCount', label: '车队/仓管等', type: 'number' }
+    ];
+
+    function renderActions() {
+        const el = document.getElementById('p-basicInfoActions');
+        if (!el) return;
+        el.innerHTML = state.basic.editing
+            ? `<button class="btn btn-secondary" type="button" data-action="cancel">取消</button><button class="btn btn-primary" type="button" data-action="save">保存</button>`
+            : `<button class="btn btn-primary" type="button" data-action="edit">编辑</button>`;
+        el.onclick = e => {
+            const action = e.target.dataset.action;
+            if (action === 'edit') {
+                state.basic.snapshot = cloneObj(state.basic.values);
+                state.basic.editing = true;
+                renderSection();
+            }
+            if (action === 'cancel') {
+                state.basic.values = cloneObj(state.basic.snapshot || state.basic.values);
+                state.basic.snapshot = null;
+                state.basic.editing = false;
+                renderSection();
+            }
+            if (action === 'save') {
+                syncInputs();
+                state.basic.snapshot = null;
+                state.basic.editing = false;
+                renderSection();
+            }
+        };
+    }
+
+    function syncInputs() {
+        document.querySelectorAll('[data-p-basic]').forEach(el => {
+            state.basic.values[el.dataset.pBasic] = el.value.trim();
+        });
+    }
+
+    function renderGrid() {
+        const el = document.getElementById('p-basicInfoGrid');
+        if (!el) return;
+        el.className = state.basic.editing ? 'info-grid editing' : 'info-grid';
+        el.innerHTML = fields.map(field => {
+            const val = escHtml(state.basic.values[field.key]);
+            const labelClass = field.key === 'standardizedGovernance' ? 'info-label no-wrap' : 'info-label';
+            if (state.basic.editing) {
+                if (field.type === 'select') {
+                    const options = field.options.map(opt => `<option${opt === state.basic.values[field.key] ? ' selected' : ''}>${escHtml(opt)}</option>`).join('');
+                    return `<div class="info-item"><div class="${labelClass}">${field.label}</div><div class="info-input"><select data-p-basic="${field.key}">${options}</select></div></div>`;
+                }
+                return `<div class="info-item"><div class="${labelClass}">${field.label}</div><div class="info-input"><input type="number" data-p-basic="${field.key}" value="${val}" placeholder="请输入${field.label}…"></div></div>`;
+            }
+            return `<div class="info-item"><div class="${labelClass}">${field.label}</div><div class="info-value">${val || '-'}</div></div>`;
+        }).join('');
+    }
+
+    function renderSection() {
+        renderActions();
+        renderGrid();
+    }
+
+    renderSection();
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB 7 — 客户信息
+// ══════════════════════════════════════════════════════════
+function initCustomerInfoTab() {
+    const strategyOpts = ['激进','平衡','稳重','躺平','退网'];
+    const customerStructureOpts = ['散客收件','小型电商','固定熟客','区域产业带','电商直播区域','集货中转区域'];
+    const yesnoOpts = ['是','否'];
+    const profitModeOpts = ['派费为主','揽派平衡','揽件创收','多元化增值'];
+    const autoKeys = ['totalCustomerCount', 'enterpriseCustomerRatio', 'ecomCustomerRatio', 'scatterCustomerRatio', 'totalCustomerRatio'];
+    const state = {
+        basic: {
+            values: {
+                strategy: '平衡',
+                peakSeasonPeriod: '11月-次年1月',
+                pickupMarketShare: '18%',
+                pickupTarget: '月揽件120万票',
+                directStationCount: '14',
+                inboundRate: '95%',
+                customerStructure: '小型电商',
+                selfWarehouseDistribution: '是',
+                ytoCloudWarehouse: '否',
+                profitMode: '揽派平衡',
+                enterpriseCustomerCount: '120',
+                ecomCustomerCount: '80',
+                scatterCustomerCount: '40',
+                totalCustomerCount: '',
+                enterpriseCustomerRatio: '',
+                ecomCustomerRatio: '',
+                scatterCustomerRatio: '',
+                totalCustomerRatio: '',
+                cost0to1kg: '2.6元',
+                cost1to3kg: '3.8元',
+                costAbove3kg: '5.2元',
+                costOther: '按区域浮动'
+            },
+            editing: false,
+            snapshot: null
+        }
+    };
+    const fields = [
+        { key: 'strategy', label: '经营策略', type: 'select', options: strategyOpts },
+        { key: 'peakSeasonPeriod', label: '旺季时间', type: 'text' },
+        { key: 'pickupMarketShare', label: '揽件市场占有率', type: 'text' },
+        { key: 'pickupTarget', label: '揽件指标', type: 'text' },
+        { key: 'directStationCount', label: '直营驿站数量', type: 'number' },
+        { key: 'inboundRate', label: '入库率', type: 'text' },
+        { key: 'customerStructure', label: '客户结构', type: 'select', options: customerStructureOpts },
+        { key: 'selfWarehouseDistribution', label: '自营仓配', type: 'select', options: yesnoOpts },
+        { key: 'ytoCloudWarehouse', label: '圆通云仓', type: 'select', options: yesnoOpts },
+        { key: 'profitMode', label: '盈利模式', type: 'select', options: profitModeOpts },
+        { key: 'enterpriseCustomerCount', label: '企业客户数', type: 'number' },
+        { key: 'ecomCustomerCount', label: '电商客户数', type: 'number' },
+        { key: 'scatterCustomerCount', label: '散件客户数', type: 'number' },
+        { key: 'totalCustomerCount', label: '合计客户数', type: 'number', auto: true },
+        { key: 'enterpriseCustomerRatio', label: '企业客户占比', type: 'text', auto: true },
+        { key: 'ecomCustomerRatio', label: '电商客户占比', type: 'text', auto: true },
+        { key: 'scatterCustomerRatio', label: '散件客户占比', type: 'text', auto: true },
+        { key: 'totalCustomerRatio', label: '合计客户数占比', type: 'text', auto: true },
+        { key: 'cost0to1kg', label: '单票成本-0-1公斤以内', type: 'text' },
+        { key: 'cost1to3kg', label: '单票成本-1-3公斤以内', type: 'text' },
+        { key: 'costAbove3kg', label: '单票成本-3公斤以上', type: 'text' },
+        { key: 'costOther', label: '单票成本-其他', type: 'text' }
+    ];
+
+    function toNumber(value) {
+        const num = Number(String(value || '').trim());
+        return Number.isFinite(num) ? num : 0;
+    }
+
+    function toPercent(part, total) {
+        if (!total) return '0%';
+        return `${((part / total) * 100).toFixed(2)}%`;
+    }
+
+    function applyAutoCalculatedFields(values) {
+        const enterprise = toNumber(values.enterpriseCustomerCount);
+        const ecom = toNumber(values.ecomCustomerCount);
+        const scatter = toNumber(values.scatterCustomerCount);
+        const total = enterprise + ecom + scatter;
+        values.totalCustomerCount = String(total);
+        values.enterpriseCustomerRatio = toPercent(enterprise, total);
+        values.ecomCustomerRatio = toPercent(ecom, total);
+        values.scatterCustomerRatio = toPercent(scatter, total);
+        values.totalCustomerRatio = total ? '100%' : '0%';
+    }
+
+    function renderActions() {
+        const el = document.getElementById('ci-basicInfoActions');
+        if (!el) return;
+        el.innerHTML = state.basic.editing
+            ? `<button class="btn btn-secondary" type="button" data-action="cancel">取消</button><button class="btn btn-primary" type="button" data-action="save">保存</button>`
+            : `<button class="btn btn-primary" type="button" data-action="edit">编辑</button>`;
+        el.onclick = e => {
+            const action = e.target.dataset.action;
+            if (action === 'edit') {
+                state.basic.snapshot = cloneObj(state.basic.values);
+                state.basic.editing = true;
+                renderSection();
+            }
+            if (action === 'cancel') {
+                state.basic.values = cloneObj(state.basic.snapshot || state.basic.values);
+                state.basic.snapshot = null;
+                state.basic.editing = false;
+                renderSection();
+            }
+            if (action === 'save') {
+                syncInputs();
+                state.basic.snapshot = null;
+                state.basic.editing = false;
+                renderSection();
+            }
+        };
+    }
+
+    function syncInputs() {
+        document.querySelectorAll('[data-ci-basic]').forEach(el => {
+            const key = el.dataset.ciBasic;
+            if (autoKeys.includes(key)) return;
+            state.basic.values[key] = el.value.trim();
+        });
+        applyAutoCalculatedFields(state.basic.values);
+    }
+
+    function bindAutoCalculationInputs(root) {
+        root.querySelectorAll('[data-ci-basic="enterpriseCustomerCount"],[data-ci-basic="ecomCustomerCount"],[data-ci-basic="scatterCustomerCount"]').forEach(input => {
+            input.addEventListener('input', () => {
+                syncInputs();
+                ['totalCustomerCount', 'enterpriseCustomerRatio', 'ecomCustomerRatio', 'scatterCustomerRatio', 'totalCustomerRatio'].forEach(key => {
+                    const target = root.querySelector(`[data-ci-basic="${key}"]`);
+                    if (target) target.value = state.basic.values[key];
+                });
+            });
+        });
+    }
+
+    function renderGrid() {
+        const el = document.getElementById('ci-basicInfoGrid');
+        if (!el) return;
+        el.className = state.basic.editing ? 'info-grid-3 editing' : 'info-grid-3';
+        const countStatKeys = ['enterpriseCustomerCount', 'ecomCustomerCount', 'scatterCustomerCount', 'totalCustomerCount'];
+        const ratioStatKeys = ['enterpriseCustomerRatio', 'ecomCustomerRatio', 'scatterCustomerRatio', 'totalCustomerRatio'];
+        const costStatKeys = ['cost0to1kg', 'cost1to3kg', 'costAbove3kg', 'costOther'];
+        const statKeySet = new Set([...countStatKeys, ...ratioStatKeys, ...costStatKeys]);
+        const normalFields = fields.filter(field => !statKeySet.has(field.key));
+        const statCellMap = {
+            enterpriseCustomerCount: { label: '企业客户数', total: false },
+            ecomCustomerCount: { label: '电商客户数', total: false },
+            scatterCustomerCount: { label: '散件客户数', total: false },
+            totalCustomerCount: { label: '合计客户数', total: true },
+            enterpriseCustomerRatio: { label: '企业客户占比', total: false },
+            ecomCustomerRatio: { label: '电商客户占比', total: false },
+            scatterCustomerRatio: { label: '散件客户占比', total: false },
+            totalCustomerRatio: { label: '合计客户数占比', total: true }
+        };
+        const costStatCellMap = {
+            cost0to1kg: '0-1公斤以内',
+            cost1to3kg: '1-3公斤以内',
+            costAbove3kg: '3公斤以上',
+            costOther: '其他'
+        };
+
+        function renderFieldInput(field, value) {
+            if (field.type === 'select') {
+                const options = field.options.map(opt => `<option${opt === state.basic.values[field.key] ? ' selected' : ''}>${escHtml(opt)}</option>`).join('');
+                return `<select data-ci-basic="${field.key}">${options}</select>`;
+            }
+            const inputType = field.type === 'number' ? 'number' : 'text';
+            const readonlyAttr = field.auto ? ' readonly' : '';
+            return `<input type="${inputType}" data-ci-basic="${field.key}" value="${value}" placeholder="请输入${field.label}…"${readonlyAttr}>`;
+        }
+
+        const normalHtml = normalFields.map(field => {
+            const val = escHtml(state.basic.values[field.key]);
+            if (state.basic.editing) {
+                return `<div class="info-item"><div class="info-label">${field.label}</div><div class="info-input">${renderFieldInput(field, val)}</div></div>`;
+            }
+            return `<div class="info-item"><div class="info-label">${field.label}</div><div class="info-value">${val || '-'}</div></div>`;
+        }).join('');
+
+        function renderStatCell(fieldKey) {
+            const value = escHtml(state.basic.values[fieldKey]);
+            const meta = statCellMap[fieldKey];
+            const fieldMeta = fields.find(field => field.key === fieldKey);
+            if (state.basic.editing) {
+                const input = renderFieldInput(fieldMeta, value);
+                return `<div class="customer-stat-cell${meta.total ? ' is-total' : ''}">
+                    <div class="customer-stat-label">${meta.label}</div>
+                    <div class="customer-stat-value">${input}</div>
+                </div>`;
+            }
+            return `<div class="customer-stat-cell${meta.total ? ' is-total' : ''}">
+                <div class="customer-stat-label">${meta.label}</div>
+                <div class="customer-stat-value">${value || '-'}</div>
+            </div>`;
+        }
+
+        const statHtml = `
+            <div class="customer-stat-group">
+                <div class="customer-stat-title">客户结构统计</div>
+                <div class="customer-stat-row">
+                    ${countStatKeys.map(renderStatCell).join('')}
+                </div>
+                <div class="customer-stat-row" style="margin-top:10px;">
+                    ${ratioStatKeys.map(renderStatCell).join('')}
+                </div>
+            </div>
+        `;
+
+        function renderCostStatCell(fieldKey) {
+            const value = escHtml(state.basic.values[fieldKey]);
+            const label = costStatCellMap[fieldKey];
+            const fieldMeta = fields.find(field => field.key === fieldKey);
+            if (state.basic.editing) {
+                const input = renderFieldInput(fieldMeta, value);
+                return `<div class="cost-stat-cell">
+                    <div class="cost-stat-label">${label}</div>
+                    <div class="cost-stat-value">${input}</div>
+                </div>`;
+            }
+            return `<div class="cost-stat-cell">
+                <div class="cost-stat-label">${label}</div>
+                <div class="cost-stat-value">${value || '-'}</div>
+            </div>`;
+        }
+
+        const costStatHtml = `
+            <div class="cost-stat-group">
+                <div class="customer-stat-title">单票成本</div>
+                <div class="cost-stat-row">
+                    ${costStatKeys.map(renderCostStatCell).join('')}
+                </div>
+            </div>
+        `;
+
+        el.innerHTML = normalHtml + statHtml + costStatHtml;
+        if (state.basic.editing) bindAutoCalculationInputs(el);
+    }
+
+    function renderSection() {
+        renderActions();
+        renderGrid();
+    }
+
+    applyAutoCalculatedFields(state.basic.values);
+    renderSection();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1950,12 +2493,16 @@ function initVisitTab() {
 function initControllerTab() {
     const currentYear = String(new Date().getFullYear());
     const mortOpts=['无抵押','已抵押'];
+    const pledgeOpts=['有','无'];
+    const loanTypeOpts=['个人贷款','企业贷款'];
     const propTypeOpts=['请选择','住宅','商铺','写字楼','厂房','其他'];
     const eduOpts=['大专','本科','硕士','博士'];
     const yesnoOpts=['是','否'];
+    const connectionOpts=['老板/老板娘','核心管理层','桐庐人','省区/总部总监级','网管'];
+    const backgroundResourceOpts=['政府层面','圆二代','富二代','企业家'];
     const state = {
         basic: {
-            values:{name:'张三',idCard:'888888888888888888',phone:'18788888888',age:'33',gender:'男',address:'湖北省',education:'大专',isTonglu:'是',hobby:'听经书',productPreference:'利率敏感',marketingPreference:'低利率',connections:'省总/总部总监级',backgroundResource:'政府层面',innerRelatedOutletCount:'2',outerRelatedOutletCount:'1'},
+            values:{name:'张三',idCard:'888888888888888888',phone:'18788888888',age:'33',gender:'男',address:'湖北省',residentAddress:'',ytoEmployeeId:'',education:'大专',isTonglu:'是',hobby:'听经书',productPreference:'利率敏感',marketingPreference:'低利率',connections:'省区/总部总监级',backgroundResource:'政府层面',innerRelatedOutletCount:'2',outerRelatedOutletCount:'1'},
             editing:false, snapshot:null
         },
         property: { items:[
@@ -1969,10 +2516,14 @@ function initControllerTab() {
             {id:2,purchaseYear:'2022',brand:'奔驰',series:'AMG',purchasePrice:'33.33',holder:'张三',mortgage:'无抵押',financingBalance:'3'},
             {id:3,purchaseYear:'2021',brand:'奥迪',series:'RS',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'},
             {id:4,purchaseYear:'2020',brand:'小米',series:'YU7',purchasePrice:'33.33',holder:'张三',mortgage:'已抵押',financingBalance:'3'}
+        ], editing:false, snapshot:null },
+        loan: { items:[
+            {id:1,bankName:'中国银行',loanType:'企业贷款',loanAmount:'1200000',pledge:'有'},
+            {id:2,bankName:'招商银行',loanType:'个人贷款',loanAmount:'350000',pledge:'无'}
         ], editing:false, snapshot:null }
     };
     const readonlyFields=[{key:'name',label:'实控人姓名'},{key:'idCard',label:'身份证号'},{key:'phone',label:'联系方式'},{key:'age',label:'年龄'},{key:'gender',label:'性别'}];
-    const editableFields=[{key:'address',label:'户籍地',type:'text'},{key:'education',label:'最高学历',type:'select',options:eduOpts},{key:'isTonglu',label:'是否桐庐系',type:'select',options:yesnoOpts},{key:'hobby',label:'个人爱好',type:'text'},{key:'productPreference',label:'产品偏好',type:'text'},{key:'marketingPreference',label:'营销偏好',type:'text'},{key:'connections',label:'人脉资源',type:'text'},{key:'backgroundResource',label:'背景资源',type:'text'},{key:'innerRelatedOutletCount',label:'体系内关联网点数',type:'text'},{key:'outerRelatedOutletCount',label:'体系外关联网点数',type:'text'}];
+    const editableFields=[{key:'address',label:'户籍地',type:'text'},{key:'residentAddress',label:'常驻地址',type:'text'},{key:'ytoEmployeeId',label:'圆通工号',type:'text'},{key:'education',label:'最高学历',type:'select',options:eduOpts},{key:'isTonglu',label:'是否桐庐系',type:'select',options:yesnoOpts},{key:'hobby',label:'个人爱好',type:'text'},{key:'productPreference',label:'产品偏好',type:'text'},{key:'marketingPreference',label:'营销偏好',type:'text'},{key:'connections',label:'人脉资源',type:'select',options:connectionOpts},{key:'backgroundResource',label:'背景资源',type:'select',options:backgroundResourceOpts},{key:'innerRelatedOutletCount',label:'体系内关联网点数',type:'text'},{key:'outerRelatedOutletCount',label:'体系外关联网点数',type:'text'}];
 
     function renderBasicAct(){
         const el=document.getElementById('c-basicInfoActions');if(!el)return;
@@ -1998,7 +2549,7 @@ function initControllerTab() {
     function renderBasicSection(){renderBasicAct();renderBasicGrid();}
 
     function syncSec(sec){document.querySelectorAll(`[data-section="${sec}"]`).forEach(el=>{const i=Number(el.dataset.index),f=el.dataset.field;if(state[sec].items[i])state[sec].items[i][f]=el.value.trim();});}
-    function renderAct(sec){const el=document.getElementById(`c-${sec==='property'?'property':'vehicle'}Actions`);if(!el)return;el.innerHTML=state[sec].editing?`<button class="btn btn-secondary" type="button" data-action="cancel">取消</button><button class="btn btn-primary" type="button" data-action="save">保存</button>`:`<button class="btn btn-primary" type="button" data-action="edit">编辑</button>`;el.onclick=e=>{const a=e.target.dataset.action;if(a==='edit'){['property','vehicle'].filter(k=>state[k].editing).forEach(k=>syncSec(k));state[sec].snapshot=cloneObj(state[sec].items);state[sec].editing=true;renderTables();}if(a==='cancel'){state[sec].items=cloneObj(state[sec].snapshot||[]);state[sec].snapshot=null;state[sec].editing=false;renderTables();}if(a==='save'){syncSec(sec);renumber(state[sec].items);state[sec].snapshot=null;state[sec].editing=false;renderTables();}};}
+    function renderAct(sec){const el=document.getElementById(`c-${sec}Actions`);if(!el)return;el.innerHTML=state[sec].editing?`<button class="btn btn-secondary" type="button" data-action="cancel">取消</button><button class="btn btn-primary" type="button" data-action="save">保存</button>`:`<button class="btn btn-primary" type="button" data-action="edit">编辑</button>`;el.onclick=e=>{const a=e.target.dataset.action;if(a==='edit'){['property','vehicle','loan'].filter(k=>state[k].editing).forEach(k=>syncSec(k));state[sec].snapshot=cloneObj(state[sec].items);state[sec].editing=true;renderTables();}if(a==='cancel'){state[sec].items=cloneObj(state[sec].snapshot||[]);state[sec].snapshot=null;state[sec].editing=false;renderTables();}if(a==='save'){syncSec(sec);renumber(state[sec].items);state[sec].snapshot=null;state[sec].editing=false;renderTables();}};}
     function renderT(sec){
         const tbody=document.getElementById(`c-${sec}TableBody`),wrap=document.getElementById(`c-${sec}AddWrap`),shell=tbody?.closest('.table-shell');
         renderAct(sec);if(!tbody)return;if(wrap)wrap.hidden=!state[sec].editing;if(shell)shell.classList.toggle('is-editing',state[sec].editing);
@@ -2010,30 +2561,37 @@ function initControllerTab() {
             if(sec==='property'){cols=state[sec].editing
                 ?`<td class="input-cell">${buildSelect('propertyType',idx,'property',propTypeOpts,item.propertyType)}</td>
                   <td class="input-cell"><input data-field="area" data-index="${idx}" data-section="property" value="${escHtml(item.area)}"></td>
-                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'property',item.purchaseYear)}</td>
+                  <td class="input-cell"><input type="number" data-field="purchaseYear" data-index="${idx}" data-section="property" value="${escHtml(item.purchaseYear)}"></td>
                   <td class="input-cell"><input data-field="purchasePrice" data-index="${idx}" data-section="property" value="${escHtml(item.purchasePrice)}"></td>
                   <td class="input-cell"><input data-field="address" data-index="${idx}" data-section="property" value="${escHtml(item.address)}"></td>
                   <td class="input-cell"><input data-field="holder" data-index="${idx}" data-section="property" value="${escHtml(item.holder)}"></td>
                   <td class="input-cell">${buildSelect('mortgage',idx,'property',mortOpts,item.mortgage)}</td>
                   <td class="input-cell"><input data-field="financingBalance" data-index="${idx}" data-section="property" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.propertyType)}</td><td>${escHtml(item.area)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.address)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
-            else{cols=state[sec].editing
+                :`<td>${escHtml(item.propertyType)}</td><td>${escHtml(item.area)}</td><td>${escHtml(item.purchaseYear)}</td><td>${fmtMoney(item.purchasePrice)}</td><td>${escHtml(item.address)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${fmtMoney(item.financingBalance)}</td>`;}
+            else if(sec==='vehicle'){cols=state[sec].editing
                 ?`<td class="input-cell"><input data-field="brand" data-index="${idx}" data-section="vehicle" value="${escHtml(item.brand)}"></td>
                   <td class="input-cell"><input data-field="series" data-index="${idx}" data-section="vehicle" value="${escHtml(item.series)}"></td>
-                  <td class="input-cell">${buildYearSelect('purchaseYear',idx,'vehicle',item.purchaseYear)}</td>
+                  <td class="input-cell"><input type="number" data-field="purchaseYear" data-index="${idx}" data-section="vehicle" value="${escHtml(item.purchaseYear)}"></td>
                   <td class="input-cell"><input data-field="purchasePrice" data-index="${idx}" data-section="vehicle" value="${escHtml(item.purchasePrice)}"></td>
                   <td class="input-cell"><input data-field="holder" data-index="${idx}" data-section="vehicle" value="${escHtml(item.holder)}"></td>
                   <td class="input-cell">${buildSelect('mortgage',idx,'vehicle',mortOpts,item.mortgage)}</td>
                   <td class="input-cell"><input data-field="financingBalance" data-index="${idx}" data-section="vehicle" value="${escHtml(item.financingBalance)}"></td>`
-                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.series)}</td><td>${escHtml(item.purchaseYear)}</td><td>${escHtml(item.purchasePrice)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${escHtml(item.financingBalance)}</td>`;}
+                :`<td>${escHtml(item.brand)}</td><td>${escHtml(item.series)}</td><td>${escHtml(item.purchaseYear)}</td><td>${fmtMoney(item.purchasePrice)}</td><td>${escHtml(item.holder)}</td><td>${escHtml(item.mortgage)}</td><td>${fmtMoney(item.financingBalance)}</td>`;}
+            else{cols=state[sec].editing
+                ?`<td class="input-cell"><input data-field="bankName" data-index="${idx}" data-section="loan" value="${escHtml(item.bankName)}"></td>
+                  <td class="input-cell">${buildSelect('loanType',idx,'loan',loanTypeOpts,item.loanType)}</td>
+                  <td class="input-cell"><input type="number" step="0.01" data-field="loanAmount" data-index="${idx}" data-section="loan" value="${escHtml(item.loanAmount)}"></td>
+                  <td class="input-cell">${buildSelect('pledge',idx,'loan',pledgeOpts,item.pledge)}</td>`
+                :`<td>${escHtml(item.bankName)}</td><td>${escHtml(item.loanType)}</td><td>${fmtMoney(item.loanAmount)}</td><td>${escHtml(item.pledge)}</td>`;}
             row.innerHTML=`<td class="row-index">${item.id}</td>`+cols+(state[sec].editing?`<td class="action-col"><button class="delete-btn" data-del="${sec}" data-idx="${idx}">&times;</button></td>`:'<td class="action-col"></td>');
             tbody.appendChild(row);
         });
         tbody.onclick=e=>{const btn=e.target.closest('[data-del]');if(btn){const s=btn.dataset.del,i=Number(btn.dataset.idx);showPopConfirm(btn,'确认删除？',()=>{syncSec(s);state[s].items.splice(i,1);renumber(state[s].items);renderTables();});}};
     }
-    function renderTables(){renderT('property');renderT('vehicle');}
+    function renderTables(){renderT('property');renderT('vehicle');renderT('loan');}
     document.getElementById('c-addPropertyRowBtn')?.addEventListener('click',()=>{syncSec('property');state.property.items.push({id:state.property.items.length+1,purchaseYear:currentYear,propertyType:propTypeOpts[0],area:'',purchasePrice:'',address:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
     document.getElementById('c-addVehicleRowBtn')?.addEventListener('click',()=>{syncSec('vehicle');state.vehicle.items.push({id:state.vehicle.items.length+1,purchaseYear:currentYear,brand:'',series:'',purchasePrice:'',holder:'',mortgage:mortOpts[0],financingBalance:''});renderTables();});
+    document.getElementById('c-addLoanRowBtn')?.addEventListener('click',()=>{syncSec('loan');state.loan.items.push({id:state.loan.items.length+1,bankName:'',loanType:loanTypeOpts[0],loanAmount:'0',pledge:pledgeOpts[0]});renderTables();});
     renderBasicSection();
     renderTables();
 }
