@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>收入统计</title>
+  <style>
+
+        :root {
+            --primary-color: #653EB3;
+            --secondary-color: #653EB3;
+            --success-color: #2ECC71;
+            --danger-color: #E74C3C;
+            --warning-color: #F39C12;
+            --gray-color: #95A5A6;
+            --light-gray: #F7F9FC;
+            --white: #fff;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --card-radius: 4px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F5F7FA;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background-color: var(--white);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 20px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            padding: 16px 12px;
+            background-color: var(--light-gray);
+            border-radius: var(--card-radius);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        .dashboard-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dashboard-row .dashboard-card {
+            flex: 1;
+        }
+
+        .income-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .income-item {
+            flex: 1;
+            padding: 20px;
+            border-radius: var(--card-radius);
+            background-color: var(--light-gray);
+            position: relative;
+        }
+
+        .income-item:nth-child(1) {
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .income-item:nth-child(2) {
+            border-bottom: 3px solid var(--success-color);
+        }
+
+        .income-item:nth-child(3) {
+            border-bottom: 3px solid var(--warning-color);
+        }
+
+        .income-title {
+            font-size: 13px;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .income-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .income-mom {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 2px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .income-mom.up {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+
+        .income-mom.down {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        .income-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .income-total {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(108, 92, 231, 0.05);
+            padding: 15px 20px;
+            border-radius: var(--card-radius);
+        }
+
+        .income-total-label {
+            font-size: 13px;
+            color: var(--gray-color);
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .income-total-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .overdue-item .income-mom.down {
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        /* 财务风格图标 */
+        .icon-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            opacity: 0.2;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .dashboard-row {
+                flex-direction: column;
+            }
+            
+            .dashboard-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .stat-item {
+                flex: 1 1 calc(50% - 10px);
+            }
+            
+            .income-box {
+                flex-direction: column;
+            }
+        }
+    
+  .aoi-hidden { display:none !important; }
+  .aoi-detail-shell { max-width: 1920px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+  .aoi-detail-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
+  .aoi-detail-title { font-size:20px; font-weight:700; color:#653eb3; }
+  .aoi-detail-back { background:#f5f7fa; border:1px solid #dcdfe6; border-radius:4px; padding:8px 12px; cursor:pointer; }
+  .aoi-detail-back:hover { background:#e6f1fc; border-color:#a0cfff; }
+  .aoi-detail-frame-wrap { background:#fff; border-radius:8px; box-shadow:0 2px 12px 0 rgba(0,0,0,0.05); overflow:hidden; height: calc(100vh - 140px); }
+  #aoi-detail-frame { width:100%; height:100%; border:none; }
+  </style>
+</head>
+<body>
+  <div id="aoi-dashboard-view">
+
+    <div class="dashboard-container">
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>当月收入</h3>
+                <div class="income-box">
+                    <div class="income-item">
+                        <div class="icon-indicator">💰</div>
+                        <div class="income-title">当月总收入</div>
+                        <div class="income-value">¥ 156,890<span class="income-mom up">↑ 5.6%</span></div>
+                    </div>
+                    <div class="income-item">
+                        <div class="icon-indicator">📊</div>
+                        <div class="income-title">当月核销费</div>
+                        <div class="income-value">¥ 98,450<span class="income-mom up">↑ 3.2%</span></div>
+                    </div>
+                    <div class="income-item">
+                        <div class="icon-indicator">📈</div>
+                        <div class="income-title">当月利息</div>
+                        <div class="income-value">¥ 58,440<span class="income-mom up">↑ 9.8%</span></div>
+                    </div>
+                </div>
+                <div class="income-footer">
+                    <div class="income-total">
+                        <div class="income-total-label">累计总收入</div>
+                        <div class="income-total-value">¥ 1,825,680</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>逾期关注</h3>
+                <div class="dashboard-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">54</div>
+                        <div class="stat-label">当月逾期客户数</div>
+                    </div>
+                    <div class="stat-item overdue-item">
+                        <div class="stat-value">¥ 36,520</div>
+                        <div class="stat-label">当月新增逾期额</div>
+                        <div class="income-mom down">↑ 12.3%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">¥ 128,450</div>
+                        <div class="stat-label">当月累计逾期额</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">245</div>
+                        <div class="stat-label">当月新增客户数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+  </div>
+  <div id="aoi-detail-view" class="aoi-hidden">
+    <div class="aoi-detail-shell">
+      <div class="aoi-detail-toolbar">
+        <div id="aoi-detail-title" class="aoi-detail-title">详情</div>
+        <button id="aoi-detail-back" class="aoi-detail-back" type="button">返回</button>
+      </div>
+      <div class="aoi-detail-frame-wrap"><iframe id="aoi-detail-frame"></iframe></div>
+    </div>
+  </div>
+
+  <script>
+    const detailTemplates = {"income/income-detail.html":"<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>收入详情 - 互联网小贷公司管理台系统</title>\n    <style>\n        :root {\n            --primary-color: #653EB3;\n            --secondary-color: #8E44AD;\n            --success-color: #2ECC71;\n            --danger-color: #E74C3C;\n            --warning-color: #F39C12;\n            --gray-color: #95A5A6;\n            --light-gray: #F7F9FC;\n            --white: #fff;\n            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);\n            --card-radius: 4px;\n        }\n\n        body {\n            margin: 0;\n            padding: 0;\n            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n            background-color: #F5F7FA;\n            color: #333;\n        }\n\n        .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n\n        header {\n            display: flex;\n            justify-content: space-between;\n            align-items: center;\n            margin-bottom: 20px;\n        }\n\n        h1 {\n            color: var(--primary-color);\n            font-size: 24px;\n            font-weight: 600;\n            margin: 0;\n        }\n\n        .breadcrumb {\n            display: flex;\n            align-items: center;\n            font-size: 14px;\n            color: var(--gray-color);\n        }\n\n        .breadcrumb a {\n            color: var(--primary-color);\n            text-decoration: none;\n        }\n\n        .breadcrumb .separator {\n            margin: 0 8px;\n        }\n\n        .card {\n            background-color: var(--white);\n            border-radius: var(--card-radius);\n            box-shadow: var(--shadow);\n            padding: 20px;\n            border-left: none;\n            margin-bottom: 20px;\n        }\n\n        .card-title {\n            margin: 0 0 20px 0;\n            color: var(--primary-color);\n            font-size: 16px;\n            font-weight: 600;\n            letter-spacing: 0.5px;\n            text-transform: uppercase;\n        }\n\n        .search-container {\n            display: flex;\n            gap: 15px;\n            flex-wrap: wrap;\n            margin-bottom: 20px;\n        }\n\n        .form-group {\n            display: flex;\n            flex-direction: column;\n            min-width: 200px;\n        }\n\n        .form-group label {\n            font-size: 13px;\n            color: var(--gray-color);\n            margin-bottom: 5px;\n        }\n\n        .form-group select, .form-group input {\n            padding: 8px 12px;\n            border: 1px solid #ddd;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            background-color: var(--white);\n        }\n\n        .search-btn {\n            align-self: flex-end;\n            padding: 8px 16px;\n            background-color: var(--primary-color);\n            color: var(--white);\n            border: none;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            cursor: pointer;\n            transition: background-color 0.2s;\n        }\n\n        .search-btn:hover {\n            background-color: var(--secondary-color);\n        }\n\n        .reset-btn {\n            align-self: flex-end;\n            padding: 8px 16px;\n            background-color: var(--white);\n            color: var(--gray-color);\n            border: 1px solid #ddd;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            cursor: pointer;\n        }\n\n        .table-container {\n            overflow-x: auto;\n        }\n\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            font-size: 14px;\n        }\n\n        th {\n            background-color: var(--light-gray);\n            color: var(--primary-color);\n            text-align: left;\n            padding: 12px 15px;\n            font-weight: 600;\n            border-bottom: 1px solid #ddd;\n        }\n\n        td {\n            padding: 12px 15px;\n            border-bottom: 1px solid #eee;\n            color: #333;\n        }\n\n        tr:last-child td {\n            border-bottom: none;\n        }\n\n        tr:hover td {\n            background-color: rgba(108, 92, 231, 0.05);\n        }\n\n        .detail-btn {\n            padding: 5px 10px;\n            background-color: rgba(108, 92, 231, 0.1);\n            color: var(--primary-color);\n            border: none;\n            border-radius: 2px;\n            cursor: pointer;\n            font-size: 12px;\n            transition: background-color 0.2s;\n        }\n\n        .detail-btn:hover {\n            background-color: rgba(108, 92, 231, 0.2);\n        }\n\n        .pagination {\n            display: flex;\n            justify-content: flex-end;\n            gap: 5px;\n            margin-top: 15px;\n        }\n\n        .pagination button {\n            width: 30px;\n            height: 30px;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            border: 1px solid #ddd;\n            background-color: var(--white);\n            border-radius: var(--card-radius);\n            cursor: pointer;\n        }\n\n        .pagination button.active {\n            background-color: var(--primary-color);\n            color: var(--white);\n            border-color: var(--primary-color);\n        }\n\n        .tab-container {\n            margin-bottom: 20px;\n        }\n\n        .tab-buttons {\n            display: flex;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #ddd;\n        }\n\n        .tab-btn {\n            padding: 10px 20px;\n            background: none;\n            border: none;\n            font-size: 14px;\n            font-weight: 500;\n            color: var(--gray-color);\n            cursor: pointer;\n            position: relative;\n        }\n\n        .tab-btn.active {\n            color: var(--primary-color);\n        }\n\n        .tab-btn.active::after {\n            content: '';\n            position: absolute;\n            bottom: -1px;\n            left: 0;\n            width: 100%;\n            height: 2px;\n            background-color: var(--primary-color);\n        }\n\n        .tab-content {\n            display: none;\n        }\n\n        .tab-content.active {\n            display: block;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <header>\n            <h1>收入详情</h1>\n        </header>\n\n        <div class=\"card\">\n            <div class=\"tab-container\">\n                <div class=\"tab-buttons\">\n                    <button class=\"tab-btn active\" data-tab=\"monthly\">当月收入客户列表</button>\n                    <button class=\"tab-btn\" data-tab=\"total\">总收入客户列表</button>\n                </div>\n            \n                <div class=\"search-container\">\n                    <div class=\"form-group\">\n                        <label>产品</label>\n                        <select id=\"product-select\">\n                            <option value=\"\">全部</option>\n                            <option value=\"小微保\">小微保</option>\n                            <option value=\"小微保专项\">小微保专项</option>\n                            <option value=\"小微保旺季\">小微保旺季</option>\n                            <option value=\"发薪贷\">发薪贷</option>\n                            <option value=\"秒贷\">秒贷</option>\n                            <option value=\"电商贷\">电商贷</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group year-month-selector\">\n                        <label>年份</label>\n                        <select id=\"year-select\">\n                            <option value=\"2024\">2024</option>\n                            <option value=\"2023\">2023</option>\n                            <option value=\"2022\">2022</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group year-month-selector\">\n                        <label>月份</label>\n                        <select id=\"month-select\">\n                            <option value=\"\">全部</option>\n                            <option value=\"01\">1月</option>\n                            <option value=\"02\">2月</option>\n                            <option value=\"03\">3月</option>\n                            <option value=\"04\">4月</option>\n                            <option value=\"05\">5月</option>\n                            <option value=\"06\">6月</option>\n                            <option value=\"07\">7月</option>\n                            <option value=\"08\">8月</option>\n                            <option value=\"09\">9月</option>\n                            <option value=\"10\">10月</option>\n                            <option value=\"11\">11月</option>\n                            <option value=\"12\">12月</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\">\n                        <label>客户名称</label>\n                        <input type=\"text\" id=\"customer-name\" placeholder=\"请输入客户名称\">\n                    </div>\n                    <button class=\"search-btn\" id=\"search-btn\">查询</button>\n                    <button class=\"reset-btn\" id=\"reset-btn\">重置</button>\n                </div>\n            \n                <div class=\"tab-content active\" id=\"monthly-tab\">\n                    <div class=\"table-container\">\n                        <table id=\"monthly-table\">\n                            <thead>\n                                <tr>\n                                    <th>客户名称</th>\n                                    <th>网点代码</th>\n                                    <th>网点名称</th>\n                                    <th>产品</th>\n                                    <th>还款金额(元)</th>\n                                    <th>收入金额(元)</th>\n                                    <th>操作</th>\n                                </tr>\n                            </thead>\n                            <tbody id=\"monthly-tbody\">\n                                <!-- 表格数据由JavaScript生成 -->\n                            </tbody>\n                        </table>\n                    </div>\n                    <div class=\"pagination\" id=\"monthly-pagination\">\n                        <!-- 分页由JavaScript生成 -->\n                    </div>\n                </div>\n            \n                <div class=\"tab-content\" id=\"total-tab\">\n                    <div class=\"table-container\">\n                        <table id=\"total-table\">\n                            <thead>\n                                <tr>\n                                    <th>客户名称</th>\n                                    <th>网点代码</th>\n                                    <th>网点名称</th>\n                                    <th>产品</th>\n                                    <th>还款金额(元)</th>\n                                    <th>收入金额(元)</th>\n                                    <th>操作</th>\n                                </tr>\n                            </thead>\n                            <tbody id=\"total-tbody\">\n                                <!-- 表格数据由JavaScript生成 -->\n                            </tbody>\n                        </table>\n                    </div>\n                    <div class=\"pagination\" id=\"total-pagination\">\n                        <!-- 分页由JavaScript生成 -->\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <script>\n        // 模拟数据 - 客户信息\n        const mockCustomers = [\n            { name: \"京东物流有限公司\", branchCode: \"100108\", branchName: \"北京总部网点\" },\n            { name: \"申通快递有限公司\", branchCode: \"100256\", branchName: \"上海分拨中心\" },\n            { name: \"顺丰速运有限公司\", branchCode: \"100375\", branchName: \"广州网点\" },\n            { name: \"中通快递有限公司\", branchCode: \"100492\", branchName: \"深圳转运中心\" },\n            { name: \"圆通速递有限公司\", branchCode: \"100587\", branchName: \"杭州总部网点\" },\n            { name: \"韵达快递有限公司\", branchCode: \"100623\", branchName: \"南京分拨中心\" },\n            { name: \"百世快递有限公司\", branchCode: \"100714\", branchName: \"重庆网点\" },\n            { name: \"德邦物流有限公司\", branchCode: \"100832\", branchName: \"成都转运中心\" },\n            { name: \"极兔速递有限公司\", branchCode: \"100941\", branchName: \"武汉网点\" },\n            { name: \"京东快递有限公司\", branchCode: \"101024\", branchName: \"西安分拨中心\" },\n            { name: \"中储物流有限公司\", branchCode: \"101135\", branchName: \"天津网点\" },\n            { name: \"安能物流有限公司\", branchCode: \"101247\", branchName: \"苏州转运中心\" },\n            { name: \"华夏物流有限公司\", branchCode: \"101358\", branchName: \"长沙网点\" },\n            { name: \"天地华宇物流有限公司\", branchCode: \"101469\", branchName: \"郑州分拨中心\" },\n            { name: \"优速快递有限公司\", branchCode: \"101578\", branchName: \"青岛总部网点\" },\n            { name: \"快捷快递有限公司\", branchCode: \"101689\", branchName: \"宁波转运中心\" },\n            { name: \"全峰快递有限公司\", branchCode: \"101795\", branchName: \"福州网点\" },\n            { name: \"佳吉快运有限公司\", branchCode: \"101857\", branchName: \"厦门分拨中心\" },\n            { name: \"远成快运有限公司\", branchCode: \"101968\", branchName: \"合肥网点\" },\n            { name: \"宅急送快递有限公司\", branchCode: \"102073\", branchName: \"济南转运中心\" },\n            { name: \"联邦快递有限公司\", branchCode: \"102184\", branchName: \"大连总部网点\" },\n            { name: \"如风达快递有限公司\", branchCode: \"102295\", branchName: \"沈阳分拨中心\" },\n            { name: \"速尔快递有限公司\", branchCode: \"102356\", branchName: \"南昌网点\" },\n            { name: \"国通快递有限公司\", branchCode: \"102467\", branchName: \"太原转运中心\" },\n            { name: \"快速物流有限公司\", branchCode: \"102578\", branchName: \"哈尔滨网点\" },\n            { name: \"龙邦快递有限公司\", branchCode: \"102689\", branchName: \"长春分拨中心\" },\n            { name: \"中铁快运有限公司\", branchCode: \"102795\", branchName: \"昆明总部网点\" },\n            { name: \"邮政速递有限公司\", branchCode: \"102857\", branchName: \"贵阳转运中心\" },\n            { name: \"万象物流有限公司\", branchCode: \"102963\", branchName: \"南宁网点\" },\n            { name: \"天天快递有限公司\", branchCode: \"103074\", branchName: \"兰州分拨中心\" }\n        ];\n\n        // 产品类型\n        const productTypes = [\"小微保\", \"小微保专项\", \"小微保旺季\", \"发薪贷\", \"秒贷\", \"电商贷\"];\n\n        // 生成随机的收入记录\n        function generateRandomRecords(count, isMonthly = true) {\n            const records = [];\n            const currentDate = new Date();\n            const currentYear = currentDate.getFullYear();\n            const currentMonth = currentDate.getMonth() + 1;\n            \n            for (let i = 0; i < count; i++) {\n                const customer = mockCustomers[Math.floor(Math.random() * mockCustomers.length)];\n                const product = productTypes[Math.floor(Math.random() * productTypes.length)];\n                const repaymentAmount = Math.floor(Math.random() * 50000 + 10000);\n                const incomeAmount = Math.floor(repaymentAmount * (Math.random() * 0.1 + 0.05));\n                \n                let year, month;\n                if (isMonthly) {\n                    year = currentYear;\n                    month = currentMonth;\n                } else {\n                    // 随机生成过去3年内的日期\n                    year = currentYear - Math.floor(Math.random() * 3);\n                    month = Math.floor(Math.random() * 12) + 1;\n                }\n                \n                records.push({\n                    ...customer,\n                    product: product,\n                    repaymentAmount: repaymentAmount,\n                    incomeAmount: incomeAmount,\n                    year: year,\n                    month: month\n                });\n            }\n            \n            return records;\n        }\n\n        // 格式化金额\n        function formatAmount(amount) {\n            return amount.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, \",\");\n        }\n\n        // 生成表格数据\n        let monthlyData = generateRandomRecords(50, true);\n        let totalData = generateRandomRecords(100, false);\n        let filteredMonthlyData = [...monthlyData];\n        let filteredTotalData = [...totalData];\n        \n        // 显示表格数据\n        function displayTableData(data, tableId, page = 1, pageSize = 10) {\n            const tbody = document.getElementById(tableId);\n            tbody.innerHTML = '';\n            \n            const startIndex = (page - 1) * pageSize;\n            const endIndex = Math.min(startIndex + pageSize, data.length);\n            const pageData = data.slice(startIndex, endIndex);\n            \n            if (pageData.length === 0) {\n                const emptyRow = document.createElement('tr');\n                emptyRow.innerHTML = `<td colspan=\"7\" style=\"text-align: center; padding: 30px;\">暂无数据</td>`;\n                tbody.appendChild(emptyRow);\n                return;\n            }\n            \n            for (const record of pageData) {\n                const row = document.createElement('tr');\n                row.innerHTML = `\n                    <td>${record.name}</td>\n                    <td>${record.branchCode}</td>\n                    <td>${record.branchName}</td>\n                    <td>${record.product}</td>\n                    <td>${formatAmount(record.repaymentAmount)}</td>\n                    <td>${formatAmount(record.incomeAmount)}</td>\n                    <td><button class=\"detail-btn\" data-id=\"${record.branchCode}\">详情</button></td>\n                `;\n                tbody.appendChild(row);\n            }\n            \n            // 更新分页\n            updatePagination(data.length, page, pageSize, tableId === 'monthly-tbody' ? 'monthly-pagination' : 'total-pagination');\n        }\n        \n        // 更新分页\n        function updatePagination(total, currentPage, pageSize, paginationId) {\n            const paginationContainer = document.getElementById(paginationId);\n            paginationContainer.innerHTML = '';\n            \n            const totalPages = Math.max(1, Math.ceil(total / pageSize));\n            \n            // 上一页按钮\n            const prevBtn = document.createElement('button');\n            prevBtn.innerHTML = '&lt;';\n            prevBtn.disabled = currentPage === 1;\n            prevBtn.addEventListener('click', () => {\n                if (currentPage > 1) {\n                    changePage(currentPage - 1, paginationId === 'monthly-pagination');\n                }\n            });\n            paginationContainer.appendChild(prevBtn);\n            \n            // 页码按钮\n            const maxPagesToShow = 5;\n            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));\n            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);\n            \n            if (endPage - startPage + 1 < maxPagesToShow) {\n                startPage = Math.max(1, endPage - maxPagesToShow + 1);\n            }\n            \n            for (let i = startPage; i <= endPage; i++) {\n                const pageBtn = document.createElement('button');\n                pageBtn.textContent = i;\n                pageBtn.classList.toggle('active', i === currentPage);\n                pageBtn.addEventListener('click', () => {\n                    changePage(i, paginationId === 'monthly-pagination');\n                });\n                paginationContainer.appendChild(pageBtn);\n            }\n            \n            // 下一页按钮\n            const nextBtn = document.createElement('button');\n            nextBtn.innerHTML = '&gt;';\n            nextBtn.disabled = currentPage === totalPages;\n            nextBtn.addEventListener('click', () => {\n                if (currentPage < totalPages) {\n                    changePage(currentPage + 1, paginationId === 'monthly-pagination');\n                }\n            });\n            paginationContainer.appendChild(nextBtn);\n        }\n        \n        // 切换页码\n        function changePage(page, isMonthly) {\n            if (isMonthly) {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', page);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', page);\n            }\n        }\n        \n        // 搜索/筛选数据\n        function filterData() {\n            const productValue = document.getElementById('product-select').value;\n            const yearValue = document.getElementById('year-select').value;\n            const monthValue = document.getElementById('month-select').value;\n            const customerNameValue = document.getElementById('customer-name').value.toLowerCase().trim();\n            \n            // 获取当前活动标签\n            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;\n            \n            // 过滤月度数据 - 对于月度数据忽略年月筛选条件\n            filteredMonthlyData = monthlyData.filter(record => {\n                return (\n                    (productValue === '' || record.product === productValue) &&\n                    (customerNameValue === '' || record.name.toLowerCase().includes(customerNameValue))\n                );\n            });\n            \n            // 过滤总数据 - 对于总数据应用所有筛选条件\n            filteredTotalData = totalData.filter(record => {\n                return (\n                    (productValue === '' || record.product === productValue) &&\n                    (yearValue === '' || record.year.toString() === yearValue) &&\n                    (monthValue === '' || record.month.toString().padStart(2, '0') === monthValue) &&\n                    (customerNameValue === '' || record.name.toLowerCase().includes(customerNameValue))\n                );\n            });\n            \n            // 更新当前显示的表格\n            if (activeTab === 'monthly') {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', 1);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', 1);\n            }\n        }\n        \n        // 重置筛选\n        function resetFilter() {\n            document.getElementById('product-select').value = '';\n            document.getElementById('year-select').value = '2024';\n            document.getElementById('month-select').value = '';\n            document.getElementById('customer-name').value = '';\n            \n            filteredMonthlyData = [...monthlyData];\n            filteredTotalData = [...totalData];\n            \n            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;\n            if (activeTab === 'monthly') {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', 1);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', 1);\n            }\n        }\n        \n        // 初始化页面\n        document.addEventListener('DOMContentLoaded', function() {\n            // 初始化表格\n            displayTableData(monthlyData, 'monthly-tbody', 1);\n            displayTableData(totalData, 'total-tbody', 1);\n            \n            // 切换标签页\n            const tabButtons = document.querySelectorAll('.tab-btn');\n            tabButtons.forEach(button => {\n                button.addEventListener('click', function() {\n                    tabButtons.forEach(btn => btn.classList.remove('active'));\n                    this.classList.add('active');\n                    \n                    const tabContents = document.querySelectorAll('.tab-content');\n                    tabContents.forEach(content => content.classList.remove('active'));\n                    \n                    const tabId = this.dataset.tab + '-tab';\n                    document.getElementById(tabId).classList.add('active');\n                    \n                    // 根据当前选中的标签页显示或隐藏年月选择器\n                    const yearMonthSelectors = document.querySelectorAll('.year-month-selector');\n                    yearMonthSelectors.forEach(selector => {\n                        selector.style.display = this.dataset.tab === 'monthly' ? 'none' : 'flex';\n                    });\n                });\n            });\n            \n            // 初始隐藏当月收入列表的年月选择器\n            const yearMonthSelectors = document.querySelectorAll('.year-month-selector');\n            yearMonthSelectors.forEach(selector => {\n                selector.style.display = 'none';\n            });\n            \n            // 点击详情按钮\n            document.addEventListener('click', function(e) {\n                if (e.target.classList.contains('detail-btn')) {\n                    const branchCode = e.target.dataset.id;\n                    alert('可根据需求展示客户的借据详情，网点代码：' + branchCode);\n                }\n            });\n            \n            // 搜索按钮\n            document.getElementById('search-btn').addEventListener('click', filterData);\n            \n            // 重置按钮\n            document.getElementById('reset-btn').addEventListener('click', resetFilter);\n        });\n    <\/script>\n</body>\n</html> ","income/overdue-detail.html":"<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>逾期详情 - 互联网小贷公司管理台系统</title>\n    <style>\n        :root {\n            --primary-color: #653EB3;\n            --secondary-color: #8E44AD;\n            --success-color: #2ECC71;\n            --danger-color: #E74C3C;\n            --warning-color: #F39C12;\n            --gray-color: #95A5A6;\n            --light-gray: #F7F9FC;\n            --white: #fff;\n            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);\n            --card-radius: 4px;\n        }\n\n        body {\n            margin: 0;\n            padding: 0;\n            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n            background-color: #F5F7FA;\n            color: #333;\n        }\n\n        .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n\n        header {\n            display: flex;\n            justify-content: space-between;\n            align-items: center;\n            margin-bottom: 20px;\n        }\n\n        h1 {\n            color: var(--primary-color);\n            font-size: 24px;\n            font-weight: 600;\n            margin: 0;\n        }\n\n        .breadcrumb {\n            display: flex;\n            align-items: center;\n            font-size: 14px;\n            color: var(--gray-color);\n        }\n\n        .breadcrumb a {\n            color: var(--primary-color);\n            text-decoration: none;\n        }\n\n        .breadcrumb .separator {\n            margin: 0 8px;\n        }\n\n        .card {\n            background-color: var(--white);\n            border-radius: var(--card-radius);\n            box-shadow: var(--shadow);\n            padding: 20px;\n            border-left: none;\n            margin-bottom: 20px;\n        }\n\n        .card-title {\n            margin: 0 0 20px 0;\n            color: var(--primary-color);\n            font-size: 16px;\n            font-weight: 600;\n            letter-spacing: 0.5px;\n            text-transform: uppercase;\n        }\n\n        .search-container {\n            display: flex;\n            gap: 15px;\n            flex-wrap: wrap;\n            margin-bottom: 20px;\n        }\n\n        .form-group {\n            display: flex;\n            flex-direction: column;\n            min-width: 200px;\n        }\n\n        .form-group label {\n            font-size: 13px;\n            color: var(--gray-color);\n            margin-bottom: 5px;\n        }\n\n        .form-group select, .form-group input {\n            padding: 8px 12px;\n            border: 1px solid #ddd;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            background-color: var(--white);\n        }\n\n        .search-btn {\n            align-self: flex-end;\n            padding: 8px 16px;\n            background-color: var(--primary-color);\n            color: var(--white);\n            border: none;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            cursor: pointer;\n            transition: background-color 0.2s;\n        }\n\n        .search-btn:hover {\n            background-color: var(--secondary-color);\n        }\n\n        .reset-btn {\n            align-self: flex-end;\n            padding: 8px 16px;\n            background-color: var(--white);\n            color: var(--gray-color);\n            border: 1px solid #ddd;\n            border-radius: var(--card-radius);\n            font-size: 14px;\n            cursor: pointer;\n        }\n\n        .table-container {\n            overflow-x: auto;\n        }\n\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            font-size: 14px;\n        }\n\n        th {\n            background-color: var(--light-gray);\n            color: var(--primary-color);\n            text-align: left;\n            padding: 12px 15px;\n            font-weight: 600;\n            border-bottom: 1px solid #ddd;\n        }\n\n        td {\n            padding: 12px 15px;\n            border-bottom: 1px solid #eee;\n            color: #333;\n        }\n\n        tr:last-child td {\n            border-bottom: none;\n        }\n\n        tr:hover td {\n            background-color: rgba(108, 92, 231, 0.05);\n        }\n\n        .detail-btn {\n            padding: 5px 10px;\n            background-color: rgba(108, 92, 231, 0.1);\n            color: var(--primary-color);\n            border: none;\n            border-radius: 2px;\n            cursor: pointer;\n            font-size: 12px;\n            transition: background-color 0.2s;\n        }\n\n        .detail-btn:hover {\n            background-color: rgba(108, 92, 231, 0.2);\n        }\n\n        .pagination {\n            display: flex;\n            justify-content: flex-end;\n            gap: 5px;\n            margin-top: 15px;\n        }\n\n        .pagination button {\n            width: 30px;\n            height: 30px;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            border: 1px solid #ddd;\n            background-color: var(--white);\n            border-radius: var(--card-radius);\n            cursor: pointer;\n        }\n\n        .pagination button.active {\n            background-color: var(--primary-color);\n            color: var(--white);\n            border-color: var(--primary-color);\n        }\n\n        .tab-container {\n            margin-bottom: 20px;\n        }\n\n        .tab-buttons {\n            display: flex;\n            margin-bottom: 20px;\n            border-bottom: 1px solid #ddd;\n        }\n\n        .tab-btn {\n            padding: 10px 20px;\n            background: none;\n            border: none;\n            font-size: 14px;\n            font-weight: 500;\n            color: var(--gray-color);\n            cursor: pointer;\n            position: relative;\n        }\n\n        .tab-btn.active {\n            color: var(--primary-color);\n        }\n\n        .tab-btn.active::after {\n            content: '';\n            position: absolute;\n            bottom: -1px;\n            left: 0;\n            width: 100%;\n            height: 2px;\n            background-color: var(--primary-color);\n        }\n\n        .tab-content {\n            display: none;\n        }\n\n        .tab-content.active {\n            display: block;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <header>\n            <h1>逾期详情</h1>\n        </header>\n\n        <div class=\"card\">\n            <div class=\"tab-container\">\n                <div class=\"tab-buttons\">\n                    <button class=\"tab-btn active\" data-tab=\"monthly\">当月逾期客户列表</button>\n                    <button class=\"tab-btn\" data-tab=\"total\">总逾期客户列表</button>\n                </div>\n            \n                <div class=\"search-container\">\n                    <div class=\"form-group\">\n                        <label>产品</label>\n                        <select id=\"product-select\">\n                            <option value=\"\">全部</option>\n                            <option value=\"小微保\">小微保</option>\n                            <option value=\"小微保专项\">小微保专项</option>\n                            <option value=\"小微保旺季\">小微保旺季</option>\n                            <option value=\"发薪贷\">发薪贷</option>\n                            <option value=\"秒贷\">秒贷</option>\n                            <option value=\"电商贷\">电商贷</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group year-month-selector\">\n                        <label>年份</label>\n                        <select id=\"year-select\">\n                            <option value=\"2024\">2024</option>\n                            <option value=\"2023\">2023</option>\n                            <option value=\"2022\">2022</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group year-month-selector\">\n                        <label>月份</label>\n                        <select id=\"month-select\">\n                            <option value=\"\">全部</option>\n                            <option value=\"01\">1月</option>\n                            <option value=\"02\">2月</option>\n                            <option value=\"03\">3月</option>\n                            <option value=\"04\">4月</option>\n                            <option value=\"05\">5月</option>\n                            <option value=\"06\">6月</option>\n                            <option value=\"07\">7月</option>\n                            <option value=\"08\">8月</option>\n                            <option value=\"09\">9月</option>\n                            <option value=\"10\">10月</option>\n                            <option value=\"11\">11月</option>\n                            <option value=\"12\">12月</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\">\n                        <label>客户名称</label>\n                        <input type=\"text\" id=\"customer-name\" placeholder=\"请输入客户名称\">\n                    </div>\n                    <button class=\"search-btn\" id=\"search-btn\">查询</button>\n                    <button class=\"reset-btn\" id=\"reset-btn\">重置</button>\n                </div>\n            \n                <div class=\"tab-content active\" id=\"monthly-tab\">\n                    <div class=\"table-container\">\n                        <table id=\"monthly-table\">\n                            <thead>\n                                <tr>\n                                    <th>客户名称</th>\n                                    <th>网点代码</th>\n                                    <th>网点名称</th>\n                                    <th>产品</th>\n                                    <th>还款金额(元)</th>\n                                    <th>逾期金额(元)</th>\n                                    <th>逾期占比</th>\n                                    <th>操作</th>\n                                </tr>\n                            </thead>\n                            <tbody id=\"monthly-tbody\">\n                                <!-- 表格数据由JavaScript生成 -->\n                            </tbody>\n                        </table>\n                    </div>\n                    <div class=\"pagination\" id=\"monthly-pagination\">\n                        <!-- 分页由JavaScript生成 -->\n                    </div>\n                </div>\n            \n                <div class=\"tab-content\" id=\"total-tab\">\n                    <div class=\"table-container\">\n                        <table id=\"total-table\">\n                            <thead>\n                                <tr>\n                                    <th>客户名称</th>\n                                    <th>网点代码</th>\n                                    <th>网点名称</th>\n                                    <th>产品</th>\n                                    <th>在贷金额(元)</th>\n                                    <th>逾期金额(元)</th>\n                                    <th>逾期占比</th>\n                                    <th>操作</th>\n                                </tr>\n                            </thead>\n                            <tbody id=\"total-tbody\">\n                                <!-- 表格数据由JavaScript生成 -->\n                            </tbody>\n                        </table>\n                    </div>\n                    <div class=\"pagination\" id=\"total-pagination\">\n                        <!-- 分页由JavaScript生成 -->\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n\n    <script>\n        // 模拟数据 - 客户信息\n        const mockCustomers = [\n            { name: \"京东物流有限公司\", branchCode: \"100108\", branchName: \"北京总部网点\" },\n            { name: \"申通快递有限公司\", branchCode: \"100256\", branchName: \"上海分拨中心\" },\n            { name: \"顺丰速运有限公司\", branchCode: \"100375\", branchName: \"广州网点\" },\n            { name: \"中通快递有限公司\", branchCode: \"100492\", branchName: \"深圳转运中心\" },\n            { name: \"圆通速递有限公司\", branchCode: \"100587\", branchName: \"杭州总部网点\" },\n            { name: \"韵达快递有限公司\", branchCode: \"100623\", branchName: \"南京分拨中心\" },\n            { name: \"百世快递有限公司\", branchCode: \"100714\", branchName: \"重庆网点\" },\n            { name: \"德邦物流有限公司\", branchCode: \"100832\", branchName: \"成都转运中心\" },\n            { name: \"极兔速递有限公司\", branchCode: \"100941\", branchName: \"武汉网点\" },\n            { name: \"京东快递有限公司\", branchCode: \"101024\", branchName: \"西安分拨中心\" },\n            { name: \"中储物流有限公司\", branchCode: \"101135\", branchName: \"天津网点\" },\n            { name: \"安能物流有限公司\", branchCode: \"101247\", branchName: \"苏州转运中心\" },\n            { name: \"华夏物流有限公司\", branchCode: \"101358\", branchName: \"长沙网点\" },\n            { name: \"天地华宇物流有限公司\", branchCode: \"101469\", branchName: \"郑州分拨中心\" },\n            { name: \"优速快递有限公司\", branchCode: \"101578\", branchName: \"青岛总部网点\" },\n            { name: \"快捷快递有限公司\", branchCode: \"101689\", branchName: \"宁波转运中心\" },\n            { name: \"全峰快递有限公司\", branchCode: \"101795\", branchName: \"福州网点\" },\n            { name: \"佳吉快运有限公司\", branchCode: \"101857\", branchName: \"厦门分拨中心\" },\n            { name: \"远成快运有限公司\", branchCode: \"101968\", branchName: \"合肥网点\" },\n            { name: \"宅急送快递有限公司\", branchCode: \"102073\", branchName: \"济南转运中心\" },\n            { name: \"联邦快递有限公司\", branchCode: \"102184\", branchName: \"大连总部网点\" },\n            { name: \"如风达快递有限公司\", branchCode: \"102295\", branchName: \"沈阳分拨中心\" },\n            { name: \"速尔快递有限公司\", branchCode: \"102356\", branchName: \"南昌网点\" },\n            { name: \"国通快递有限公司\", branchCode: \"102467\", branchName: \"太原转运中心\" },\n            { name: \"快速物流有限公司\", branchCode: \"102578\", branchName: \"哈尔滨网点\" },\n            { name: \"龙邦快递有限公司\", branchCode: \"102689\", branchName: \"长春分拨中心\" },\n            { name: \"中铁快运有限公司\", branchCode: \"102795\", branchName: \"昆明总部网点\" },\n            { name: \"邮政速递有限公司\", branchCode: \"102857\", branchName: \"贵阳转运中心\" },\n            { name: \"万象物流有限公司\", branchCode: \"102963\", branchName: \"南宁网点\" },\n            { name: \"天天快递有限公司\", branchCode: \"103074\", branchName: \"兰州分拨中心\" }\n        ];\n\n        // 产品类型\n        const productTypes = [\"小微保\", \"小微保专项\", \"小微保旺季\", \"发薪贷\", \"秒贷\", \"电商贷\"];\n\n        // 生成随机的逾期记录\n        function generateRandomRecords(count, isMonthly = true) {\n            const records = [];\n            const currentDate = new Date();\n            const currentYear = currentDate.getFullYear();\n            const currentMonth = currentDate.getMonth() + 1;\n            \n            for (let i = 0; i < count; i++) {\n                const customer = mockCustomers[Math.floor(Math.random() * mockCustomers.length)];\n                const product = productTypes[Math.floor(Math.random() * productTypes.length)];\n                const repaymentAmount = Math.floor(Math.random() * 50000 + 10000);\n                const incomeAmount = Math.floor(repaymentAmount * (Math.random() * 0.1 + 0.05));\n                \n                let year, month;\n                if (isMonthly) {\n                    year = currentYear;\n                    month = currentMonth;\n                } else {\n                    // 随机生成过去3年内的日期\n                    year = currentYear - Math.floor(Math.random() * 3);\n                    month = Math.floor(Math.random() * 12) + 1;\n                }\n                \n                records.push({\n                    ...customer,\n                    product: product,\n                    repaymentAmount: repaymentAmount,\n                    incomeAmount: incomeAmount,\n                    year: year,\n                    month: month\n                });\n            }\n            \n            return records;\n        }\n\n        // 格式化金额\n        function formatAmount(amount) {\n            return amount.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, \",\");\n        }\n\n        // 生成表格数据\n        let monthlyData = generateRandomRecords(50, true);\n        let totalData = generateRandomRecords(100, false);\n        let filteredMonthlyData = [...monthlyData];\n        let filteredTotalData = [...totalData];\n        \n        // 显示表格数据\n        function displayTableData(data, tableId, page = 1, pageSize = 10) {\n            const tbody = document.getElementById(tableId);\n            tbody.innerHTML = '';\n            \n            const startIndex = (page - 1) * pageSize;\n            const endIndex = Math.min(startIndex + pageSize, data.length);\n            const pageData = data.slice(startIndex, endIndex);\n            \n            if (pageData.length === 0) {\n                const emptyRow = document.createElement('tr');\n                emptyRow.innerHTML = `<td colspan=\"8\" style=\"text-align: center; padding: 30px;\">暂无数据</td>`;\n                tbody.appendChild(emptyRow);\n                return;\n            }\n            \n            for (const record of pageData) {\n                // 计算逾期占比百分比\n                const ratio = ((record.incomeAmount / record.repaymentAmount) * 100).toFixed(2);\n                const row = document.createElement('tr');\n                row.innerHTML = `\n                    <td>${record.name}</td>\n                    <td>${record.branchCode}</td>\n                    <td>${record.branchName}</td>\n                    <td>${record.product}</td>\n                    <td>${formatAmount(record.repaymentAmount)}</td>\n                    <td>${formatAmount(record.incomeAmount)}</td>\n                    <td>${ratio}%</td>\n                    <td><button class=\"detail-btn\" data-id=\"${record.branchCode}\">详情</button></td>\n                `;\n                tbody.appendChild(row);\n            }\n            \n            // 更新分页\n            updatePagination(data.length, page, pageSize, tableId === 'monthly-tbody' ? 'monthly-pagination' : 'total-pagination');\n        }\n        \n        // 更新分页\n        function updatePagination(total, currentPage, pageSize, paginationId) {\n            const paginationContainer = document.getElementById(paginationId);\n            paginationContainer.innerHTML = '';\n            \n            const totalPages = Math.max(1, Math.ceil(total / pageSize));\n            \n            // 上一页按钮\n            const prevBtn = document.createElement('button');\n            prevBtn.innerHTML = '&lt;';\n            prevBtn.disabled = currentPage === 1;\n            prevBtn.addEventListener('click', () => {\n                if (currentPage > 1) {\n                    changePage(currentPage - 1, paginationId === 'monthly-pagination');\n                }\n            });\n            paginationContainer.appendChild(prevBtn);\n            \n            // 页码按钮\n            const maxPagesToShow = 5;\n            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));\n            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);\n            \n            if (endPage - startPage + 1 < maxPagesToShow) {\n                startPage = Math.max(1, endPage - maxPagesToShow + 1);\n            }\n            \n            for (let i = startPage; i <= endPage; i++) {\n                const pageBtn = document.createElement('button');\n                pageBtn.textContent = i;\n                pageBtn.classList.toggle('active', i === currentPage);\n                pageBtn.addEventListener('click', () => {\n                    changePage(i, paginationId === 'monthly-pagination');\n                });\n                paginationContainer.appendChild(pageBtn);\n            }\n            \n            // 下一页按钮\n            const nextBtn = document.createElement('button');\n            nextBtn.innerHTML = '&gt;';\n            nextBtn.disabled = currentPage === totalPages;\n            nextBtn.addEventListener('click', () => {\n                if (currentPage < totalPages) {\n                    changePage(currentPage + 1, paginationId === 'monthly-pagination');\n                }\n            });\n            paginationContainer.appendChild(nextBtn);\n        }\n        \n        // 切换页码\n        function changePage(page, isMonthly) {\n            if (isMonthly) {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', page);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', page);\n            }\n        }\n        \n        // 搜索/筛选数据\n        function filterData() {\n            const productValue = document.getElementById('product-select').value;\n            const yearValue = document.getElementById('year-select').value;\n            const monthValue = document.getElementById('month-select').value;\n            const customerNameValue = document.getElementById('customer-name').value.toLowerCase().trim();\n            \n            // 获取当前活动标签\n            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;\n            \n            // 过滤月度数据 - 对于月度数据忽略年月筛选条件\n            filteredMonthlyData = monthlyData.filter(record => {\n                return (\n                    (productValue === '' || record.product === productValue) &&\n                    (customerNameValue === '' || record.name.toLowerCase().includes(customerNameValue))\n                );\n            });\n            \n            // 过滤总数据 - 对于总数据应用所有筛选条件\n            filteredTotalData = totalData.filter(record => {\n                return (\n                    (productValue === '' || record.product === productValue) &&\n                    (yearValue === '' || record.year.toString() === yearValue) &&\n                    (monthValue === '' || record.month.toString().padStart(2, '0') === monthValue) &&\n                    (customerNameValue === '' || record.name.toLowerCase().includes(customerNameValue))\n                );\n            });\n            \n            // 更新当前显示的表格\n            if (activeTab === 'monthly') {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', 1);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', 1);\n            }\n        }\n        \n        // 重置筛选\n        function resetFilter() {\n            document.getElementById('product-select').value = '';\n            document.getElementById('year-select').value = '2024';\n            document.getElementById('month-select').value = '';\n            document.getElementById('customer-name').value = '';\n            \n            filteredMonthlyData = [...monthlyData];\n            filteredTotalData = [...totalData];\n            \n            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;\n            if (activeTab === 'monthly') {\n                displayTableData(filteredMonthlyData, 'monthly-tbody', 1);\n            } else {\n                displayTableData(filteredTotalData, 'total-tbody', 1);\n            }\n        }\n        \n        // 初始化页面\n        document.addEventListener('DOMContentLoaded', function() {\n            // 初始化表格\n            displayTableData(monthlyData, 'monthly-tbody', 1);\n            displayTableData(totalData, 'total-tbody', 1);\n            \n            // 切换标签页\n            const tabButtons = document.querySelectorAll('.tab-btn');\n            tabButtons.forEach(button => {\n                button.addEventListener('click', function() {\n                    tabButtons.forEach(btn => btn.classList.remove('active'));\n                    this.classList.add('active');\n                    \n                    const tabContents = document.querySelectorAll('.tab-content');\n                    tabContents.forEach(content => content.classList.remove('active'));\n                    \n                    const tabId = this.dataset.tab + '-tab';\n                    document.getElementById(tabId).classList.add('active');\n                    \n                    // 根据当前选中的标签页显示或隐藏年月选择器\n                    const yearMonthSelectors = document.querySelectorAll('.year-month-selector');\n                    yearMonthSelectors.forEach(selector => {\n                        selector.style.display = this.dataset.tab === 'monthly' ? 'none' : 'flex';\n                    });\n                });\n            });\n            \n            // 初始隐藏当月逾期列表的年月选择器\n            const yearMonthSelectors = document.querySelectorAll('.year-month-selector');\n            yearMonthSelectors.forEach(selector => {\n                selector.style.display = 'none';\n            });\n            \n            // 点击详情按钮\n            document.addEventListener('click', function(e) {\n                if (e.target.classList.contains('detail-btn')) {\n                    const branchCode = e.target.dataset.id;\n                    alert('可根据需求展示客户的借据详情，网点代码：' + branchCode);\n                }\n            });\n            \n            // 搜索按钮\n            document.getElementById('search-btn').addEventListener('click', filterData);\n            \n            // 重置按钮\n            document.getElementById('reset-btn').addEventListener('click', resetFilter);\n        });\n    <\/script>\n</body>\n</html> "};
+    const detailTitleMap = {"income/income-detail.html":"收入详情","income/overdue-detail.html":"逾期详情"};
+    const dashboardView = document.getElementById('aoi-dashboard-view');
+    const detailView = document.getElementById('aoi-detail-view');
+    const detailFrame = document.getElementById('aoi-detail-frame');
+    const detailTitle = document.getElementById('aoi-detail-title');
+
+    function closeDetail(){
+      detailView.classList.add('aoi-hidden');
+      dashboardView.classList.remove('aoi-hidden');
+      detailFrame.srcdoc = '';
+    }
+
+    function openDetail(fileName){
+      const tpl = detailTemplates[fileName];
+      if(!tpl) return;
+      detailTitle.textContent = detailTitleMap[fileName] || '详情';
+      detailFrame.srcdoc = tpl;
+      dashboardView.classList.add('aoi-hidden');
+      detailView.classList.remove('aoi-hidden');
+    }
+
+    document.getElementById('aoi-detail-back').addEventListener('click', closeDetail);
+    window.__aoiOpenDetail = openDetail;
+  </script>
+</body>
+</html>
