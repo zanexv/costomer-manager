@@ -1394,6 +1394,7 @@ function initEnterpriseTab() {
     const P = 'e';
     const relationOpts = ['直接控股','间接控股','亲属关系','其他关系'];
     const companyIndustryOpts = ['圆通网点','农业行业','工业行业','服务业行业','金融行业','房地产行业','教育行业','医疗行业','交通运输行业','旅游行业','通信行业','电力行业','能源行业','化工行业','采矿行业','制造业行业','其他'];
+    const managementPositionOpts = ['法人','历史法人','实控人','历史实控人','股东','总经理','财务','联系人','合同经办人','办公室负责人','财务负责人','客服负责人','职业经理人','其他'];
     const state = {
         basicInfo: { data: {
             name:'杭州云恒科技有限公司', creditCode:'91330106MA2CDX7Y3R',
@@ -1423,6 +1424,13 @@ function initEnterpriseTab() {
     function renderBasicActions() {
         const el = document.getElementById('e-basicInfoActions');
         if (!el) return;
+        // 基本信息暂不支持编辑：隐藏按钮并禁用点击。
+        // 如需恢复编辑，取消下方注释并恢复原按钮渲染与点击逻辑。
+        state.basicInfo.editing = false;
+        state.basicInfo.snapshot = null;
+        el.innerHTML = '';
+        el.onclick = null;
+        /*
         el.innerHTML = state.basicInfo.editing
             ? `<button class="btn btn-secondary" type="button" data-action="cancel">取消</button>
                <button class="btn btn-primary" type="button" data-action="save">保存</button>`
@@ -1433,6 +1441,7 @@ function initEnterpriseTab() {
             if (a==='cancel') { state.basicInfo.data=cloneObj(state.basicInfo.snapshot); state.basicInfo.snapshot=null; state.basicInfo.editing=false; renderAll(); }
             if (a==='save') { syncBasic(); state.basicInfo.snapshot=null; state.basicInfo.editing=false; renderAll(); }
         };
+        */
     }
     function syncBasic() {
         document.querySelectorAll('[data-basic-field]').forEach(el => {
@@ -1527,7 +1536,11 @@ function initEnterpriseTab() {
             : `<td>${escHtml(item.name)}</td><td>${escHtml(item.type)}</td><td>${escHtml(item.ratio)}</td><td>${fmtMoney(item.amount)}</td><td>${escHtml(item.date)}</td>`
         );
         renderTable('management', (item, idx, editing) => editing
-            ? ['name','position','jobNumber','phone','idCard'].map(f=>`<td class="input-cell"><input data-field="${f}" data-index="${idx}" data-section="management" value="${escHtml(item[f])}"></td>`).join('')
+            ? `<td class="input-cell"><input data-field="name" data-index="${idx}" data-section="management" value="${escHtml(item.name)}"></td>
+               <td class="input-cell">${buildSelect('position', idx, 'management', managementPositionOpts, item.position)}</td>
+               <td class="input-cell"><input data-field="jobNumber" data-index="${idx}" data-section="management" value="${escHtml(item.jobNumber)}"></td>
+               <td class="input-cell"><input data-field="phone" data-index="${idx}" data-section="management" value="${escHtml(item.phone)}"></td>
+               <td class="input-cell"><input data-field="idCard" data-index="${idx}" data-section="management" value="${escHtml(item.idCard)}"></td>`
             : `<td>${escHtml(item.name)}</td><td>${escHtml(item.position)}</td><td>${escHtml(item.jobNumber)}</td><td>${escHtml(item.phone)}</td><td>${escHtml(item.idCard)}</td>`
         );
         renderTable('company', (item, idx, editing) => editing
@@ -1542,7 +1555,7 @@ function initEnterpriseTab() {
     }
     // Add row buttons
     document.getElementById('e-addShareholderRowBtn')?.addEventListener('click', ()=>{ syncSection('shareholder'); state.shareholder.items.push({id:state.shareholder.items.length+1,name:'',type:'',ratio:'',amount:'',date:''}); renderAll(); });
-    document.getElementById('e-addManagementRowBtn')?.addEventListener('click', ()=>{ syncSection('management'); state.management.items.push({id:state.management.items.length+1,name:'',position:'',jobNumber:'',phone:'',idCard:''}); renderAll(); });
+    document.getElementById('e-addManagementRowBtn')?.addEventListener('click', ()=>{ syncSection('management'); state.management.items.push({id:state.management.items.length+1,name:'',position:managementPositionOpts[0],jobNumber:'',phone:'',idCard:''}); renderAll(); });
     document.getElementById('e-addCompanyRowBtn')?.addEventListener('click', ()=>{ syncSection('company'); state.company.items.push({id:state.company.items.length+1,name:'',industry:companyIndustryOpts[0],date:'',capital:'',controller:'',relationship:relationOpts[0]}); renderAll(); });
     renderAll();
 }
